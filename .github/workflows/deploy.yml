@@ -3,7 +3,7 @@ name: Deploy Jekyll Site
 on:
   push:
     branches:
-      - master  # Vaihda master/main riippuen siitä mitä käytät
+      - gh-pages  # Vaihda master/main riippuen siitä mitä käytät
 
 jobs:
   build-and-deploy:
