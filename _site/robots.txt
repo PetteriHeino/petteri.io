@@ -2,4 +2,4 @@ User-agent: *
 
 Disallow: /norobots/
 
-Sitemap: https://petteriheino.github.io/sitemap.xml
+Sitemap: https://petteriheino.github.io/petteri.io/sitemap.xml
