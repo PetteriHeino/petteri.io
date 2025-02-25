@@ -29,11 +29,11 @@ jobs:
       - name: Build Jekyll site
         run: bundle exec jekyll build
 
-      - name: Upload artifact (with unique name)
+      - name: Upload artifact (GitHub Pages)
         uses: actions/upload-pages-artifact@v3
         with:
-          name: jekyll-pages-${{ github.run_id }}  # Uniikki artifact-nimi
           path: ./_site
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+
