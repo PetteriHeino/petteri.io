@@ -1,0 +1,34 @@
+name: Deploy Jekyll Site
+
+on:
+  push:
+    branches:
+      - master  # Vaihda master/main riippuen siitä mitä käytät
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+
+      - name: Upload artifact (with unique name)
+        uses: actions/upload-pages-artifact@v2
+        with:
+          name: jekyll-pages-${{ github.run_id }}  # Uniikki artifact-nimi
+          path: ./_site
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
