@@ -13,6 +13,8 @@ MS kumppanuuden kannalta merkittävät sertifioinnit tällä hetkellä ovat vain
 
 ## Vuonna 2025 merkitykselliset sertifikaatit
 Microsoft Certified: Windows Server Hybrid Administrator Associate<br>
+Microsoft Certified: Identity and Access Administrator Associate<br>
+Microsoft 365 Certified: Administrator Expert<br>
 Microsoft Certified: Azure Administrator Associate<br>
 Microsoft Certified: Azure Fundamentals<br>
 
