@@ -1,25 +1,17 @@
 [
   {
-    "title": "Teams ja ulkoiset käyttäjät",
-    "url": "/posts/teams_ulkoiset/",
+    "title": "Entra ID Identity Governance - Entitlement Management osa 1",
+    "url": "/posts/M365_ID_gov_entitlement_management/",
     "categories": "M365",
-    "tags": "Teams",
-    "date": "2025-03-02 12:00:00 +0200",
-    "content": "Teams käyttöön vaikuttavat M365 tenantin yhteistyö asetukset ulkoisten käyttäjien kanssa ovat hujan hajan M365 palvelussa. Tässä kirjoituksessa pyrin niputtamaan nämä yhteen dokumenttiin ja käyn lä..."
+    "tags": "SC-300, Microsoft, Entra ID, Identity Governance, Entitlement Management",
+    "date": "2025-08-03 10:00:00 +0300",
+    "content": "Entitlement Management - katalogi, resurssit, käyttöoikeuspaketit, käyttöoikeuspyynnöt"
   },
   {
-    "title": "VS Code ja GitHub käyttöönotto ja työskentely repositoryissä",
-    "url": "/posts/VS-Code-GitHub-komennot-ja-integraatio/",
-    "categories": "Työvälineet",
-    "tags": "VS Code, GitHub",
-    "date": "2025-03-01 12:00:00 +0200",
-    "content": "Infrastucture As Code for dummies sarjan ensimmäinen kirjoitus. Käydään vähän komentoja läpi, että päästään alkuun VS Coden ja GitHubin kanssa."
-  },
-  {
-    "title": "Azure opiskelun aloittaminen ja sertifiointien merkitys työmarkkinoilla",
-    "url": "/posts/Azure_opiskelun_aloittaminen/",
-    "categories": "Sertifiointi, Opiskelu",
-    "tags": "Azure, Microsoft",
+    "title": "Ide",
+    "url": "/posts/M365_Identity_Governance/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, identity",
     "date": "2025-02-22 21:50:00 +0200",
     "content": "Tämän on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi postauksina harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Co..."
   }

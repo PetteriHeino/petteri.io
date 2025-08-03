@@ -1,569 +1,467 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-03-04T09:18:30+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Teams ja ulkoiset käyttäjät</title><link href="http://localhost:4000/posts/teams_ulkoiset/" rel="alternate" type="text/html" title="Teams ja ulkoiset käyttäjät" /><published>2025-03-02T12:00:00+02:00</published><updated>2025-03-02T12:00:00+02:00</updated><id>http://localhost:4000/posts/teams_ulkoiset</id><content type="html" xml:base="http://localhost:4000/posts/teams_ulkoiset/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-03T17:44:16+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-03T10:00:00+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
-<p>Kun aloittaa opiskelemaan Teamsiä sertifioinnin suorattamista ajatellen, eikä kokemusta Teams ylläpidosta ole entuudestaan, niin ulkoisten käyttäjien asetusten määrityksiin voi olla alkuun hankala saada otetta, kun on useampaa erilaista kollaboraatio tyyppiä ja asetuksia on M365n eri palveluissa.</p>
+<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 
-<p>Kollaboraatio ulkoisten käyttäjien kanssa on aihealua, mitä sertifiointi testissä kysytään varmasti, niin ajattelin yhdistää nämä eri kollaboraatio asetukset yhteen dokumenttiin.</p>
+<ol>
+  <li>Katalogi, resurssit, acccess package ja käyttöoikeuspyyntöjen hallinta</li>
+  <li>Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, Yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla</li>
+</ol>
 
-<h2 id="lyhyesti-koko-paletti">Lyhyesti koko paletti</h2>
+<p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
 
-<ul>
-  <li>External Access
-    <ul>
-      <li>Tenantin käyttäjät voivat chatata ulkoisten käyttäjien kanssa</li>
-      <li>Ulkoisilla käyttäjillä ei ole pääsyä tenantin tiimeihin ja resursseihin</li>
-      <li>Asetukset: Teams hallintakeskus Users -&gt; External Access -&gt; Organization settings ja Policies</li>
-    </ul>
-  </li>
-  <li>Guest Access
-    <ul>
-      <li>vieraskäyttäjille voidaan antaa pääsy Teamsiin, kanavien dokumentteihin, chatiin ja sovelluksiin</li>
-      <li>Asetukset:
-        <ul>
-          <li>Entra ID -&gt; External collaboration settings</li>
-          <li>M365 admin center -&gt; Settings -&gt; M65 Groups</li>
-          <li>Sharepoint admin center -&gt; Policies -&gt; Sharing</li>
-          <li>Teams Admin Center -&gt; Users -&gt; Guest access</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>B2B Direct Connect ja Shared Channel
-    <ul>
-      <li>Luottosuhde tenantien välillä mahdollistaa shared channel käytön, missä kollaboraatioon ei tarvitse guest tunnusta ja näin ollen ulkoisen käyttäjän ei tarvitse kirjautua tenantiin, vaan hän käytää Teams kanavaa oman tenanttinsa tunnuksella.</li>
-      <li>Asetukset:
-        <ul>
-          <li>Entra ID -&gt;</li>
-          <li>Teams Admin Center -&gt;</li>
-          <li>Teams client -&gt;</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
+<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
 
-<h2 id="shared-channel---b2b-luottosuhde-ja-teams-ryhmän-shared-channel">Shared Channel - B2B luottosuhde ja Teams ryhmän shared channel</h2>
+<h2 id="entitlement-management-microsoft-entra-idssa">Entitlement Management Microsoft Entra ID:ssa</h2>
 
-<h3 id="b2b-direct-connect-konfiguraatiot-entra-id">B2B direct connect konfiguraatiot (Entra ID)</h3>
+<p>Entitlement Management on osa Microsoft Entra ID:n (entinen Azure AD) Identity Governance -ratkaisua. Sen avulla organisaatiot voivat hallita käyttäjien pääsyä resursseihin hallitusti ja itsepalveluna – sekä sisäisille että ulkoisille käyttäjille.</p>
 
-<h4 id="lisää-partner-tenant">Lisää partner tenant</h4>
+<p>Kun työntekijät liittyvät organisaatioon, vaihtavat tiimiä tai aloittavat työskentelyn uudessa roolissa he tarvitsevat pääsyn erilaisiin resursseihin. Esimiesten on tunnistettava, mitä resursseja työntekijä tarvitsee ja kuinka kauan. Resurssien käyttöoikeuksien myöntäminen yksitellen on hankalaa ja aikaa vievää. Kun käyttäjä siirtyy pois tiimistä tai organisaatiosta pitää myös poistaa käyttöoikeudet.</p>
 
-<p>To configure cross-tenant access settings in the Microsoft Entra admin center, you need an account with at least the Security Administrator role. Teams administrators can read cross-tenant access settings, but they can’t update these settings.</p>
-
-<p><img src="/crosstenant_access_settings.png" alt="Entra ID polku" /></p>
-
-<p>Sign in to the Microsoft Entra admin center as at least a Security Administrator.</p>
-
-<p>Browse to Identity &gt; External Identities &gt; Cross-tenant access settings.</p>
-
-<p>Select Organizational settings.</p>
-
-<p>Select Add organization.</p>
-
-<p>On the Add organization pane, type the full domain name (or tenant ID) for the organization.</p>
-
-<p><img src="/crosstenant_add_domain.png" alt="add domain" /></p>
-
-<p>Select the organization in the search results, and then select Add.</p>
-
-<p>The organization appears in the Organizational settings list. At this point, all access settings for this organization are inherited from your default settings. To change the settings for this organization, select the Inherited from default link under the Inbound access or Outbound access column.</p>
-
-<p><img src="/crosstenant_added_domain.png" alt="added domain" /></p>
-
-<h4 id="määritä-pääsyoikeudet">Määritä pääsyoikeudet</h4>
-
-<p>If you’re configuring settings for an organization, select one of these options:</p>
-
-<p>Default settings: The organization uses the settings configured on the Default settings tab. If customized settings were already configured for this organization, you need to select Yes to confirm that you want all settings to be replaced by the default settings. Then select Save, and skip the rest of the steps in this procedure.</p>
-
-<p>Customize settings: You can customize the settings to enforce for this organization instead of the default settings. Continue with the rest of the steps in this procedure.</p>
-
-<p>Select External users and groups.</p>
-
-<p>Under Access status, select one of these options:</p>
-
-<p>Allow access: Allows the users and groups specified under Applies to to access B2B direct connect.
-Block access: Blocks the users and groups specified under Applies to from accessing B2B direct connect. Blocking access for all external users and groups also blocks all your internal applications from being shared via B2B direct connect.</p>
-
-<p>If you chose Select external users and groups, do the following for each user or group you want to add:</p>
-
-<p>Select Add external users and groups.
-In the Add other users and groups pane, type the user object ID or the group object ID in the search box.
-In the menu next to the search box, choose either user or group.
-Select Add.</p>
-
-<p><img src="/custom_allow_access.png" alt="Allow access to groups or/and users" /></p>
-
-<p><img src="/custom_allow_access2.png" alt="Allow access to M365 application" /></p>
-
-<h4 id="partner-organisaation-luottosuhde---outbound-access">partner organisaation luottosuhde - outbound access</h4>
-
-<p>In the Microsoft Entra admin center, select External Identities, and then select Cross-tenant access settings.
-Select the outbound access link for the organization that you want to modify.
-On the B2B direct connect tab, choose Customize settings.
-On the External users and groups tab, choose Allow access and set an Applies to of all users.
-On the External applications tab, choose Allow access and Select external applications.
-Select Add Microsoft applications.
-Select the Office 365 application, and then choose Select.
-Select Save, choose Yes to confirm, and close the Outbound access settings blade.</p>
-
-<h3 id="teams-shared-channel-teams-hallintakonsoli-tai-teams-client">Teams shared channel (Teams hallintakonsoli tai Teams client)</h3>]]></content><author><name></name></author><category term="M365" /><category term="Teams" /><summary type="html"><![CDATA[Teams käyttöön vaikuttavat M365 tenantin yhteistyö asetukset ulkoisten käyttäjien kanssa ovat hujan hajan M365 palvelussa. Tässä kirjoituksessa pyrin niputtamaan nämä yhteen dokumenttiin ja käyn läpi niiden konfiguroinnin. Näitä asioita testataan vuoren varmasti MS-700 seritifiontitestissä.]]></summary></entry><entry><title type="html">VS Code ja GitHub käyttöönotto ja työskentely repositoryissä</title><link href="http://localhost:4000/posts/VS-Code-GitHub-komennot-ja-integraatio/" rel="alternate" type="text/html" title="VS Code ja GitHub käyttöönotto ja työskentely repositoryissä" /><published>2025-03-01T12:00:00+02:00</published><updated>2025-03-01T21:38:57+02:00</updated><id>http://localhost:4000/posts/VS%20Code%20GitHub%20komennot%20ja%20integraatio</id><content type="html" xml:base="http://localhost:4000/posts/VS-Code-GitHub-komennot-ja-integraatio/"><![CDATA[<h1 id="johdanto">Johdanto</h1>
-
-<p>Opiskelen MS Azuren hallinnointia sertifiointitavoitteisesti. Aloittaessani opiskelemaan Azure Administrator Associate testiin (AZ-104) tuumasin, että koska Windows pöytäkoneeni hajosi, niin asennan Macbook läppäriin VS Code editorin ajatuksena, että koitan alusta lähtien opetella ylläpitämään Azurea mahdollisimman vähän graafisessa käyttöliittymässä. Sen takia tässä kirjoituksessa on asiaa VS Coden ja GitHubin käyttöönotosta MacOsille. Samat asiat koskevat toki Windowsia, mutta ne voivat olla vähän erilaisia. En tässä kirjoituksessa ota kantaa Windows asennukseen. Kirjoituksen GitHub komennot ovat kuitenkin samat, ajaa niitä Macissä tai Windowsissa.</p>
-
-<p>Kun pääsin AZ-104 opiskelussa ARM templateihin, niin ymmärsin, että vaistoni oli oikeassa siinä, että VS Code kannattaa asentaa omalla läppärille. Jos olet koskaan asentanut virtuaalikoneita Azuren hallintaportaalissa, niin tiedät kuinka hidasta se voi olla. ARM templateilla voidaan automatisoida niin virtuaalikoneiden kuin muidenkin Azure resurssien asennuksia. Mittavampienkin asennusten tekeminen tapahtuu nopeasti kun Azure Resource Manager asentaa templateissa määritettyjä asennuksia ja konfiguraatioita saman aikaisesti, riippuvaisuus tilanteita lukuunottamatta.</p>
-
-<p>Opiskelussakin testiympäristöjen automatisoidulla asennuksella on merkitystä. Koska haluat opiskella Azurea mahdollisimman vähillä kuluilla, niin et halua, että opiskelusession jälkeen Azureen jää mitään resursseja, mitkä tuottaa sinulle kuluja. Sen takia on hyvä automatisoida demoympäristöjen asennukset, jotta pääset aloittamaan hands on testaamisen mahdollisemman nopeasti testiympäristön asentuessa muutamassa hetkessä. Mikä parasta, kun tähtäät siihen, että voit asentaa demoympäristöt automatisoidusti, niin olet samalla jo mahdollisesti matkalla Infrastructure As Code (IaC) osaajaksi.</p>
-
-<p>Internetistä löytyy tämän kirjoituksen asiat todennäköisesti paremmin dokumentoituna. En ole tätä kirjoittaessa vielä mikään VS Code ja GitHun taituri. Se onkin tämän kirjoituksen pointti. Sen sijaan, että dokumentoin itselleni asioita OneNoteen, niin dokumentoin niitä web sivuksi internetiin. Dokumentaatiossa on lähinnä sitä asiaa jäsenneltynä, mitä olen joutunut tähän mennessä VS Coden ja GitHubin kanssa tekemään. Eli peruskomentoja ylläpitoon.</p>
-
-<p>Lähdin VS Coden ja GitHubin käytössä liikkeelle lukematta ensinkään dokumentaatioita ja kyselin jatkuvasti tekoälyltä että miten tehdään sitä ja tätä?</p>
-
-<p>Päädyin tekemään web sivuja DJ persoonalleni, koska halusin jonkun hyvän harjoitustyön millä saan tuntumaa VS Coden ja GitHubin käyttöön. Se oli melkoisen uuvuttava prosessi kun lähti liikkeelle siitä, että minulla ei ollut kummankaan käyttökokemusta ja osaamista entuudestaan. En varmasti olisi saanut tehtyä mitään ilman tekoälyn avustusta. Tällä haluan kannustaa asiantuntijoita koodieditorin pariin, koska VS Coden mukana tulee copilot edit ja copilot chat integroituna ja sen käyttö on ilmaista. Joskin maksullinen lisenssi löytyy myös mikä antaa Copilotin käyttöön rajattomasti. Ilmaislisenssissä on rajoitus kuinka paljon Copilotia voi komentaa kuukautta kohden.</p>
-
-<p>Tässä vielä mainostuksena Copilotin tuoman lisän tekemiseen:<br />
-Copilotilta voit</p>
-<ul>
-  <li>kysyä tekoälyltä apua kun et ymmärrä miten jokin asia tehdään VScodessa, koodissa, terminal komennoissa jne..</li>
-  <li>pyytää kertomaan mitä jokin valmis koodi tekee</li>
-  <li>pyytää luomaan koodia antamillasi spekseillä</li>
-  <li>pyytää debugausta virheellisesti toimivaan koodiin</li>
-</ul>
-
-<p>Nolla taidoilla pystyin luomaan web sivuston ja tekemään siihen liittyvää ongelmanselvitystä. Jos copilotia ei olisi ollut, niin web sivusto ei olisi noussut henkiin. Toki siinäkin meni aikaa. Hajoitin web sivut vain pahemmin ennenkuin ne lopulta oli täysin toimivat, koska jouduin uskomaan kaiken mitä tekoäly ehdottaa. Tekoäly on mahtava opettaja ja apuri, mutta sen käyttö edellyttää kriittysyyttä ja omien aivojen käyttöä.</p>
-
-<p>Tästä kokemuksesta viisastuneena voin kuitenkin sanoa, että pääasiassa tekoäly toimii tänä päivänä käsittämättömän hyvin, mutta jotta saat toimivia ratkaisuja, niin sinun pitää pystyä antamaan mahdollisimman hyvät taustatiedot tekoälylle. Asiantuntijat aina voivottelevat puutteellisista lähtötiedoista kun jotakin muutosprojektia käynnistetään, tekoälyn kanssa voi testata saman ilmiön kun itse annat puutteelliset lähtötiedot, niin kuinka hyvää jälkeä sieltä tekoälyltä sitten saat.</p>
-
-<p>Web sivuja luodessa alkoi olemaan selvä, että minun pitää jossain kohtaa dokumentoida ihan näitä perus terminal komentoja, jotta ymmärrän niihin liittyviä vivahteita eikä kaikkea tarvi kysyä tekoälyltä tai jos kysyy niin pystyy sanomaan vastaan jos jokin ei vaikuta oikealta ratkaisulta.</p>
-
-<p>Aloitin dokumentoinnin omaan OneNoteen, mutta pian siinä tuli ajatus, että tämä dokumentaatio voisi olla ensimmäinen blogikirjoitus Infrastructure As Code for dummies sarjalleni. Tässä lähinnä dokumentoitu hieman VS Code ja GitHub käyttöönottoa ja perus zsh komentoja VS Coden terminalissa. Saatan päivittää tätä dokumentin sisältöä jatkossa kun työskentelen VS Coden ja GitHubin parissa ja kokemusta tulee lisää.</p>
-
-<p>Paremmat dokumentaatiot VS Codesta ja Githubista löytyvät täältä:</p>
+<h3 id="-entitlement-management-hyödyt">🎯 Entitlement Management hyödyt</h3>
 
 <ul>
-  <li><a href="https://code.visualstudio.com/docs" target="_blank" rel="noopener noreferrer">VS Code</a></li>
-  <li><a href="https://docs.gitlab.com/user/get_started/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+  <li><strong>Automaattinen ja hallittu pääsynhallinta</strong>: vähemmän manuaalista työtä IT:lle.</li>
+  <li><strong>Auditointi ja jäljitettävyys</strong>: kaikki pyynnöt ja hyväksynnät tallennetaan.</li>
+  <li><strong>Tuki ulkoisille käyttäjille (B2B)</strong>: yhteistyökumppanit voivat hakea pääsyä hallitusti.</li>
+  <li><strong>Vanhentumisen ja uusinnan hallinta</strong>: ei jää “ikuisia” käyttöoikeuksia.</li>
 </ul>
 
-<p>Mikäli olet kiinnostunut web sivujen luomisesta, joihin nämä sivuni pohjautuvat:</p>
-<ul>
-  <li><a href="https://chirpy.cotes.page/posts/getting-started/" target="_blank" rel="noopener noreferrer">Chirpy</a></li>
-</ul>
+<h2 id="käyttöoikeuksien-hallinnan-delegointi-ja-roolit">Käyttöoikeuksien hallinnan delegointi ja roolit</h2>
 
-<h2 id="vs-code-github--integraation-asennus-ja-käyttöönotto">VS Code GitHub -integraation asennus ja käyttöönotto</h2>
+<p>Ylläpitäjät voivat luoda ja hallita käyttöoikeuksia, he eivät kuitenkaan välttämättä tiedä kaikkia skenaarioita, joissa käyttöoikeuspaketteja tarvitaan. Asianomaisten osastojen käyttäjät tietävät, mitä resursseja työn suorittamiseen tarvitaan ja kuinka kauan. Käyttöoikeuksien hallinnan delegointi loppukäyttäjille varmistaa, että oikeat henkilöt hallitsevat käyttöoikeuksia.</p>
 
-<h3 id="1-luo-github-tunnus">1. Luo GitHub tunnus</h3>
-
-<p>Käy luomassa GitHub tili osoitteessa https://github.com/</p>
-
-<h3 id="2-asenna-vs-code">2. Asenna VS Code</h3>
-
-<p>lataa asennuspaketti ja asenna editori https://code.visualstudio.com/Download</p>
-
-<h3 id="3-varmista-että-git-on-asennettuna">3. Varmista, että Git on asennettuna</h3>
-
-<p>Avaa VS Code</p>
-
-<p>Todennäköisesti VS Code ei ole asennettu, jos vasta asensit editorin, mutta jos on jokin muu tilanna niin voit tarkastaa onko GitHun jo asenettu komennolla:</p>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git <span class="nt">--version</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Jos tämä ei palauta versiota, asenna Git Macille:</p>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>brew <span class="nb">install </span>git
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>Jatkossa pidä GitHub päivitettynä komennolla</p>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>brew update <span class="o">&amp;&amp;</span> brew upgrade git
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>Seuraavaksi asennetaan GitHub Pull Requests and Issues laajennus. Tämä löytyy Extensions: Marketplacesta (klikkaa vasemmassa laidassa olevaa ikonio missä on neljä neliötä joista yksi on erillään). Kirjoita hakukenttään GitHub, paikallista GitHub Pull Requests ja klikkaa install.</p>
-
-<h3 id="4-kirjaudu-githubiin-vs-codessa-ja-autentikointi">4. Kirjaudu GitHubiin VS Codessa ja autentikointi</h3>
-
-<p>Editorin vasemmassa alakulmassa olevasta identiteetti kuvakkeesta kirjaudutaan GitHub Pull Requests… ja GitHub Copilotiin.</p>
-
-<h4 id="ssh-autentikointi-avaimen-luominen">SSH-autentikointi avaimen luominen</h4>
-
-<p>Aja seuraava komento shellissä:</p>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>ssh-keygen <span class="nt">-t</span> ed25519 <span class="nt">-C</span> <span class="s2">"sähköpostisi@domain.com"</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Korvaa sähköpostiosoitte GitHub tunnukseesi määritellyllä sähköpostiosoitteella.<br />
-Kun komentoa suoritetaan, niin voit painaa olla vastaamatta ja painaa enteriä kummassakin kysymyksessä jos olet tyytyväinen oletuspolkuun koneellasi ja et määritä salasanaa avaimelle.</p>
-
-<p>Aktivoidaan SSH-agentti:</p>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>ssh-agent <span class="nt">-s</span><span class="si">)</span><span class="s2">"</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>Lisää uusi SSH-avain agenttiin:</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>ssh-add ~/.ssh/id_ed25519
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>Kopioi komennon tuottama koko hässäkkä GitHubiin oman tunnuksen asetuksiin SSH and GPG keys välilehdelle SSH keysiin.</p>
-
-<p>Testaa yhteys GitHubiin</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>ssh <span class="nt">-T</span> git@github.com
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Mikäli saat tämän henkisen vastauksen, niin yhteyden pitäisi olla kunnossa “You’ve successfully authenticated, but GitHub does not provide shell access.”</p>
-
-<h3 id="5-luodaan-github-repository-ja-paikallinen-kansio-jotka-liitetään-toisiinsa">5. Luodaan GitHub repository ja paikallinen kansio, jotka liitetään toisiinsa</h3>
-
-<p>Luo kansio omalle tietokoneelle, mitä haluat käyttää paikallisena kopiona. Avaa kansio VS Codessa File valikosta ja Open Folder…</p>
-
-<p>Mene selaimella GitHubiin. Sivun ylälaidassa on valikkorivi ja oikeassa laidassa näkyy plust ja sen vieressä kolmio/nuoli alaspäin. Klikkaa nuolta ja valitse New repository. Anna repositorylle nimi ja valitse onko repository public vai private… esim. tämä blogi on public repositoryssa. Klikkaa Create repository.</p>
-
-<p>Liitetään paikallinen kansio GitHub repositoryyn kommennolla:</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git remote add origin &lt;repo-osoite&gt;
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Voit tarkistaa, että liitos onnistui:</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git remote <span class="nt">-v</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<h2 id="työskentely-repositoryn-kanssa">Työskentely repositoryn kanssa</h2>
-
-<p>Tässä dokumentaation kappaleessa lähinnä keskeistä ovat komennot brancheille, joita oman tämän hetkisen ymmärryksen mukaan voisi periaatteessa sanoa myös juurihakemistoiksi. Lisäksi versiohallinnan komennot git add, git commit ja datan siirto push komennolla.</p>
-
-<p>Nämä ovat keskeisimmät asiat paikallisen ja github repositoryn ylläpidon kannalta. Github dokumentaatiosta voi lukea syvemmin näistä.</p>
-
-<h3 id="1-branchit-haarat">1. Branchit (haarat)</h3>
-
-<p>Repositoryssa voi olla monta eri haaraa mihin dataa tallennetaan.</p>
-
-<p>Haaroja on sekä paikallisessa repossa, että GitHub repossa. Tässä komentoja joilla voi tutkia ja operoida paikallisia -ja etähaaroja:</p>
+<p>Entitlement Managementissa käyttöoikeushallinta perustuu <strong>rooleihin</strong>, jotka määrittävät, kuka voi hallita mitäkin osaa – esimerkiksi katalogeja, access packageja tai pyyntöprosesseja.</p>
 
 <table>
   <thead>
     <tr>
-      <th>Komento</th>
-      <th>Kuvaus</th>
+      <th>Rooli</th>
+      <th>Päävastuut</th>
+      <th>Tarvitsee Entra-roolin?</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>git branch</td>
-      <td>Listaa paikalliset haarat</td>
+      <td><strong>Identity Governance Administrator</strong></td>
+      <td>Hallitsee kaikkea Identity Governance -kokonaisuudessa</td>
+      <td>✅ Kyllä</td>
     </tr>
     <tr>
-      <td>git branch -r</td>
-      <td>Listaa etähaarat (GitHubissa)</td>
+      <td><strong>Catalog Owner</strong></td>
+      <td>Hallitsee tietyn katalogin sisältöä ja access packageja</td>
+      <td>❌ Ei (määritetään katalogissa)</td>
     </tr>
     <tr>
-      <td>git branch -a</td>
-      <td>Listaa kaikki haarat</td>
+      <td><strong>Approver</strong></td>
+      <td>Hyväksyy pääsypyynnöt tai uusinnat</td>
+      <td>❌ Ei (määritetään paketin asetuksissa)</td>
     </tr>
     <tr>
-      <td>git status</td>
-      <td>Näyttää nykyisen haaran ja muutokset</td>
+      <td><strong>Requester</strong></td>
+      <td>Tekee access package -pyyntöjä</td>
+      <td>❌ Ei</td>
     </tr>
     <tr>
-      <td>git rev-parse –abbrev-ref HEAD</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>git branch -v</td>
-      <td>Näyttää haarojen viimeisimmät commitit</td>
-    </tr>
-    <tr>
-      <td>git checkout -b uusibranch</td>
-      <td>luo uusibranch nimisen lokaalin branchin ja vaihtaa uusibranch branchin aktiiviseksi</td>
-    </tr>
-    <tr>
-      <td>git push -u origin uusibranch</td>
-      <td>kopioi uusibranch branchin GitHubiin</td>
-    </tr>
-    <tr>
-      <td>git checkout develop</td>
-      <td>vaihtaa develop nimiseen brachiin</td>
-    </tr>
-    <tr>
-      <td>git fetch</td>
-      <td>tuo etäbranchit siirtymättä kopioutuun branchiin</td>
+      <td><strong>Access Package Manager</strong></td>
+      <td>Luo ja ylläpitää access packageja (Catalog Ownerin tehtävänä)</td>
+      <td>❌ Ei</td>
     </tr>
   </tbody>
 </table>
 
-<p>Kaksi branchia voidaan yhdistää esim “uusibranch” -&gt; “main” komennoilla</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-</pre></td><td class="rouge-code"><pre>git checkout main
-git merge uusibranch
-git push origin main
-</pre></td></tr></tbody></table></code></pre></div></div>
+<h2 id="-entitlement-management-kokonaisuuden-rakenne">🔄 Entitlement management kokonaisuuden rakenne</h2>
 
-<p>Opiskelun alussa harvemmin tarvitsee branchien kanssa operoida, mutta jotta dataa ei tule siirtäneeksi minne sattuu niin on hyvä tuntea komennot, joilla pystyy tarkistamaan lokaalit ja etäbranchit tarvittaessa. Esimerkiksi git branch -a komento tuottaa tällä hetkellä omassa VS Codessa seuraavat tiedot
-“* gh-pages
-  master
-  remotes/origin/gh-pages”</p>
+<p>Entitlement Management rakentuu neljästä pääkomponentista:</p>
 
-<p>Tämä tarkoittaa sitä, että minulla on kaksi paikallista branchia gh-pages ja master, joista gh-pages on aktiivinen. Näiden lisäksi yksi etähaara remotes/origin/gh-pages. Etähaaran tunnistaa polusta remotes/origin/</p>
+<h3 id="1-katalogi-catalog">1. <strong>Katalogi (Catalog)</strong></h3>
+<ul>
+  <li>Katalogi toimii säiliönä, johon yhdistetään kaikki resurssit, jotka ovat käytettävissä access package -pakettien kautta.</li>
+  <li>Yksi organisaatio voi luoda useita katalogeja esimerkiksi eri osastoille tai liiketoiminnoille.</li>
+  <li>Jokaisella katalogilla on omat ylläpitäjänsä (Catalog owners), jotka hallinnoivat sen sisältöä.</li>
+</ul>
 
-<h3 id="2-peruskomennot-datan-työntämiseen">2. Peruskomennot datan työntämiseen</h3>
+<p><img src="/catalog.png" alt="Kuva" /></p>
 
-<p>Joudut melkein aina suorittamaan samat kolme komentoa, kun sinulla on versiohallinta käytössä ja siirrät dataa lokaalista repositorysta GitHub repositoryyn.</p>
+<h3 id="2-resurssit-resources">2. <strong>Resurssit (Resources)</strong></h3>
+<ul>
+  <li>Resurssit ovat kohteita, joihin pääsyä voidaan hallita. Näitä voivat olla:
+    <ul>
+      <li>Microsoft 365 -ryhmät</li>
+      <li>Microsoft Teams -tiimit</li>
+      <li>SharePoint Online -sivustot</li>
+      <li>Azure AD -sovellukset ja roolit</li>
+    </ul>
+  </li>
+  <li>Resurssit lisätään ensin katalogiin, jonka jälkeen ne voidaan sisällyttää access packageihin.</li>
+</ul>
+
+<h3 id="3-access-packages-pääsypaketit">3. <strong>Access Packages (Pääsypaketit)</strong></h3>
+<ul>
+  <li>Access package on “paketti” resursseja, joiden käyttöoikeus voidaan myöntää yhdellä hyväksyntäpyynnöllä.</li>
+  <li>Paketti määrittää:
+    <ul>
+      <li>Mitä resursseja siihen kuuluu</li>
+      <li>Kuka voi pyytää pääsyä (sisäiset tai ulkoiset käyttäjät)</li>
+      <li>Tarvitaanko hyväksyntää ja kuka hyväksyy</li>
+      <li>Kuinka kauan pääsy on voimassa (automaattinen vanhentuminen, uusintapyynnöt)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="4-hyväksyntäprosessi-approval-workflow">4. <strong>Hyväksyntäprosessi (Approval Workflow)</strong></h3>
+<ul>
+  <li>Pääsypyynnöt voidaan hyväksyä:
+    <ul>
+      <li>Automaattisesti</li>
+      <li>Yksivaiheisella hyväksynnällä (esim. esihenkilö)</li>
+      <li>Kaksivaiheisella hyväksynnällä (esim. esihenkilö + tietoturva)</li>
+    </ul>
+  </li>
+  <li>Hyväksyjille voidaan määrittää aikaraja ja ilmoitukset</li>
+  <li>Myönnetyt käyttöoikeudet kirjataan ja niitä voidaan tarkastella myöhemmin</li>
+</ul>
+
+<hr />
+
+<h2 id="-esimerkki-uuden-työntekijän-pääsy-markkinointitiimiin">📊 Esimerkki: Uuden työntekijän pääsy markkinointitiimiin</h2>
+
+<ol>
+  <li>Markkinointiosastolla on oma kataloginsa.</li>
+  <li>Katalogiin lisätään resurssit:
+    <ul>
+      <li>“Marketing Team” -Microsoft 365 -ryhmä</li>
+      <li>SharePoint-sivusto “Marketing Assets”</li>
+      <li>Käyttöoikeus sovellukseen “Canva for Enterprise”</li>
+    </ul>
+  </li>
+  <li>Luodaan access package “Marketing Starter Kit”.</li>
+  <li>Uusi työntekijä pyytää pakettia itsepalveluportaalista.</li>
+  <li>Esihenkilö hyväksyy pyynnön.</li>
+  <li>Työntekijä saa automaattisesti tarvittavat käyttöoikeudet.</li>
+</ol>
+
+<hr />
+<h2 id="katalogin-luominen">Katalogin luominen</h2>
+
+<ol>
+  <li>Kirjaudu entra.microsoft.com</li>
+  <li>Klikkaa ID Governance - Entitlement Management - Catalogs + New Catalog</li>
+  <li>Anna katalogille kuvaava nimi ja description kenttään kuvaus katalogista.</li>
+  <li>Valitse vaihtoehdot Käytössä- (Enabled) ja Käytössä ulkoisille käyttäjille (Enabled for external users) ja luo sitten luettelo valitsemalla Create.
+    <ul>
+      <li>Käytössä: Valitse Kyllä, jos haluat ottaa luettelon käyttöön välitöntä käyttöä varten. Valitse Ei, jos haluat, että luettelo ei ole käytettävissä, ennen kuin aiot käyttää sitä.</li>
+      <li>Käytössä ulkoisille käyttäjille: Valitse Kyllä, jos haluat sallia valitun ulkoisen hakemiston käyttäjien pyytää käyttöoikeuspaketteja tässä luettelossa. Valitse Ei, jos haluat, että luettelo ei ole ulkoisen hakemiston käyttäjien käytettävissä.</li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/uusikatalogi.png" alt="Kuva" /></p>
+
+<h3 id="lisää-tarvittavat-resurssit-katalogiin">Lisää tarvittavat resurssit katalogiin</h3>
+
+<ol>
+  <li>Klikkaa aikaisemmin luotua katalogia ja Resources
+<img src="/uusikatalogi2.png" alt="Kuva" /></li>
+  <li>Klikkaa +Add resources</li>
+  <li>Lisää resurssit ja klikkaa Add
+<img src="/resurssit.png" alt="Kuva" /></li>
+</ol>
+
+<p>Resurssien lisääminen katalogiin: Voit sisällyttää katalogiin resursseja, kuten ryhmiä, sovelluksia ja SharePoint-sivustoja. Resurssien on oltava katalogissa, jotta ne voidaan sisällyttää käyttöoikeuspakettiin</p>
+
+<p>Resurssit: Kuten kuvassa näkyy, Lisää resursseja -kohdassa on vaihtoehtoja luetteloon lisättävien resurssien valitsemiseen.</p>
+<ul>
+  <li>Ryhmät: Ryhmät voivat olla Azure AD käyttöoikeusryhmiä tai Microsoft 365 -ryhmiä. Ryhmiä, jotka ovat peräisin paikallisesta tai Exchange Onlinesta jakeluryhminä, ei voi muokata Azure AD:ssä.</li>
+  <li>Sovellukset: Azure AD -yrityssovellukset, jotka sisältävät sekä SaaS- että toimialakohtaisia sovelluksia, jotka on integroitu Entra ID:hen.</li>
+  <li>Sivustot: SharePoint Online -sivustot tai SharePoint Online -sivustokokoelmat.</li>
+</ul>
+
+<h2 id="luo-ja-määritä-käyttöoikeuspaketit-access-package">Luo ja määritä käyttöoikeuspaketit (access package)</h2>
+
+<p>Sen sijaan, että käyttöoikeuspaketit myöntäisivät käyttöoikeuden yksittäisille resursseille, ne auttavat myöntämään tai poistamaan käyttöoikeuksia sopivammalla tavalla seuraaville resurssityypeille:</p>
+<ul>
+  <li>Azure AD -käyttöoikeusryhmien jäsenyys</li>
+  <li>Microsoft 365 -ryhmien ja Teamsin jäsenyys</li>
+  <li>Määritys Azure AD -yrityssovelluksiin (mukaan lukien SaaS ja mukautetut sovellukset)</li>
+  <li>SharePoint-verkkosivustojen jäsenyys</li>
+</ul>
+
+<p>Käyttöoikeuspaketit ovat sopivampia, kun:</p>
+<ul>
+  <li>Työntekijät tarvitsevat rajoitetun käyttöoikeuden.</li>
+  <li>Käyttöoikeudet, jotka edellyttävät esimiehen tai nimetyn henkilön hyväksyntää.</li>
+  <li>Tietyn osaston resurssit on ryhmitelty yhteen.</li>
+  <li>Yhden organisaation käyttäjien on käytettävä toisen organisaation resursseja.</li>
+</ul>
+
+<ol>
+  <li>Klikkaa katalogin Access Packages osiota ja avautuvasta näkymästä +New Access Package
+<img src="/AccessPackage1.png" alt="Kuva" /></li>
+  <li>Basic välilehti: Lisää kuvaava nimi ja kuvaus käyttöoikeuspaketille
+<img src="/AccessPackage3.png" alt="Kuva" /></li>
+  <li>Klikkaa Next: Resource roles</li>
+  <li>Valitse resurssit, joihin access package antaa oikeudet ja määritä resurssirooli. Valittavissa on vain resursseja, mitkä ovat aikaisemmin lisätty katalogiin.
+<img src="/AccessPackage4.png" alt="Kuva" /></li>
+  <li>Klikkaa Next: Requests</li>
+  <li>Requests välilehti jakautuu neljään asetusten määrittelyosaan:
+    <ul>
+      <li>Users who can request access. Vaihtoehdot:
+        <ul>
+          <li>Hakemiston käyttäjät: Tämän vaihtoehdon avulla hakemiston käyttäjät ja ryhmät voivat pyytää käyttöoikeuspakettia. Voit valita vain tietyt hakemiston käyttäjät ja ryhmät tai kaikki hakemiston käyttäjät tai kaikki hakemiston käyttäjät ja vieraskäyttäjät pyytävät käyttöoikeutta tähän käyttöoikeuspakettiin.</li>
+          <li>Käyttäjät, jotka eivät ole hakemistossasi: Tämän vaihtoehdon avulla yhdistettyjen organisaatioiden käyttäjät voivat pyytää tätä käyttöoikeuspakettia. Voit valita tietyt yhdistetyt organisaatiot tai kaikki yhdistetyt organisaatiot tai kaikki käyttäjät kaikista yhdistetyistä organisaatioista, ja kaikki uudet ulkoiset käyttäjät voivat pyytää tämän käyttöoikeuspaketin käyttöoikeutta.</li>
+          <li>Ei mitään (vain järjestelmänvalvojan suorat määritykset): Tämän asetuksen avulla järjestelmänvalvojat voivat määrittää tietyt käyttäjät suoraan tähän käyttöoikeuspakettiin.</li>
+        </ul>
+      </li>
+      <li>Approval: Pyynnöt-välilehden hyväksyntäosa, jossa voit määrittää, tarvitaanko hyväksyntä ja pyynnön perustelu, kun käyttäjät pyytävät tätä käyttöoikeuspakettia. Hyväksyntäprosessissa on vaihtoehtoja yksi- tai kaksivaiheisen hyväksyntäprosessin määrittämiseen. Yksivaiheisella hyväksynnällä on vain yksi hyväksyjä. Hyväksyjä voi olla sisäinen tai ulkoinen sponsori tai valitut hyväksyjät. Kun valitset sisäisen tai ulkoisen sponsorin, voit määrittää varahyväksyjiä. Kaksivaiheista hyväksyntää varten kunkin vaiheen valittujen hyväksyjien on hyväksyttävä pyyntö.
+<img src="/AccessPackage5.png" alt="Kuva" /></li>
+      <li>Email Notifications (Kirjoitusta tehdessä vielä preview vaiheessa)</li>
+      <li>Enable: Tässä osiossa voidaan määrittää onko access package ylipäätään käytössä ja tarvitaanko käyttöoikeuden hakemiseen jonkinlaista verified IDtä.</li>
+    </ul>
+  </li>
+  <li>Klikkaa Next: Requestor Information</li>
+  <li>Klikkaa Next: Lifecycle</li>
+  <li>Määritä Lifecycle asetukset:
+    <ul>
+      <li>Expiration
+        <ul>
+          <li>Access package assignment expire</li>
+          <li>Assignments expire after (number of days)</li>
+          <li>Users can request specific timeline</li>
+        </ul>
+      </li>
+      <li>Access Reviews
+        <ul>
+          <li>Require access reviews: Vaadi (tai älä vaadi) käyttöoikeuksien tarkistuksia Access Review toiminnolla
+<img src="/AccessPackage6.png" alt="Kuva" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Klikkaa Next: Rules</li>
+  <li>Klikkaa Next: Review + Create</li>
+  <li>Klikkaa Create</li>
+</ol>
+
+<h2 id="käyttöoikeuspyyntöjen-hallinta">Käyttöoikeuspyyntöjen hallinta</h2>
+
+<p>Kun käyttöoikeuspaketti on luotu, järjestelmänvalvojat jakavat Omat käyttöoikeudet -portaalilinkin käyttäjien kanssa tai käyttäjät voivat pyytää käyttöoikeuspaketteja kirjautumalla sisään Omat käyttöoikeudet -portaaliin. Kuvassa näkyy My Access -portaalin linkki käyttöoikeuspaketin yleiskatsaussivulla. Kun järjestelmänvalvoja jakaa Omat käyttöoikeudet -portaalilinkin sisäisten tai ulkoisten käyttäjien kanssa, käyttäjät voivat kirjautua sisään Omat käyttöoikeudet -portaaliin (https://myaccess.microsoft.com) nähdäkseen luettelon käyttöoikeuspaketeista, joita he voivat pyytää.</p>
+
+<p><img src="/myaccess2.png" alt="Kuva" />
+Käyttäjät pyytävät käyttöoikeuspaketin käyttöoikeutta. Järjestelmänvalvojat määrittävät käyttäjille käyttöoikeuspaketin. Kaikki käyttäjät saavat sähköpostiviestin, joka sisältää linkin käyttöoikeuspakettiin, tai he voivat kirjautua sisään My Access -portaaliin (https://myaccess.microsoft.com) nähdäkseen luettelon käyttöoikeuspaketeista, joita he voivat pyytää.</p>
+
+<p><img src="/myaccess3.png" alt="Kuva" /></p>
+
+<p>Kun käyttäjät ovat lähettäneet käyttöoikeuspaketin pyynnöt, hyväksyjät saavat sähköpostiviestin, joka sisältää linkin pyyntöjen hyväksymiseen tai hylkäämiseen. Hyväksyjä voi joko napsauttaa linkkiä kirjautuakseen My Access -portaaliin tai kirjautua suoraan My Access -portaaliin (https://myaccess.microsoft.com) ja siirtyä Hyväksynnät-välilehteen.</p>
+
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - katalogi, resurssit, käyttöoikeuspaketit, käyttöoikeuspyynnöt]]></summary></entry><entry><title type="html">Ide</title><link href="http://localhost:4000/posts/M365_Identity_Governance/" rel="alternate" type="text/html" title="Ide" /><published>2025-02-22T21:50:00+02:00</published><updated>2025-02-22T21:50:00+02:00</updated><id>http://localhost:4000/posts/M365_Identity_Governance</id><content type="html" xml:base="http://localhost:4000/posts/M365_Identity_Governance/"><![CDATA[<h1 id="johdanto">Johdanto</h1>
+
+<p>Mikä on tämän blogi kirjoituksen tarkoitus</p>
+
+<h1 id="microsoft-365-identity-governance">Microsoft 365 Identity Governance</h1>
+
+<p><strong>Microsoft 365 Identity Governance</strong> on kokoelma palveluita ja ominaisuuksia, joiden avulla organisaatiot voivat hallita käyttäjien elinkaarta, käyttöoikeuksia ja varmistaa, että oikeilla henkilöillä on pääsy oikeisiin resursseihin – oikeaan aikaan ja oikeista syistä.</p>
+
+<p>Se auttaa ratkaisemaan seuraavat asiat:</p>
+<ul>
+  <li>Kenellä on pääsy mihinkin aineistoon?</li>
+  <li>Mitä käyttäjät tekevät käyttöoikeudella?</li>
+  <li>Mitä organisaation hallintatoimintoja käyttöoikeuksien hallintaan on käytössä?</li>
+  <li>Voivatko tarkastajat (auditors) varmistaa, että hallintatoiminnot (controls) toimii?</li>
+</ul>
+
+<h2 id="työntekijöiden-on-käytettävä-resursseja-kuten-ryhmiä-sovelluksia-ja-sharepoint-sivustoja-jotta-he-voivat-suorittaa-työnsä-käyttöoikeuksien-hallinta-ajan-mittaan-on-organisaatiolle-haastavaa-ja-monimutkaistuu-kun-uusia-ryhmiä-tai-sovelluksia-lisätään-tai-kun-käyttäjät-tarvitsevat-lisäkäyttöoikeuksia-siitä-tulee-myös-monimutkaisempaa-kun-organisaatiot-tekevät-yhteistyötä-organisaationsa-ulkopuolisten-käyttäjien-kanssa">Työntekijöiden on käytettävä resursseja, kuten ryhmiä, sovelluksia ja SharePoint-sivustoja, jotta he voivat suorittaa työnsä. Käyttöoikeuksien hallinta ajan mittaan on organisaatiolle haastavaa ja monimutkaistuu, kun uusia ryhmiä tai sovelluksia lisätään tai kun käyttäjät tarvitsevat lisäkäyttöoikeuksia. Siitä tulee myös monimutkaisempaa, kun organisaatiot tekevät yhteistyötä organisaationsa ulkopuolisten käyttäjien kanssa.</h2>
+
+<h2 id="identity-governance-palvelut-ja-ominaisuudet">Identity Governance palvelut ja ominaisuudet</h2>
+
+<h3 id="1-entitlement-management-oikeuksien-hallinta">1. Entitlement Management (oikeuksien hallinta)</h3>
+<ul>
+  <li>Mahdollistaa pääsyn hallittuihin “paketteihin” (Access packages), jotka voivat sisältää ryhmäjäsenyyksiä, sovellusoikeuksia ja SharePoint-sivustoja.</li>
+  <li>Käyttäjät voivat hakea pääsyä itsepalveluna hyväksymiskierron kautta.</li>
+  <li>Tukee myös ulkoisia käyttäjiä (B2B).</li>
+</ul>
+
+<h3 id="2-access-reviews-käyttöoikeusarvioinnit">2. Access Reviews (käyttöoikeusarvioinnit)</h3>
+<ul>
+  <li>Auttaa säännöllisesti tarkistamaan, onko käyttäjillä edelleen tarpeellinen pääsy ryhmiin, sovelluksiin tai rooleihin.</li>
+  <li>Hyväksyntä voidaan automatisoida tai delegoida vastuuhenkilöille.</li>
+</ul>
+
+<h3 id="3-privileged-identity-management-pim">3. Privileged Identity Management (PIM)</h3>
+<ul>
+  <li>Hallitsee korkean tason käyttöoikeuksia (esim. Azure AD ja Microsoft 365 -roolit).</li>
+  <li>Mahdollistaa tilapäisen, hyväksynnän vaativan pääsyn (“Just-in-Time” käyttöoikeudet).</li>
+  <li>Sisältää käyttöoikeuksien aktivointipyynnöt, ilmoitukset ja audit-lokit.</li>
+</ul>
+
+<h3 id="4-lifecycle-workflows-esikatselussa--julkisesti-saatavilla">4. Lifecycle Workflows (esikatselussa / julkisesti saatavilla)</h3>
+<ul>
+  <li>Automaatiot käyttäjän elinkaaren vaiheisiin (esim. uusi työntekijä, roolin vaihto, työsuhteen päättyminen).</li>
+  <li>Mahdollistaa mm. ilmoitukset, käyttöoikeuksien lisäämisen/poiston ja käyttäjän deaktivoinnin.</li>
+</ul>
+
+<h2 id="-lisenssivaatimukset-ja-hallintaroolit">🔐 Lisenssivaatimukset ja hallintaroolit</h2>
+
+<h3 id="-identity-governance--komponenttien-lisenssivaatimukset">💳 Identity Governance -komponenttien lisenssivaatimukset</h3>
 
 <table>
   <thead>
     <tr>
-      <th>Komento</th>
-      <th>Kuvaus</th>
+      <th>Komponentti</th>
+      <th>Vaadittu lisenssi</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>git add .</td>
-      <td>Lisää kaikki muutokset nykyisestä hakemistosta ja alihakemistoista</td>
+      <td>Entitlement Management</td>
+      <td>Microsoft Entra ID Governance (tai P2)</td>
     </tr>
     <tr>
-      <td>git commit -m “feat: lisätty uusi ominaisuus”</td>
-      <td>Tallentaa muutokset paikalliseen versiohistoriaan ja antaa niille kuvaavan viestin.</td>
+      <td>Access Reviews</td>
+      <td>Microsoft Entra ID Governance (tai P2)</td>
     </tr>
     <tr>
-      <td>git push origin main</td>
-      <td>Lähettää muutokset main haaraan.</td>
+      <td>Privileged Identity Management (PIM)</td>
+      <td>Microsoft Entra ID Governance (tai P2)</td>
+    </tr>
+    <tr>
+      <td>Lifecycle Workflows</td>
+      <td>Microsoft Entra ID Governance</td>
     </tr>
   </tbody>
 </table>
 
-<p>Kun kaikki kolme komentoa on ajettu virheettömästi, niin data siirtyy GitHub repositoryyn kaikkien muutosten osalta.<br />
-Kaikilla kolmella komennolla on omat kahvansa, niin että ne voi komentaa tekemään samaa asia hieman erilailla.</p>
+<blockquote>
+  <p>💡 <em>Microsoft Entra ID Governance</em> -lisenssi sisältää kaikki yllä mainitut ominaisuudet ja korvaa aiemman <strong>Azure AD Premium P2</strong> -lisenssin käytön tässä yhteydessä.</p>
+</blockquote>
 
-<h5 id="git-add">git add</h5>
-<p>Merkitys: lisää kaikki muuttuneet tiedostot staging arealle eli valmistelee ne commitointia varten
-vaihtoehdot:</p>
+<hr />
 
+<h3 id="-tarvittavat-käyttöoikeusroolit">👥 Tarvittavat käyttöoikeusroolit</h3>
+
+<p>Identity Governance -toimintojen hallintaan tarvitaan tietyt <strong>Azure AD -hallintaroolit</strong> riippuen siitä, mitä osaa halutaan hallita:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Toiminto</th>
+      <th>Tarvittava rooli</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Access packagesin ja katalogien luonti</td>
+      <td><strong>Identity Governance Administrator</strong> tai <strong>Global Administrator</strong></td>
+    </tr>
+    <tr>
+      <td>Resurssien lisääminen katalogeihin</td>
+      <td><strong>Catalog owner</strong> (katalogikohtainen)</td>
+    </tr>
+    <tr>
+      <td>Käyttöoikeusarviointien hallinta</td>
+      <td><strong>Identity Governance Administrator</strong></td>
+    </tr>
+    <tr>
+      <td>PIM-roolien määrittäminen</td>
+      <td><strong>Privileged Role Administrator</strong></td>
+    </tr>
+    <tr>
+      <td>Lifecycle Workflowsin hallinta</td>
+      <td><strong>Identity Governance Administrator</strong></td>
+    </tr>
+    <tr>
+      <td>Access package -pyyntöjen hyväksyntä</td>
+      <td><strong>Määritelty hyväksyjä</strong> (esim. esihenkilö)</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>🛡️ Käytännössä suositellaan, että <strong>Identity Governance Administrator</strong> -roolia käytetään hallintaan, ja delegoidaan hyväksynnät sekä katalogien hallinta omistajille organisaatiorakenteen mukaisesti.</p>
+</blockquote>
+
+<hr />
+<h1 id="entitlement-management-microsoft-entra-idssa">Entitlement Management Microsoft Entra ID:ssa</h1>
+
+<p>Entitlement Management on osa Microsoft Entra ID:n (entinen Azure AD) Identity Governance -ratkaisua. Sen avulla organisaatiot voivat hallita käyttäjien pääsyä resursseihin hallitusti ja itsepalveluna – sekä sisäisille että ulkoisille käyttäjille.</p>
+
+<h2 id="-kokonaisuuden-rakenne">🔄 Kokonaisuuden rakenne</h2>
+
+<p>Entitlement Management rakentuu neljästä pääkomponentista:</p>
+
+<h3 id="1-katalogi-catalog">1. <strong>Katalogi (Catalog)</strong></h3>
 <ul>
-  <li><strong><em>git add.</em></strong> -&gt; lisää kaikki muutokset nykyisestä hakemistosta ja alihakemistoista</li>
-  <li><strong><em>git add tiedosto</em></strong> -&gt; lisää vain tietyn tiedoston staging arealle</li>
-  <li><strong><em>git add -A</em></strong> -&gt; lisää kaikki muutokset, mukaan lukien poistetut tiedostot</li>
+  <li>Katalogi toimii säiliönä, johon yhdistetään kaikki resurssit, jotka ovat käytettävissä access package -pakettien kautta.</li>
+  <li>Yksi organisaatio voi luoda useita katalogeja esimerkiksi eri osastoille tai liiketoiminnoille.</li>
+  <li>Jokaisella katalogilla on omat ylläpitäjänsä (Catalog owners), jotka hallinnoivat sen sisältöä.</li>
 </ul>
 
-<h4 id="git-commit">git commit</h4>
-<p>Merkitys: Tallentaa muutokset paikalliseen versiohistoriaan.</p>
+<h3 id="2-resurssit-resources">2. <strong>Resurssit (Resources)</strong></h3>
+<ul>
+  <li>Resurssit ovat kohteita, joihin pääsyä voidaan hallita. Näitä voivat olla:
+    <ul>
+      <li>Microsoft 365 -ryhmät</li>
+      <li>Microsoft Teams -tiimit</li>
+      <li>SharePoint Online -sivustot</li>
+      <li>Azure AD -sovellukset ja roolit</li>
+    </ul>
+  </li>
+  <li>Resurssit lisätään ensin katalogiin, jonka jälkeen ne voidaan sisällyttää access packageihin.</li>
+</ul>
 
-<p>git commit komennolla on kahvoja, joista tässä muutama yleisimmin käytetty.</p>
+<h3 id="3-access-packages-pääsypaketit">3. <strong>Access Packages (Pääsypaketit)</strong></h3>
+<ul>
+  <li>Access package on “paketti” resursseja, joiden käyttöoikeus voidaan myöntää yhdellä hyväksyntäpyynnöllä.</li>
+  <li>Paketti määrittää:
+    <ul>
+      <li>Mitä resursseja siihen kuuluu</li>
+      <li>Kuka voi pyytää pääsyä (sisäiset tai ulkoiset käyttäjät)</li>
+      <li>Tarvitaanko hyväksyntää ja kuka hyväksyy</li>
+      <li>Kuinka kauan pääsy on voimassa (automaattinen vanhentuminen, uusintapyynnöt)</li>
+    </ul>
+  </li>
+</ul>
 
-<p><strong>-m “message”</strong>  <br />
-Merkitys: tehtyihin toimenpiteisiin jää viesti, että mitä muutoksessa on tehty</p>
+<h3 id="4-hyväksyntäprosessi-approval-workflow">4. <strong>Hyväksyntäprosessi (Approval Workflow)</strong></h3>
+<ul>
+  <li>Pääsypyynnöt voidaan hyväksyä:
+    <ul>
+      <li>Automaattisesti</li>
+      <li>Yksivaiheisella hyväksynnällä (esim. esihenkilö)</li>
+      <li>Kaksivaiheisella hyväksynnällä (esim. esihenkilö + tietoturva)</li>
+    </ul>
+  </li>
+  <li>Hyväksyjille voidaan määrittää aikaraja ja ilmoitukset</li>
+  <li>Myönnetyt käyttöoikeudet kirjataan ja niitä voidaan tarkastella myöhemmin</li>
+</ul>
 
-<p>-m kahvan viesti osassa pitää olla jokin alla luetelluista merkinnöistä mukana tai shell antaa virheen komentoa ajettaessa</p>
+<hr />
 
-<p><strong>feat:</strong> → Uusi ominaisuus<br />
-<strong>fix:</strong> → Bugikorjaus<br />
-<strong>chore:</strong> → Ylläpitotoimenpide (esim. riippuvuuksien päivittäminen)<br />
-<strong>refactor:</strong> → Koodin uudelleenjärjestely ilman toiminnallisia muutoksia<br />
-<strong>docs:</strong> → Dokumentaation päivitys<br />
-<strong>style:</strong> → Muotoilu- tai tyylimuutokset (ei koodin toimintaan vaikuttavia)<br />
-<strong>test:</strong> → Testien lisäys tai päivitys<br />
-<strong>perf:</strong> → Suorituskyvyn parannukset<br />
-<strong>ci:</strong> → Continous Integration -konfiguraatioiden muokkaus</p>
-
-<p>Esimerkki</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git commit <span class="nt">-m</span> <span class="s2">"fix: korjattu virheellinen muuttujan nimi"</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p><strong>–amend</strong>  <br />
-Merkitys: muokkaa edellistä committia (korvaa uudella).</p>
-
-<p>Esimerkki</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git commit <span class="nt">--amend</span> <span class="nt">-m</span> <span class="s2">"fix: korjattu tiedostoja hakemistossa x"</span>  
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Esimerkin komento ajettu, koska edellisen commitin jälkeen tehty samaan muutokseen liittyviä lisämuutoksia ja haluttu muuuttaa commit viestiä</p>
-
-<p>Jos halutaan korvata edellinen commit uudella, mutta ei haluta muuttaa viestiä, niin se onnistuu tällä komennolla:</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git commit <span class="nt">--amend</span> <span class="nt">--no-edit</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git commit <span class="nt">-a</span> <span class="nt">--amend</span> <span class="nt">--no-edit</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p><strong>-a</strong>  <br />
-Commitoi kaikki muuttuneet ja trackatut tiedostot, <mark>ei lisää uusia tiedostoja</mark>.</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git commit <span class="nt">-a</span> <span class="nt">-m</span> <span class="s2">"fix: korjattu bugi"</span>  
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>Käyttötapa: commitoi ilman git add komentoa</p>
-
-<h4 id="git-push">git push</h4>
-<p>Pushia tehdessä pelkkä “git push” komento riittää, mikäli lokaali branch seuraa etäbranchia.</p>
-
-<p>Tarkista seuraako lokaali branch etäbranchia komennolla</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git branch <span class="nt">-vv</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
-
-<p>Kun teet ensimmäisen push komennon etäbranchiin niin aja komento</p>
-<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>git push <span class="nt">-u</span> origin branchnimi
-</pre></td></tr></tbody></table></code></pre></div></div>
-<p>tämän jälkeen branchit ovat linkitetty toisiinsa.</p>]]></content><author><name></name></author><category term="Työvälineet" /><category term="VS Code" /><category term="GitHub" /><summary type="html"><![CDATA[Infrastucture As Code for dummies sarjan ensimmäinen kirjoitus. Käydään vähän komentoja läpi, että päästään alkuun VS Coden ja GitHubin kanssa.]]></summary></entry><entry><title type="html">Azure opiskelun aloittaminen ja sertifiointien merkitys työmarkkinoilla</title><link href="http://localhost:4000/posts/Azure_opiskelun_aloittaminen/" rel="alternate" type="text/html" title="Azure opiskelun aloittaminen ja sertifiointien merkitys työmarkkinoilla" /><published>2025-02-22T21:50:00+02:00</published><updated>2025-03-01T15:42:46+02:00</updated><id>http://localhost:4000/posts/Azure_opiskelun_aloittaminen</id><content type="html" xml:base="http://localhost:4000/posts/Azure_opiskelun_aloittaminen/"><![CDATA[<h1 id="johdanto">Johdanto</h1>
-
-<p>Pilvipalveluiden merkitys IT-alalla on kasvanut valtavasti viime vuosina, ja yhä useampi organisaatio siirtyy joko kokonaan tai osittain pilviympäristöihin. Microsoft Azure on yksi johtavista pilvipalvelualustoista, ja sen hallintaosaaminen on nykyään tärkeä taito IT-ammattilaisille.</p>
-
-<p>Lähestyn aihetta omasta kulmasta katsottuna. Olen ollut IT-alan infratehtävissä yli 20 vuotta, joista suurimman osan ajasta olen ollut kahden Suomen markkinassa ison palvelutarjoajan asiakasprojekteissa infra-asiantuntijana. Ala on tekniikan osalta jatkuvasti kehittyvä, mutta pilveistymisen myötä asiantuntijoilta vaadittava osaamisen määrä meni harppauksin eteenpäin ja vaikka on-premises (legacy) taitoja tarvitaan vielä pitkän aikaa, niin työmarkkinassa on-premises osaaminen on kokenut romahduksen.</p>
-
-<p>Maailmantalous kyntää ja se näkyy yrityksien jatkuvina YT-neuvottelu kierroksina. Jos et vielä ole työtön työnhakija, niin pian saatat olla, jos et pidä huolta siitä, että pysyt kyvykkäänä ja hyödyllisenä yritykselle. Tästä kohtaa alkaa blogikirjoitukseni tarina. Parin YT-kierroksen jälkeen löysin itseni työttömyys uhan alta. Ansaitsemani palkka ei enää korreloinut siihen oikeuttavan osaamisprofiilin kanssa ja näin päädyin irtisanomisprosessiin. Onni onnettomuudessa on se, että minun kohdallani prosessi on aika pitkä ja siihen kuuluu kouluttautumisraha, joten nyt minulla on aikaa opiskella täyspäiväisesti ja voin käyttää koulutusrahaa sertifikaattitesteihin.</p>
-
-<p>Pilveistymisen alkaessa en pitänyt huolta siitä, että osaamiseni kehittyy sitä mukaa kuin maailma muuttuu alalla. Työtä oli yllin kyllin on-prem projekteissa, Exchange Hybrid rakentamista ja pilvisiirtymiä yms… Kunnes tultiin siihen vaiheeseen, että nämä hommat vähentyivät merkittävästi ja yhtäkkiä uutta opittavaa asiaa oli valtavat määrät.</p>
-
-<p>Niinpä tässä kirjoituksessa keskityn ruotimaan alalla pidempään työskennelleen näkökulmasta tilannetta missä aloittelee vasta nyt Azuren opiskelua, miten tarttua härkää sarvista ja miksi? Ja mitä Azure osaaminen ylipäätään on? Se kun ei oikeasti kerro mitään jos sanoo osaavansa Azurea.</p>
-
-<p>Ajatus tämän tekstin kirjoitukseen tuli omasta tilanteestani. Ajattelin, että mahdollisesti työelämässä on asiantuntijoita, joilla on samanlaisia asenteita Azuren opiskeluun kuin minulla oli aikaisemmin ja tässä koitan antaa ajatuksia näiden asenteiden muuttamiseksi.</p>
-
-<p>Tämä kirjoitus on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi-postauksina hands-on harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Codessa.</p>
-
-<h1 id="millaista-osaamista-it-alalla-arvostetaan-tänään">Millaista osaamista IT-alalla arvostetaan tänään?</h1>
-
-<p>Tänä päivänä IT alan työpaikkailmoituksia tutkiessa huomaa kuinka osaamisvaatimukset ovat asiantuntijarooleissa muuttuneet rajusti viime vuosien aikana. Pilvipalveluosaaminen nousee esiin yhtenä keskeisimmistä vaatimuksista.</p>
-
-<p>Alalla pitkään työskennelleiden on hyvä välillä katsella työpaikka ilmoituksia, vaikka ei olisi uutta työpaikkaa etsimässäkään. IT-ala muuttuu nopeasti, nyt varsinkin kun olemme eläneet viime vuodet “pilveistymisen” aikakautta. Työpaikkailmoituksista saa käsityksen siitä, mitä työnantajat tällä hetkellä arvostavat ja sitä voi peilata omaan osaamisprofiiliin varmistakseen työpaikkansa ja miksei mahdollisesti myös paremmasta palkasta haaveillessa.</p>
-
-<p>Toki työnantajien odottama osaaminen työpaikkailmoituksissa usein on vähän epärealistinen. Jos henkilö suvereenisti hallitsisi kaiken mitä monissa työpaikka ilmoituksissa odotetaan, niin kyseessä olisi todellinen kansainvälisen tason superosaaja, jotka ovat harvassa. Työpaikkailmoituksista silti saa suuntaa antavan käsityksen siitä minkälaisia osaajaprofiileja yritykset arvostavat tällä hetkellä.</p>
-
-<p>Harvemmin työpaikka ilmoituksissa enää puhutaan on-premises osaamisesta, vaikka legacy palveluista ei vielä pitkään aikaan päästä irti. Varsinkaan isommissa ja kompleksisimmissa ympäristöissä. Sinänsä omituinen ilmiö, koska uudet alalle tulijat aloittavat opinnot suoraan pilvipalveluista ja on-prem palveluiden osaaminen on vähäistä. Jossain vaiheessa legacy osaaminen voi olla vielä hetken aikaa merkityksellistä.</p>
-
-<p>Tänä päivänä Infra-asiantuntijoiden perusvaatimus on jo osata  Azurea ja lisäksi katsotaan hyvällä jos osaamista on myös AWS- tai Google Cloudista (vähän riippuu mitä näistä painotetaan riippuen asiantuntijaprofiilista). Lisäksi tietysti odotetaan, että M365 palveluiden hoitaminen kokonaisuudessaan sujuu myös.</p>
-
-<p>Kun tällä hetkellä luen työpaikkailmoituksia, niin Azure osaamisessa korostetaan rajusti AI osaamista. Se on ymmärrettävää, koska alan kuuma uudehko aihe tällä hetkellä on AI ratkaisut. Aihe on aika uusi esim. MS osaamiskartassa, joten kysyntää on paljon ja tekijöiden määrä ei vielä kohtaa millään tavalla kysyntää.</p>
-
-<p>Lisäksi paljon näkee DevOpsiin, dataan ja securityyn liittyviä hakemuksia.</p>
-
-<p>Voisi siis olettaa, että johonkin näistä alueista kannattaa alkaa erikoistumaan, kun Azuren perustaidot alkaa olemaan hyppysissä.</p>
-
-<h1 id="miten-microsoftin-sertifioinnit-tukevat-työmarkkinoilla-menestymistä">Miten Microsoftin sertifioinnit tukevat työmarkkinoilla menestymistä?</h1>
-
-<p>Hyvä työntekijä on tietysti paljon muutakin kuin sertifioinnit ja tekninen osaaminen. Asiantuntija roolissakaan tekninen osaaminen ei ole kaikki kaikessa, mutta toki se on keskeinen osa tätä roolia.</p>
-
-<p>Työnhakijana sertifioinnit auttavat näkymään työnhakijamassasta ja työnantajalle sertifioiduista osaajista voi olla sekä välitöntä että välillistä hyötyä. Välitön hyöty esimerkiksi siinä, että sertifioinnit voivat olla kytkyssä yrityksen kumppanuuteen kuten Microsoftin kanssa ja kumppanuudesta saatavin etuuksiin. Välillistä hyötyä esimerkiksi myynnissä saatava vaikutelma osaamisesta jne… Näin ollen sertifiointien merkitys ei pelkästään rajoitu oman osaamisen todistamiseen.</p>
-
-<p>Aikaisemmin Microsoftin kumppaniohjelmassa oli käytössä Gold ja Silver -tasot, joissa yritykset ansaitsivat tunnustettuja kompetensseja suorittamalla tiettyjä sertifiointeja ja täyttämällä osaamisvaatimuksia. Tämä on nyt historiaa, ja tilalle on tullut Cloud Partner Program, jossa yritykset voivat saavuttaa Solutions Partner -statuksen tietyillä osa-alueilla.</p>
-
-<p>Uudessa mallissa yrityksille kertyy osaamispisteitä kolmesta eri kategoriasta:</p>
+<h2 id="-esimerkki-uuden-työntekijän-pääsy-markkinointitiimiin">📊 Esimerkki: Uuden työntekijän pääsy markkinointitiimiin</h2>
 
 <ol>
-  <li>Performance (Suorituskyky) – Mittaa uusien asiakkuuksien ja käytössä olevien palveluiden määrää.</li>
-  <li>Skilling (Osaaminen) – Yrityksessä työskentelevien sertifioitujen asiantuntijoiden määrä ja heidän suorittamansa sertifikaatit.</li>
-  <li>Customer Success (Asiakashyöty) – Mittaa asiakasympäristöjen käyttöasteen ja edistyksen.</li>
+  <li>Markkinointiosastolla on oma kataloginsa.</li>
+  <li>Katalogiin lisätään:
+    <ul>
+      <li>“Marketing Team” -Microsoft 365 -ryhmä</li>
+      <li>SharePoint-sivusto “Marketing Assets”</li>
+      <li>Käyttöoikeus sovellukseen “Canva for Enterprise”</li>
+    </ul>
+  </li>
+  <li>Luodaan access package “Marketing Starter Kit”.</li>
+  <li>Uusi työntekijä pyytää pakettia itsepalveluportaalista.</li>
+  <li>Esihenkilö hyväksyy pyynnön.</li>
+  <li>Työntekijä saa automaattisesti tarvittavat käyttöoikeudet.</li>
 </ol>
 
-<p>Yritykset tarvitsevat Solutions Partner Designation -tunnustuksia, jotka saavutetaan keräämällä riittävästi osaamispisteitä eri alueilla, kuten Infrastructure, Data &amp; AI, Security, Business Applications, Digital &amp; App Innovation ja Modern Work. Tämä tarkoittaa sitä, että työnantajat arvostavat asiantuntijoita, jotka suorittavat sertifiointeja, sillä se auttaa heidän yritystään saavuttamaan arvokkaamman kumppanistatuksen Microsoftin ekosysteemissä.</p>
+<hr />
 
-<p>Näihin alueisiin tällä hetkellä laskettavat sertifioinnit voi tarkistaa Microsoftin Certification Posterista helpoiten (https://arch-center.azureedge.net/Credentials/Certification-Poster_en-us.pdF). Julisteen sertifikaatti laatikot toimivat myös linkkeinä sertifioinnin omalle nettisivulle, mistä pääsee</p>
-
-<ul>
-  <li>lueskelemaan mitä taitoja kyseisessä sertifioinnissa testataan</li>
-  <li>Varaamaan testiaikoja</li>
-  <li>Opiskelemaan sertifioinnin osa-alueita ilmaiseen Learn Training palveluun</li>
-</ul>
-
-<p>Tässä kuvakaappaus PDFstä (klikkaa kuvaa, niin saat sen suuremmaksi):</p>
-
-<p><img src="/certificationposter.png" alt="CertificationPoster" /></p>
-
-<p>Kuvaa katsellessa voi vaan hymyillä ajatusta siitä, että mitä henkilö tarkoittaa sillä jos sanoo osaavansa Azurea?</p>
-
-<h1 id="asennoituminen-opiskeluun">Asennoituminen opiskeluun</h1>
-
-<p>Miksi opiskelen Azurea vasta nyt, kun on kova paine saada taottua osaamista kalloon mahdollisemman nopeaan?</p>
-
-<p>Siihen minulla oli oikeastaan kaksi keskeistä syytä joista ainakin pari syytä on tuttuja suurimmalle osalle alalla työskenteleville:</p>
+<h2 id="-hyödyt">🎯 Hyödyt</h2>
 
 <ul>
-  <li>Ajankäyttö</li>
-  <li>Jaksaminen</li>
-  <li>Ennakkoluulot</li>
+  <li><strong>Automaattinen ja hallittu pääsynhallinta</strong>: vähemmän manuaalista työtä IT:lle.</li>
+  <li><strong>Auditointi ja jäljitettävyys</strong>: kaikki pyynnöt ja hyväksynnät tallennetaan.</li>
+  <li><strong>Tuki ulkoisille käyttäjille (B2B)</strong>: yhteistyökumppanit voivat hakea pääsyä hallitusti.</li>
+  <li><strong>Vanhentumisen ja uusinnan hallinta</strong>: ei jää “ikuisia” käyttöoikeuksia.</li>
 </ul>
 
-<p>Ajankäyttö ja jaksaminen oikeastaan liittyvät hyvin läheisesti toisiinsa. IT asiantuntija viettää ensin työpäivän näyttöpäätteen ääressä ja sitten pitäisi jaksaa tuijottaa näyttöä lisää opiskelujen merkeissä. Lisäksi kun asiantuntija on kiinni työläässä projektissa tai aktiivisia projekteja on käynnissä samaan aikaan useampi, niin työpäivät helposti venähtävät paljon kahdeksan tuntia pidemmiksi. Siihen päälle vielä yksityiselämän ajankäyttö, niin saa olla mestari suunnittelemaan ajankäyttöä niin, että sinne mahtuisi mukaan myös opiskelua. Aika usein asiantuntijan pitää hyväksyä se fakta, että työ opettaa sen minkä opettaa.</p>
-
-<p>Minun kohdalla ennakkoluulot tarkoittivat kahta seikkaa:</p>
-
-<ul>
-  <li>Kuvittelin, että Azurea on vaikea opiskella, koska opiskelu tapahtuu maksullisella alustalla. Olen ollut liian pitkää siinä kankeassa “mindsetissä” että opiskelu ei saa maksaa itselle juuri mitään.</li>
-  <li>Kuvittelin myös aina, että pilvipalveluiden päälle rakentaminen on loppujen lopuksi paljon helpompaa kuin on-prem tekeminen ja asiat on pitkälti samoja erilailla toteutettuna, niin eipä se mikään homma ottaa haltuun kunhan saa vaan aikaiseksi aloittaa opinnot.</li>
-</ul>
-
-<p>Nyt kun olen opiskelut aloittanut ja pari sertifiointia suorittanut tuosta Microsoftin sertifiointikartasta, niin voin vain todeta että kummatkin näistä ennakkoluuloista oli vääriä.</p>
-
-<p>Azure opiskeluissa alkuun pääsee käyttämättä rahaa juuri ensinkään. Monet Azure Administrator Associate sertifioinnin osa-alueista on täysin ilmaisia Azuressa testailla. Maksullisiakin asioita testaillessa pääsee pitkän aikaa hyvin minimaalisilla kuluilla, koska testattavat asiat eivät vie montaa minuuttia ja kun on valmista niin poistaa heti kaikki resurssit mitä Azure subscriptionin alle teki. Näin kuukautta kohden jonkun verran maksua tulla, mutta alkuun opiskelu on pitkän aikaa sitä, että jos pitää vaan huolta, niin on ihme jos kuukauden opiskelu maksu ylittää edes yhden euron. Opiskelua ei siis kannata karttaa sen takia, että palvelu on maksullinen.</p>
-
-<p>Mitä tulee toiseen ennakkoluuloon mikä minulla oli, niin kyllä pilvialustalle tekeminen tietyllä tapaa on helpompaa, mutta asiaa on vain niin valtava määrä että se ottaa hetken kun sulattelee lukemaansa ja testailee käytännössä Azuren eri palveluita.</p>
-
-<p>Omalla kohdalla Azure opintojen alkuun pääseminen oli siis aika pitkälle asennemuutos. Ja nyt on aikakin opiskelulle järjestetty, joskin aika valitettavalla tavalla. Eipä kauheasti toivo, että kukaan joutuu päivittämään osaamistaan kilpaa ajan kanssa näissä olosuhteissa. Kannattaa siis fiksata ajankäyttö opiskelulle silloinkin kun työelämä vie ison osan omasta ajankäytöstä, niin ei välttämättä tarvitse nähdä irtisanomisprosessia.</p>
-
-<p>Seuraavana, kun ajankäyttö ja asenne on kunnossa, niin tulee päätös siitä että miten opiskelua lähtee etenemään?</p>
-
-<h1 id="sertifiointiputki">Sertifiointiputki</h1>
-
-<p>Ilokseni voin sanoa, että Microsoftilla on suuret määrät opiskelua tukevaa ilmaista oppimateriaalia. Sertifiointitavoitteinen opiskelu helpottaa myös sitä, että opiskelu ei rönsyile sinne tänne, vaan keskittyy opiskeluissa vain kulloinkin työn alla olevien sertifiointien aihealueisiin. Kun opittavaa asiaa on paljon, niin sertifiointeihin opiskelu tuo opintoihin järjestelmällisyyttä. Kun sertifoinnit ohjaavat opiskelua, niin sitten vain pitää määritellä sertifiointi polku mitä lähtee opiskelemaan.</p>
-
-<p>Infra-asiantuntijalle suosittelen aloittamista Azure Administrator (AZ-104) testistä. Taitaa oikeastaan tuossa julisteen kartassa sertit mennäkin suositellussa järjestyksessä ylhäältä alaspäin. Ainakin infrastructure sarakkeessa.</p>
-
-<p>Tein itse nimittäin virheen suorittamalla ensin Windows Server Hybrid Administrator  Associate sertifioinnin (AZ-800 ja AZ-801 testit).</p>
-
-<p>Ajattelin, että tuo on vanha Windows Server testi mihin on tuotu hybrid server asiaa mukaan. Ja sitähän tuo testi kyllä osittain onkin, mutta tuntui pitkästi siltä, että sertifikaatissa painotettiin Hyper-V klusteria ja moniko infra-asiantuntija tekee päivittäin työssään Hyper-V klusteireita? Lisäksi tässä sertifioinnissa Azure teknologiat tuntuvat hyvin abstrakteilta komponenteilta kun alla ei ole sertifiointeja joissa näihin palveluiden mennään syvemmin. Muutenkin varsinkin kun tässä aikaa vastaan koittaa saada suoritettua sertifiointeja, niin se, että tämä sertifiointi vaatii kaksi sertifiointitestiä tuntui aika rajulta, muiden sertifiointien ollessa sertifiointi per hyväksytty testi. Meni siis hetki ennen kuin sai tuntea onnistumisen tunnetta, mikä voi olla alkuun pääsemisessä tärkeää vaikka ei edes opiskelisi aikaa vastaan.</p>
-
-<p>Seuraavaksi olisi tarkoitus aloittaa Azure Network Engineer opinnot. Voi olla, että sen jälkeen hylkään hetkeksi Infrastructure sarakkeen ja siirryn joko securityyn tai DevOpsiin. Tietoturva sinänsä olisi aika selkeä ja ehkä vähemmän vaativa alue sisäistää, kun ei ole varsinaista koodari osaamista eikä työelämän osaamista konteista, mutta en nyt ole vielä tätä kirjoittaessa tutkinut, että tarvitseeko DevOps suoritukset välttämättä niinkään koodari osaamista. Azure Administrator sertifiointia opiskellessa viimeistään alkaa ymmärtää Azuren Infrastructure As Coden tehokkuuden ja oletan, että IaC osaaminen syventyy DevOpsissa, mutta saatan olla väärässäkin.</p>
-
-<p>Nyt kun kompetenssi ajattelua ei enää ole MS kumppanuus tasoissa ja jos haluaa ajatella että suoritetuilla sertifioinneilla haluaa tehdä itsensä kiinnostavaksi kohteeksi rekryissä tai tuottaa arvoa yritykselle muutenkin kuin pelkällä työn teolla, niin kannattaisi varmaan ajatella, että sertifiointeja olisi usealta certification posteriin määritellyillä osa-aluella. Vähintään kahdesta eri laatikosta.</p>
-
-<p>Esimerkiksi infraosaajalle suositeltavia sertifiointikombinaatioita voisi olla:</p>
-
-<ul>
-  <li>Azure Administrator (AZ-104) → Azure Solutions Architect (AZ-305) → Azure Security Engineer (AZ-500)</li>
-  <li>Azure Administrator (AZ-104) → Azure Network Engineer (AZ-700) → Azure Security Engineer (AZ-500)</li>
-</ul>
-
-<p>Jos haluaa erottua työmarkkinoilla entistä enemmän, voi harkita myös DevOps-, Data- tai Security-haaran sertifiointeja, kuten Azure DevOps Engineer (AZ-400) tai Security-haaran sertifikaatit (SC-200, SC-300, SC-100).</p>
-
-<p>Itsellä ei data alueeseen ole tällä hetkellä oikein intoa tarttua, koska siellä tulee SQL asiat vastaan, mitä en ole koskaan opiskellut kuin vähän ohi mennen. Kiinnostaa kyllä, mutta siihen ei välttämättä ihan lyhyellä opiskelulla pääse vielä kunnolla sisään. Ja niin houkuttelevaa kuin AI onkin työpaikkailmoitusten perusteella, niin se taitaa olla kuitenkin enemmän koodareiden valtakuntaa (en ole perehtynyt).</p>
-
-<p>Miten aloittaa Azure-opiskelu tehokkaasti?</p>
-
-<ol>
-  <li>Järjestä ajankäyttö
-    <ul>
-      <li>Ajankäytön järjestäminen työelämän ohessa on priorisointipäätös. Kuinka paljon on valmis uhraamaan omaa vapaa-aikaa oman työelämän osaamisen ylläpitoon?</li>
-      <li>Miten järjestää aika opiskeluun, niin että jaksaa opiskella? Ei sen loppujen lopuksi tarvitse olla paljon aikaa per viikko, jos vain opiskelee säännöllisesti. Arkena ei välttämättä kannata asialle uhrata paljon aikaa, mutta jos vaikka ottaisi tavaksi iltasella lukea lyhyen aikaa MS Learniä? Ei niin paljon, että ei kerkeä vähän katsomaan telkkariakin yms.. Viikonloppuaamuisin ennen kuin rientää viikonlopun muihin askareisiin, niin opiskelisi pari tuntia lauantaina ja sunnuntaina? Tekisi siinä vähän hands on opiskelua Azuressa etc…?</li>
-      <li>Kun nämä asiat kondiksessa, niin sitten yrittää vaan rohkeasti työelämässä päästä tekemään asioita joita kotona parhaillaan opiskelee.</li>
-    </ul>
-  </li>
-  <li>Asenne kohdilleen
-    <ul>
-      <li>Vaikka osa opiskelusta voi olla maksullista, niin hinnat on varsin maltillisia ja mitättömiä kun pitää huolen, että Azure resurssit on poistettu välittömästi kun lopettaa hands on opiskelun.</li>
-    </ul>
-  </li>
-  <li>Tekniset valmistelut ennen opiskelun aloittamista
-    <ul>
-      <li>Luo oma Azure-tili, mikä on täysin maksuton kun palvelussa ei ole asennettuna resursseja joista tulee kuluja.</li>
-      <li>Ota käyttöön GitHub ja asenna VS Code kehitysympäristöksi. Jos olet on-prem asiantuntija, niin luultavasti et ole käyttänyt muuta editoria kuin korkeintaan Powershell ISEä. VS Code on täysin suvereeni editorina verrattuna ISEen ja sen käytön opiskelu kannattaa aloittaa heti alusta lähtien kun alkaa opiskelemaan Azurea. VS Coden lisäksi haluat oppia käyttämään Githubia ja opetella heti alkuun miten datan commitointi ja push omalta koneelta Githubin repositoryyn tapahtuu.</li>
-      <li>Hyödynnä GitHub Copilotin ilmaista versiota opiskelun tukena. VS Codeen integroitu AI on opiskelun ja editorissa työskentelyn kannalta niin ehdoton apu, että sitä välillä miettii, että miten kukaan on oppinut mitään ennen AI työkaluja.</li>
-    </ul>
-  </li>
-  <li>Hyödynnä tarjolla olevia opiskelumateriaaleja
-    <ul>
-      <li>Microsoft Learn ( https://learn.microsoft.com/en-us/training/) tarjoaa palveludokumentaatioiden lisäksi ilmaisia kursseja ja opintopolkuja omatoimiseen opiskeluun sertifiointitestiin valmistelevassa opiskelussa.</li>
-      <li>Azure-dokumentaatio ( https://learn.microsoft.com/en-us/azure/) syventää ymmärrystäsi ja auttaa testeihin valmistautumisessa.</li>
-      <li>Microsoft Partner University on Microsoftin koulutusalusta, joka on suunnattu Microsoftin kumppaneille. Se tarjoaa kattavasti oppimateriaalia, joka liittyy Microsoftin teknologioihin, myyntiin, asiakasmenestykseen ja kumppanuusohjelmiin. Pitäisi löytyä myös teknistä asiantuntijakoulutusta. En tiedä tästä oikeastaan paljoakaan, huomasin tätä blogikirjoitusta kirjoittaessa että tällainenkin on näköjään olemassa.</li>
-      <li>Harjoituskokeet (esim. MeasureUp) auttavat hahmottamaan, milloin olet valmis varsinaiseen testiin. Kun hankit vouchereita sertifiointi testiin, niin osta MeasureUp harjoitustesti kylkeen, mikä ei lisää hintaa montaa kymppiä ja voit harjoitustestillä kartoittaa valmiuttasi testiin ja huomaat mikäli jokin osa-alue on vielä vähän heikosti hallinnassa.</li>
-    </ul>
-  </li>
-</ol>
-
-<p>Miten ikinä lopulta päätyykään kehittämään osaamistaan, niin tärkeintä varmasti on se, että sitä malttaa tehdä opiskelua jatkuvasti, eikä tuudittaudu pelkästään siihen, että työ opettaa tekijäänsä.</p>]]></content><author><name></name></author><category term="Sertifiointi" /><category term="Opiskelu" /><category term="Azure" /><category term="Microsoft" /><summary type="html"><![CDATA[Tämän on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi postauksina harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Codessa.]]></summary></entry></feed>
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="identity" /><summary type="html"><![CDATA[Tämän on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi postauksina harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Codessa.]]></summary></entry></feed>
