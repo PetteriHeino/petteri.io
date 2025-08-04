@@ -15,7 +15,7 @@ media_subpath: '/assets/media/2025-08-03-entitlement_management'
 Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:
 
 1. Katalogi, resurssit, acccess package ja käyttöoikeuspyyntöjen hallinta
-2. Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, Yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla
+2. Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, Yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla [Linkki kirjoitukseen](../M365_id_gov_entitlement_management2)  
 
 Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.
 

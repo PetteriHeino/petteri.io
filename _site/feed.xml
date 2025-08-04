@@ -1,10 +1,331 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-03T17:44:16+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-03T10:00:00+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-04T11:03:49+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
+
+<ol>
+  <li>Katalogi, resurssit, acccess package ja käyttöoikeuspyyntöjen hallinta. <a href="../M365_ID_gov_entitlement_management">Linkki kirjoitukseen</a></li>
+  <li>Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla</li>
+</ol>
+
+<p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
+
+<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
+
+<hr />
+
+<h2 id="terms-of-use--ehtojen-käyttöönotto-osana-entitlement-managementia">Terms of Use -ehtojen käyttöönotto osana Entitlement Managementia</h2>
+
+<p><strong>Terms of Use (ToU)</strong> on Microsoft Entran tarjoama ominaisuus, jonka avulla organisaatiot voivat edellyttää, että käyttäjät <strong>hyväksyvät tietyt käyttöehdot</strong> ennen kuin heille myönnetään pääsy resursseihin – kuten <strong>access packageihin</strong>.</p>
+
+<p>ToU-ehdot ovat erityisen hyödyllisiä silloin, kun pääsyä tarjotaan <strong>ulkopuolisille käyttäjille</strong> tai tilanteissa, joissa organisaation resurssien käytölle halutaan määrittää selkeät pelisäännöt.</p>
+
+<h3 id="mitä-käyttöehdot-voivat-sisältää">Mitä käyttöehdot voivat sisältää?</h3>
+
+<ul>
+  <li>Tietoturvakäytännöt</li>
+  <li>Tiedonluokitteluun liittyvät ohjeet</li>
+  <li>GDPR- tai sopimusehdot ulkopuolisille yhteistyökumppaneille</li>
+  <li>Organisaation sisäiset hyväksymisvelvoitteet</li>
+</ul>
+
+<h3 id="esimerkki-kun-käyttäjä-pyytää-access-packagea">Esimerkki: kun käyttäjä pyytää access packagea</h3>
+
+<ol>
+  <li>Käyttäjä aloittaa pyynnön portaalissa</li>
+  <li>Ennen hyväksyntäprosessia tai käyttöoikeuden myöntämistä käyttäjälle näytetään käyttöehdot</li>
+  <li>Käyttäjän on hyväksyttävä ehdot ennen kuin hänelle voidaan antaa pääsy resursseihin</li>
+</ol>
+
+<h3 id="hyödyt-lyhyesti">Hyödyt lyhyesti</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Hyöty</th>
+      <th>Kuvaus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Suojaa resurssit</td>
+      <td>Edellyttää ehtojen hyväksymistä ennen pääsyä</td>
+    </tr>
+    <tr>
+      <td>Dokumentointi</td>
+      <td>Käyttäjän hyväksyntä kirjataan audit-lokeihin</td>
+    </tr>
+    <tr>
+      <td>Uusiminen</td>
+      <td>Käyttöehdot voidaan asettaa vanhenemaan automaattisesti</td>
+    </tr>
+    <tr>
+      <td>Monikielisyys</td>
+      <td>Voit ladata eri kieliversioita käyttöehdoista</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="terms-of-use--ehdon-määrittäminen">Terms of Use -ehdon määrittäminen</h3>
+
+<h4 id="vaihe-1-luo-terms-of-use">Vaihe 1: Luo Terms of Use</h4>
+<p>A Global administrator, Security administrator ja Conditional Access administrator rooleilla on oikeus luoda Terms Of Use.</p>
+
+<ol>
+  <li>Siirry Microsoft Entra -portaaliin: <a href="https://entra.microsoft.com">https://entra.microsoft.com</a></li>
+  <li>Navigoi kohtaan <strong>Identity Governance &gt; Terms of use</strong></li>
+  <li>Klikkaa <strong>+ New terms</strong></li>
+  <li>Täytä seuraavat kentät:
+    <ul>
+      <li><strong>Name</strong>: esim. “Yhteistyökumppanin käyttöehdot”</li>
+      <li><strong>Display name</strong>: nimi, joka näytetään loppukäyttäjälle</li>
+      <li><strong>Terms of use document</strong>: valitse PDF-tiedosto, jossa ehdot on kuvattu (pdf), määritä kieli ja display name</li>
+      <li><strong>Require users to expand</strong>: voit edellyttää, että käyttäjä avaa ehdot ennen hyväksymistä</li>
+      <li><strong>Require users to consent on every device</strong>: Jos haluat loppukäyttäjien hyväksyvän käyttöehtosi jokaisella laitteella, jolla he käyttävät järjestelmää, aseta Vaadi käyttäjien suostumus jokaisella laitteella -asetus arvoon Käytössä . Käyttäjien on ehkä asennettava muita sovelluksia, jos tämä asetus on käytössä. Microsoft Entra B2B -käyttäjiä ei tueta.</li>
+      <li><strong>Expire consents</strong>:Järjestelmänvalvojat voivat määrittää käyttöehtojen käytäntöjen vanhentumispäivän ja -tiheyden käyttämällä vanhentuvia suostumuksia. Jos Vanhene alkaen on määritetty tämän päivän päivämäärään ja tiheys on kuukausittain, käyttäjien on hyväksyttävä käyttöehtokäytäntö ja hyväksyttävä se uudelleen joka kuukausi. Jos Mike esimerkiksi hyväksyy käyttöehdot 1. tammikuuta, ensimmäinen vanhentumispäivä on 1. helmikuuta ja toinen vanhentumispäivä on 1. maaliskuuta. Jos Mike hyväksyy käyttöehdot 15. tammikuuta, ensimmäinen vanhenemispäivä on 1. helmikuuta ja toinen vanhenemispäivä on 1. maaliskuuta</li>
+      <li><strong>Duration before re-acceptance required (days)</strong> (valinnainen) Määritä Kesto ennen uudelleenhyväksyntää -kentässä, kuinka monta päivää käyttäjän on hyväksyttävä käyttöehtokäytäntö uudelleen. Käyttäjät voivat noudattaa omaa aikatauluaan. Jos esimerkiksi määrität kestoksi 30 päivää ja jos Mike hyväksyy käyttöehtokäytännön 1. tammikuuta, ensimmäinen vanhentumispäivä on 1. helmikuuta ja toinen vanhentumispäivä on 1. maaliskuuta. Jos Mike hyväksyy käyttöehdot 15. tammikuuta, ensimmäinen vanhenemispäivä on 14. helmikuuta ja toinen vanhenemispäivä on 16. maaliskuuta.</li>
+      <li><strong>Conditional access/enforce with conditional access policy templates</strong>: Conditional Policya ei ole pakko määrittää Terms of Use asetusta luodessa -&gt; Create conditional access policy later. Mukautetun käytännön (Custom policy) valitseminen avaa uuden Conditional Access policy mallin.</li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/tou1.png" alt="Kuva" /></p>
+
+<ol>
+  <li>Valitse <strong>Create</strong></li>
+</ol>
+
+<h4 id="vaihe-2-luo-conditional-access-policy">Vaihe 2: Luo conditional access policy</h4>
+
+<p>Microsoft Entra -ympäristössä käyttöehtojen hyväksyntä toteutetaan nykyisin <strong>Conditional Access -politiikan avulla</strong>, ei suoraan access package -asetuksissa. Tämä mahdollistaa selkeämmän hallinnan, monipuolisemmat ehdot ja yhtenäisen käyttökokemuksen kaikissa sovelluksissa.</p>
+
+<h4 id="käyttöönoton-vaiheet">Käyttöönoton vaiheet:</h4>
+<ol>
+  <li>Luo Terms of Use -ehdot PDF-muodossa ja lataa ne Entra-portaaliin (tehtiin edellisessä esimerkissä)</li>
+  <li>Luo dynaaminen ryhmä, johon access package lisää hyväksytyt käyttäjät</li>
+  <li>Luo Conditional Access -käytäntö, jossa:
+    <ul>
+      <li>Kohdistat politiikan tähän ryhmään</li>
+      <li>Määrität resurssit (esim. Teams, SharePoint)</li>
+      <li>Valitset käyttöehdot, jotka on hyväksyttävä. Aikaisemmin luotu Terms Of Use näkyy Grant osiossa valittavana pääsykontrollina.</li>
+    </ul>
+
+    <p><img src="/capolicy1.png" alt="Kuva" /></p>
+  </li>
+</ol>
+
+<p>Näin käyttäjältä edellytetään käyttöehtojen hyväksymistä ennen pääsyä resursseihin – ja hyväksyntä kirjautuu audit-lokeihin.</p>
+
+<blockquote>
+  <p>Terms of Use lisää tärkeän kerroksen vastuullista käyttöä ja sääntelyvaatimusten täyttämistä Entitlement Managementin yhteyteen – erityisesti B2B-skenaarioissa.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="pääsynhallinta-ja-organisaation-ulkopuoliset-käyttäjät">Pääsynhallinta ja organisaation ulkopuoliset käyttäjät</h2>
+
+<p>Microsoft Entra Identity Governance tarjoaa tehokkaita välineitä resurssien käytön hallintaan ja valvontaan – myös silloin, kun yhteistyötä tehdään organisaation ulkopuolisten toimijoiden kanssa.</p>
+
+<p>Entitlement Management toiminnallisuudessa ulkopuolisten käyttäjien pääsynhallinta määritellään yhdistetyllä organisaatiolla (connected organization).</p>
+
+<h3 id="mikä-on-yhdistetty-organisaatio">Mikä on yhdistetty organisaatio?</h3>
+
+<p>Yhdistetty organisaatio (Connected organization) on ulkoinen Entra ID -tenant tai muu identiteettilähde (esim. Microsoft-tilit), joiden käyttäjät voivat pyytää pääsyoikeuksia määritettyihin <strong>access packageihin</strong> (pääsykokonaisuuksiin). Näiden avulla voidaan antaa turvallisesti ja hallitusti pääsy esimerkiksi sovelluksiin, ryhmiin tai SharePoint-sivustoihin ilman jatkuvaa manuaalista hallintaa.</p>
+
+<p>Yhdistettyjä organisaatioita voidaan määrittää neljällä eri skenaariolla:</p>
+<ul>
+  <li>Käyttäjät toisessa Entra ID hakemistossa</li>
+  <li>Toisen ei Entra ID-hakemiston käyttäjät, jotka on määritetty suoraa liittoutumista varten</li>
+  <li>Toisen ei Entra ID-hakemiston käyttäjät, joiden sähköpostiosoitteilla on sama toimialuenimi</li>
+  <li>Microsoft tilin käyttäjät, joilla ei ole yhteistä organisaatiota</li>
+</ul>
+
+<p><img src="/connectedorganization1.png" alt="Kuva" /></p>
+
+<p>Kuva esimerkissä Contosolla on kaksi yhdistettyä organisaatiota: Fabrikam ja Woodgrove.</p>
+
+<p>Fabrikam käyttää Entra ID:tä, ja Woodgrove on muu kuin Entra ID hakemisto. Yhdistettyjen organisaatioiden käyttäjät voivat pyytää käyttöoikeuspaketteja. Käyttäjät, joiden täydellinen käyttäjätunnus on woodgrove.com tai fabrikam.com vastaa Contosoon yhdistettyjä organisaatioita, ja he voivat pyytää käyttöoikeuspaketteja.</p>
+
+<p>Koska Fabrikam käyttää Entra ID:tä, käyttäjät voivat pyytää pääsypakettaja (Access Package) tunnuksen ollessa määritettynä mihin tahansa Fabrikam tenantiin liitettyyn vahvistettuun toimialueeseen, esim. “fabrikam.in”.</p>
+
+<p>Jos kertakäyttöinen salasanatodennus (OTP) on käytössä, näiden toimialueiden käyttäjät, joilla ei vielä ole Azure AD tilejä, todentavat OTP:n avulla, kun he käyttävät Contoson resursseja.</p>
+
+<h3 id="miksi-yhdistettyjä-organisaatioita-tarvitaan">Miksi yhdistettyjä organisaatioita tarvitaan?</h3>
+
+<ul>
+  <li>Mahdollistetaan <strong>B2B (Business-to-Business)</strong> -yhteistyö suojatusti ja hallitusti.</li>
+  <li>Automaattinen pääsyn hallinta ulkopuolisille käyttäjille.</li>
+  <li>Tukee itsepalvelupohjaista pääsynpyyntöä ja hyväksyntäprosesseja.</li>
+  <li>Mahdollistaa käyttöoikeuksien elinkaaren hallinnan myös ulkopuolisille käyttäjille.</li>
+</ul>
+
+<h3 id="yhdistetyn-organisaation-määrittäminen">Yhdistetyn organisaation määrittäminen</h3>
+
+<ul>
+  <li>Microsoft Entra -hallintaportaalissa: https://entra.microsoft.com</li>
+  <li>Navigoi kohtaan <strong>Identity Governance &gt; Entitlement Management &gt; Connected organizations</strong></li>
+  <li>Valitse <strong>Add connected organization</strong></li>
+  <li>Anna organisaation nimi ja valinnainen kuvaus
+<img src="/connectedorganization2.png" alt="Kuva" /></li>
+</ul>
+
+<p>Yhdistetyillä organisaatioilla on kaksi tilaa: määritetty (Configured) ja ehdotettu (Proposed). Configured tilassa organisaatio on täysin määritetty ja käyttövalmis. Proposed tilassa yhdistetyn organisaation määritys on kesken, eikä sitä voi vielä käyttää pääsyhallinnassa.</p>
+
+<ul>
+  <li>Klikkaa Next: Directory + Domain -painiketta ja avautuvalla välilehdellä klikkaa Add directory + domain
+<img src="/connectedorganization3.png" alt="Kuva" />
+    <ul>
+      <li>Select directories + domains ruudussa voit kirjoittaa hakukenttään domain nimen etsiäksesi Entra ID hakemistoa. Voit lisätä tässä myös verkkotunnuksia, mitkä eivät kuulu mihinkään hakemistoon. (Huomioi B2B hyväksytyt ja estetyt domainit asetusten vaikutus.)</li>
+    </ul>
+  </li>
+  <li>Klikkaa Next: Sponsors ja lisää sponsori(t).<br />
+Sponsorit ovat hakemistossasi jo olevia sisäisiä tai ulkoisia käyttäjiä, jotka toimivat yhteyshenkilöinä suhteessa tähän yhdistettyyn organisaatioon. Sisäiset sponsorit ovat hakemistossasi olevia jäsenkäyttäjiä. Ulkoiset sponsorit ovat yhdistetyn organisaation vieraskäyttäjiä, jotka on aiemmin kutsuttu ja jotka ovat jo hakemistossasi. Sponsoreita voidaan käyttää hyväksyjinä, kun tämän yhdistetyn organisaation käyttäjät pyytävät pääsyä tähän käyttöoikeuspakettiin.</li>
+</ul>
+
+<p><img src="/connectedorganization4.png" alt="Kuva" /></p>
+
+<ul>
+  <li>Klikkaa Next: Review + Create painiketta, tarkasta asetukset ovat kunnossa ja klikkaa Create</li>
+</ul>
+
+<h3 id="hallinta-ja-käyttö">Hallinta ja käyttö</h3>
+
+<h4 id="yhdistettyjen-organisaatioiden-hyödyntäminen-access-packageissa">Yhdistettyjen organisaatioiden hyödyntäminen access packageissa</h4>
+
+<p>Kun yhdistetty organisaatio on määritetty (Configured), voit käyttää sitä <strong>access package</strong> -kokonaisuuden määrittelyssä:
+<img src="/connectedorganization5.png" alt="Kuva" /></p>
+
+<ul>
+  <li>Käyttäjät yhdistetystä organisaatiosta voivat pyytää pääsyä</li>
+  <li>Käyttöoikeuden hyväksyntä voi vaatia ulkopuolisen hyväksyjää tai sisäisen valvojan hyväksynnän</li>
+  <li>Käyttöoikeuden kesto, uusiminen ja poistaminen voidaan automatisoida</li>
+</ul>
+
+<h5 id="esimerkki-access-package--asetuksista">Esimerkki access package -asetuksista</h5>
+
+<p>Access package: Project X – External collaborators<br />
+Target resources: Microsoft Teams, SharePoint, Security Group<br />
+Request policy: External users from “Fabrikam”<br />
+Approval: Requires approval from internal sponsor<br />
+Access duration: 180 days, with optional renewal</p>
+
+<hr />
+<h2 id="käyttäjäkohtaisten-oikeuksien-tarkistaminen-käyttöoikeuksien-hallinnan-avulla">Käyttäjäkohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla</h2>
+
+<p>Oikeuksien hallinta auttaa tarkastelemaan, kenelle käyttöoikeuspaketit, käytäntö ja tila on määritetty. Jos käyttöoikeuspaketilla on asianmukainen käytäntö, voit määrittää käyttäjän suoraan käyttöoikeuspakettiin.</p>
+
+<p>Yleinen järjestelmänvalvoja, käyttäjätietojen hallinnan järjestelmänvalvoja, käyttäjän järjestelmänvalvoja, luettelon omistaja, käyttöoikeuspaketin hallinta tai käyttöoikeuspaketin määritysten hallinta voi tarkastella, lisätä tai poistaa käyttöoikeuspakettien määrityksiä.</p>
+
+<p>Jos haluat tarkastella, kenellä on määritys, kirjaudu sisään Azure-portaaliin, siirry kohtaan Käyttäjätietojen hallinta, valitse Käyttöoikeuspaketit ja avaa käyttöoikeuspaketti. Kuten kuvassa 4-18 näkyy, valitse vasemmasta navigointivalikosta Tehtävät, niin näet luettelon aktiivisista tehtävistä.</p>
+
+<ul>
+  <li>Navigoi “ID Governance -&gt; Access Packages” ja klikkaa haluttua access packagea -&gt; assignments</li>
+</ul>
+
+<p><img src="/assignments1.png" alt="Kuva" /></p>
+<ul>
+  <li>Ylläpitäjä voi lisätä assignmentin käyttäjälle klikkaamalla “+ New assignment” ilman että käyttäjän tarvitsee hakea käyttöoikeutta itse. Lisäksi politiikasta riippuen ylläpitäjä voi ohittaa hyväksyntä prosessin.</li>
+</ul>
+
+<hr />
+<h2 id="ulkoisten-käyttäjätunnusten-elinkaari-asetukset">Ulkoisten käyttäjätunnusten elinkaari asetukset</h2>
+
+<p>Microsoft Entra Identity Governance tarjoaa mahdollisuuden hallita <strong>ulkoisten käyttäjien elinkaarta</strong> automaattisesti. Kun ulkopuolinen käyttäjä (esim. yhteistyökumppani tai toimittaja) ei enää tarvitse pääsyä organisaation resursseihin, voidaan hänen tililleen määrittää toimenpiteitä – kuten pääsyn estäminen tai tilin poistaminen – automaattisesti <strong>Control configuration</strong> -asetusten avulla.</p>
+
+<p>Tämä on erityisen hyödyllistä, kun käyttäjät saavat pääsyn esimerkiksi Entitlement Managementin kautta access packageilla ja pääsy vanhenee automaattisesti.</p>
+
+<h3 id="control-configuration--asetukset">Control configuration -asetukset</h3>
+
+<p>Control configuration -asetukset löytyvät Entra-portaalista kohdasta:</p>
+
+<p><strong>ID Governance &gt; Control configurations &gt; Lifecycle of external users</strong></p>
+<ul>
+  <li>Klikkaa view settings</li>
+</ul>
+
+<p><img src="/lifecycle_ext.png" alt="Kuva" /></p>
+
+<p>Seuraavat asetukset koskevat ulkoisten käyttäjien elinkaarta:</p>
+
+<h4 id="remove-external-user-from-the-directory"><strong>Remove external user from the directory</strong></h4>
+
+<ul>
+  <li>
+    <p><strong>Kuvaus:</strong><br />
+Jos käyttäjä on <strong>ulkopuolinen (guest)</strong> ja hänellä <strong>ei ole enää voimassa olevia access package -pääsyjä</strong>, hänen tilinsä voidaan poistaa kokonaan tenantista automaattisesti.</p>
+  </li>
+  <li>
+    <p><strong>Toiminto:</strong><br />
+Poistaa käyttäjän Microsoft Entra ID:stä.</p>
+  </li>
+  <li>
+    <p><strong>Hyödyt:</strong></p>
+    <ul>
+      <li>Siivoaa vanhat ja tarpeettomat B2B-käyttäjätilit</li>
+      <li>Vähentää tietoturvariskiä</li>
+      <li>Tukee Zero Trust -mallia</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="block-external-user-from-signing-in-to-the-directory"><strong>Block external user from signing in to the directory</strong></h4>
+
+<ul>
+  <li>
+    <p><strong>Kuvaus:</strong><br />
+Jos ulkoinen käyttäjä ei enää tarvitse pääsyä (esim. kaikki access package -oikeudet on poistettu), voidaan estää hänen kirjautumisensa ilman että käyttäjätiliä poistetaan heti.</p>
+  </li>
+  <li>
+    <p><strong>Toiminto:</strong><br />
+Asettaa käyttäjän <code class="language-plaintext highlighter-rouge">SignInBlocked = true</code>.</p>
+  </li>
+  <li>
+    <p><strong>Käyttötarkoitus:</strong></p>
+    <ul>
+      <li>Antaa siirtymäajan ennen tilin lopullista poistamista</li>
+      <li>Soveltuu ympäristöihin, joissa yhteistyö voi jatkua myöhemmin</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="number-of-days-before-removing-external-user-from-the-directory"><strong>Number of days before removing external user from the directory</strong></h4>
+
+<ul>
+  <li>
+    <p><strong>Kuvaus:</strong><br />
+Määrittää kuinka monta päivää käyttäjän kaikki access package -pääsyoikeudet voivat olla poissa, ennen kuin <strong>käyttäjätilille suoritetaan valittu toimenpide</strong> (esim. estäminen tai poistaminen).</p>
+  </li>
+  <li>
+    <p><strong>Oletusarvo:</strong><br />
+30 päivää</p>
+  </li>
+  <li>
+    <p><strong>Käyttäytyminen:</strong><br />
+Kun käyttäjällä ei ole enää pääsyä mihinkään access packageen, laskuri alkaa. Kun määritetty määrä päiviä täyttyy:</p>
+    <ul>
+      <li>Käyttäjä joko estetään (sign-in block), tai</li>
+      <li>Poistetaan (delete), riippuen asetuksista</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="esimerkki-käytöstä">Esimerkki käytöstä</h3>
+
+<p>Asetukset:</p>
+<ul>
+  <li>Block external user from signing in: ✅</li>
+  <li>Remove external user: ✅</li>
+  <li>Number of days: 14</li>
+</ul>
+
+<p>→ Käyttäjällä ei ole enää access package -oikeuksia.
+→ 14 päivän kuluttua: käyttäjän kirjautuminen estetään.
+→ Poistetaan kokonaan tenantista seuraavana päivänä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-03T10:00:00+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 
 <ol>
   <li>Katalogi, resurssit, acccess package ja käyttöoikeuspyyntöjen hallinta</li>
-  <li>Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, Yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla</li>
+  <li>Käyttöehtojen hallinta, ulkoisten käyttäjien elinkaaren hallinta, Yhdistettyjen organisaatioiden määrittäminen, henkilökohtaisten oikeuksien tarkistaminen käyttöoikeuksien hallinnan avulla <a href="../M365_id_gov_entitlement_management2">Linkki kirjoitukseen</a></li>
 </ol>
 
 <p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
@@ -253,215 +574,4 @@ Käyttäjät pyytävät käyttöoikeuspaketin käyttöoikeutta. Järjestelmänva
 
 <p>Kun käyttäjät ovat lähettäneet käyttöoikeuspaketin pyynnöt, hyväksyjät saavat sähköpostiviestin, joka sisältää linkin pyyntöjen hyväksymiseen tai hylkäämiseen. Hyväksyjä voi joko napsauttaa linkkiä kirjautuakseen My Access -portaaliin tai kirjautua suoraan My Access -portaaliin (https://myaccess.microsoft.com) ja siirtyä Hyväksynnät-välilehteen.</p>
 
-<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - katalogi, resurssit, käyttöoikeuspaketit, käyttöoikeuspyynnöt]]></summary></entry><entry><title type="html">Ide</title><link href="http://localhost:4000/posts/M365_Identity_Governance/" rel="alternate" type="text/html" title="Ide" /><published>2025-02-22T21:50:00+02:00</published><updated>2025-02-22T21:50:00+02:00</updated><id>http://localhost:4000/posts/M365_Identity_Governance</id><content type="html" xml:base="http://localhost:4000/posts/M365_Identity_Governance/"><![CDATA[<h1 id="johdanto">Johdanto</h1>
-
-<p>Mikä on tämän blogi kirjoituksen tarkoitus</p>
-
-<h1 id="microsoft-365-identity-governance">Microsoft 365 Identity Governance</h1>
-
-<p><strong>Microsoft 365 Identity Governance</strong> on kokoelma palveluita ja ominaisuuksia, joiden avulla organisaatiot voivat hallita käyttäjien elinkaarta, käyttöoikeuksia ja varmistaa, että oikeilla henkilöillä on pääsy oikeisiin resursseihin – oikeaan aikaan ja oikeista syistä.</p>
-
-<p>Se auttaa ratkaisemaan seuraavat asiat:</p>
-<ul>
-  <li>Kenellä on pääsy mihinkin aineistoon?</li>
-  <li>Mitä käyttäjät tekevät käyttöoikeudella?</li>
-  <li>Mitä organisaation hallintatoimintoja käyttöoikeuksien hallintaan on käytössä?</li>
-  <li>Voivatko tarkastajat (auditors) varmistaa, että hallintatoiminnot (controls) toimii?</li>
-</ul>
-
-<h2 id="työntekijöiden-on-käytettävä-resursseja-kuten-ryhmiä-sovelluksia-ja-sharepoint-sivustoja-jotta-he-voivat-suorittaa-työnsä-käyttöoikeuksien-hallinta-ajan-mittaan-on-organisaatiolle-haastavaa-ja-monimutkaistuu-kun-uusia-ryhmiä-tai-sovelluksia-lisätään-tai-kun-käyttäjät-tarvitsevat-lisäkäyttöoikeuksia-siitä-tulee-myös-monimutkaisempaa-kun-organisaatiot-tekevät-yhteistyötä-organisaationsa-ulkopuolisten-käyttäjien-kanssa">Työntekijöiden on käytettävä resursseja, kuten ryhmiä, sovelluksia ja SharePoint-sivustoja, jotta he voivat suorittaa työnsä. Käyttöoikeuksien hallinta ajan mittaan on organisaatiolle haastavaa ja monimutkaistuu, kun uusia ryhmiä tai sovelluksia lisätään tai kun käyttäjät tarvitsevat lisäkäyttöoikeuksia. Siitä tulee myös monimutkaisempaa, kun organisaatiot tekevät yhteistyötä organisaationsa ulkopuolisten käyttäjien kanssa.</h2>
-
-<h2 id="identity-governance-palvelut-ja-ominaisuudet">Identity Governance palvelut ja ominaisuudet</h2>
-
-<h3 id="1-entitlement-management-oikeuksien-hallinta">1. Entitlement Management (oikeuksien hallinta)</h3>
-<ul>
-  <li>Mahdollistaa pääsyn hallittuihin “paketteihin” (Access packages), jotka voivat sisältää ryhmäjäsenyyksiä, sovellusoikeuksia ja SharePoint-sivustoja.</li>
-  <li>Käyttäjät voivat hakea pääsyä itsepalveluna hyväksymiskierron kautta.</li>
-  <li>Tukee myös ulkoisia käyttäjiä (B2B).</li>
-</ul>
-
-<h3 id="2-access-reviews-käyttöoikeusarvioinnit">2. Access Reviews (käyttöoikeusarvioinnit)</h3>
-<ul>
-  <li>Auttaa säännöllisesti tarkistamaan, onko käyttäjillä edelleen tarpeellinen pääsy ryhmiin, sovelluksiin tai rooleihin.</li>
-  <li>Hyväksyntä voidaan automatisoida tai delegoida vastuuhenkilöille.</li>
-</ul>
-
-<h3 id="3-privileged-identity-management-pim">3. Privileged Identity Management (PIM)</h3>
-<ul>
-  <li>Hallitsee korkean tason käyttöoikeuksia (esim. Azure AD ja Microsoft 365 -roolit).</li>
-  <li>Mahdollistaa tilapäisen, hyväksynnän vaativan pääsyn (“Just-in-Time” käyttöoikeudet).</li>
-  <li>Sisältää käyttöoikeuksien aktivointipyynnöt, ilmoitukset ja audit-lokit.</li>
-</ul>
-
-<h3 id="4-lifecycle-workflows-esikatselussa--julkisesti-saatavilla">4. Lifecycle Workflows (esikatselussa / julkisesti saatavilla)</h3>
-<ul>
-  <li>Automaatiot käyttäjän elinkaaren vaiheisiin (esim. uusi työntekijä, roolin vaihto, työsuhteen päättyminen).</li>
-  <li>Mahdollistaa mm. ilmoitukset, käyttöoikeuksien lisäämisen/poiston ja käyttäjän deaktivoinnin.</li>
-</ul>
-
-<h2 id="-lisenssivaatimukset-ja-hallintaroolit">🔐 Lisenssivaatimukset ja hallintaroolit</h2>
-
-<h3 id="-identity-governance--komponenttien-lisenssivaatimukset">💳 Identity Governance -komponenttien lisenssivaatimukset</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Komponentti</th>
-      <th>Vaadittu lisenssi</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Entitlement Management</td>
-      <td>Microsoft Entra ID Governance (tai P2)</td>
-    </tr>
-    <tr>
-      <td>Access Reviews</td>
-      <td>Microsoft Entra ID Governance (tai P2)</td>
-    </tr>
-    <tr>
-      <td>Privileged Identity Management (PIM)</td>
-      <td>Microsoft Entra ID Governance (tai P2)</td>
-    </tr>
-    <tr>
-      <td>Lifecycle Workflows</td>
-      <td>Microsoft Entra ID Governance</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>💡 <em>Microsoft Entra ID Governance</em> -lisenssi sisältää kaikki yllä mainitut ominaisuudet ja korvaa aiemman <strong>Azure AD Premium P2</strong> -lisenssin käytön tässä yhteydessä.</p>
-</blockquote>
-
-<hr />
-
-<h3 id="-tarvittavat-käyttöoikeusroolit">👥 Tarvittavat käyttöoikeusroolit</h3>
-
-<p>Identity Governance -toimintojen hallintaan tarvitaan tietyt <strong>Azure AD -hallintaroolit</strong> riippuen siitä, mitä osaa halutaan hallita:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Toiminto</th>
-      <th>Tarvittava rooli</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Access packagesin ja katalogien luonti</td>
-      <td><strong>Identity Governance Administrator</strong> tai <strong>Global Administrator</strong></td>
-    </tr>
-    <tr>
-      <td>Resurssien lisääminen katalogeihin</td>
-      <td><strong>Catalog owner</strong> (katalogikohtainen)</td>
-    </tr>
-    <tr>
-      <td>Käyttöoikeusarviointien hallinta</td>
-      <td><strong>Identity Governance Administrator</strong></td>
-    </tr>
-    <tr>
-      <td>PIM-roolien määrittäminen</td>
-      <td><strong>Privileged Role Administrator</strong></td>
-    </tr>
-    <tr>
-      <td>Lifecycle Workflowsin hallinta</td>
-      <td><strong>Identity Governance Administrator</strong></td>
-    </tr>
-    <tr>
-      <td>Access package -pyyntöjen hyväksyntä</td>
-      <td><strong>Määritelty hyväksyjä</strong> (esim. esihenkilö)</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>🛡️ Käytännössä suositellaan, että <strong>Identity Governance Administrator</strong> -roolia käytetään hallintaan, ja delegoidaan hyväksynnät sekä katalogien hallinta omistajille organisaatiorakenteen mukaisesti.</p>
-</blockquote>
-
-<hr />
-<h1 id="entitlement-management-microsoft-entra-idssa">Entitlement Management Microsoft Entra ID:ssa</h1>
-
-<p>Entitlement Management on osa Microsoft Entra ID:n (entinen Azure AD) Identity Governance -ratkaisua. Sen avulla organisaatiot voivat hallita käyttäjien pääsyä resursseihin hallitusti ja itsepalveluna – sekä sisäisille että ulkoisille käyttäjille.</p>
-
-<h2 id="-kokonaisuuden-rakenne">🔄 Kokonaisuuden rakenne</h2>
-
-<p>Entitlement Management rakentuu neljästä pääkomponentista:</p>
-
-<h3 id="1-katalogi-catalog">1. <strong>Katalogi (Catalog)</strong></h3>
-<ul>
-  <li>Katalogi toimii säiliönä, johon yhdistetään kaikki resurssit, jotka ovat käytettävissä access package -pakettien kautta.</li>
-  <li>Yksi organisaatio voi luoda useita katalogeja esimerkiksi eri osastoille tai liiketoiminnoille.</li>
-  <li>Jokaisella katalogilla on omat ylläpitäjänsä (Catalog owners), jotka hallinnoivat sen sisältöä.</li>
-</ul>
-
-<h3 id="2-resurssit-resources">2. <strong>Resurssit (Resources)</strong></h3>
-<ul>
-  <li>Resurssit ovat kohteita, joihin pääsyä voidaan hallita. Näitä voivat olla:
-    <ul>
-      <li>Microsoft 365 -ryhmät</li>
-      <li>Microsoft Teams -tiimit</li>
-      <li>SharePoint Online -sivustot</li>
-      <li>Azure AD -sovellukset ja roolit</li>
-    </ul>
-  </li>
-  <li>Resurssit lisätään ensin katalogiin, jonka jälkeen ne voidaan sisällyttää access packageihin.</li>
-</ul>
-
-<h3 id="3-access-packages-pääsypaketit">3. <strong>Access Packages (Pääsypaketit)</strong></h3>
-<ul>
-  <li>Access package on “paketti” resursseja, joiden käyttöoikeus voidaan myöntää yhdellä hyväksyntäpyynnöllä.</li>
-  <li>Paketti määrittää:
-    <ul>
-      <li>Mitä resursseja siihen kuuluu</li>
-      <li>Kuka voi pyytää pääsyä (sisäiset tai ulkoiset käyttäjät)</li>
-      <li>Tarvitaanko hyväksyntää ja kuka hyväksyy</li>
-      <li>Kuinka kauan pääsy on voimassa (automaattinen vanhentuminen, uusintapyynnöt)</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="4-hyväksyntäprosessi-approval-workflow">4. <strong>Hyväksyntäprosessi (Approval Workflow)</strong></h3>
-<ul>
-  <li>Pääsypyynnöt voidaan hyväksyä:
-    <ul>
-      <li>Automaattisesti</li>
-      <li>Yksivaiheisella hyväksynnällä (esim. esihenkilö)</li>
-      <li>Kaksivaiheisella hyväksynnällä (esim. esihenkilö + tietoturva)</li>
-    </ul>
-  </li>
-  <li>Hyväksyjille voidaan määrittää aikaraja ja ilmoitukset</li>
-  <li>Myönnetyt käyttöoikeudet kirjataan ja niitä voidaan tarkastella myöhemmin</li>
-</ul>
-
-<hr />
-
-<h2 id="-esimerkki-uuden-työntekijän-pääsy-markkinointitiimiin">📊 Esimerkki: Uuden työntekijän pääsy markkinointitiimiin</h2>
-
-<ol>
-  <li>Markkinointiosastolla on oma kataloginsa.</li>
-  <li>Katalogiin lisätään:
-    <ul>
-      <li>“Marketing Team” -Microsoft 365 -ryhmä</li>
-      <li>SharePoint-sivusto “Marketing Assets”</li>
-      <li>Käyttöoikeus sovellukseen “Canva for Enterprise”</li>
-    </ul>
-  </li>
-  <li>Luodaan access package “Marketing Starter Kit”.</li>
-  <li>Uusi työntekijä pyytää pakettia itsepalveluportaalista.</li>
-  <li>Esihenkilö hyväksyy pyynnön.</li>
-  <li>Työntekijä saa automaattisesti tarvittavat käyttöoikeudet.</li>
-</ol>
-
-<hr />
-
-<h2 id="-hyödyt">🎯 Hyödyt</h2>
-
-<ul>
-  <li><strong>Automaattinen ja hallittu pääsynhallinta</strong>: vähemmän manuaalista työtä IT:lle.</li>
-  <li><strong>Auditointi ja jäljitettävyys</strong>: kaikki pyynnöt ja hyväksynnät tallennetaan.</li>
-  <li><strong>Tuki ulkoisille käyttäjille (B2B)</strong>: yhteistyökumppanit voivat hakea pääsyä hallitusti.</li>
-  <li><strong>Vanhentumisen ja uusinnan hallinta</strong>: ei jää “ikuisia” käyttöoikeuksia.</li>
-</ul>
-
-<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="identity" /><summary type="html"><![CDATA[Tämän on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi postauksina harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Codessa.]]></summary></entry></feed>
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - katalogi, resurssit, käyttöoikeuspaketit, käyttöoikeuspyynnöt]]></summary></entry></feed>

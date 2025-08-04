@@ -1,19 +1,19 @@
 [
   {
+    "title": "Entra ID Identity Governance - Entitlement Management osa 2",
+    "url": "/posts/m365_id_gov_entitlement_management2/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Identity Governance, Entitlement Management",
+    "date": "2025-08-04 04:00:00 +0300",
+    "content": "Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta"
+  },
+  {
     "title": "Entra ID Identity Governance - Entitlement Management osa 1",
     "url": "/posts/M365_ID_gov_entitlement_management/",
     "categories": "M365",
     "tags": "SC-300, Microsoft, Entra ID, Identity Governance, Entitlement Management",
     "date": "2025-08-03 10:00:00 +0300",
     "content": "Entitlement Management - katalogi, resurssit, käyttöoikeuspaketit, käyttöoikeuspyynnöt"
-  },
-  {
-    "title": "Ide",
-    "url": "/posts/M365_Identity_Governance/",
-    "categories": "M365",
-    "tags": "SC-300, Microsoft, identity",
-    "date": "2025-02-22 21:50:00 +0200",
-    "content": "Tämän on tarkoitus olla blogi-sarjan ei-tekninen aloitus ja jatkan sarjaa blogi postauksina harjoituksista Azure opiskelujen edetessä. Sarjan focus on tarkoitus olla pääasiassa Infrastructure As Co..."
   }
   
 ]
