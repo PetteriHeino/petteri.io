@@ -8,6 +8,14 @@
     "content": "Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta"
   },
   {
+    "title": "Entra ID Identity Governance - Access Review",
+    "url": "/posts/M365_id_gov_access_review/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Identity Governance, Access Review",
+    "date": "2025-08-04 04:00:00 +0300",
+    "content": "Access Review"
+  },
+  {
     "title": "Entra ID Identity Governance - Entitlement Management osa 1",
     "url": "/posts/M365_ID_gov_entitlement_management/",
     "categories": "M365",

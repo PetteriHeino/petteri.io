@@ -1,4 +1,318 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-04T12:31:46+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-04T14:59:25+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn osa-alueeseen Access Review.</p>
+
+<p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
+
+<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
+
+<hr />
+
+<h2 id="access-review---organisaation-resursseihin-kohdistettuja-käyttöoikeuksien-tarkistuksia">Access Review - Organisaation resursseihin kohdistettuja käyttöoikeuksien tarkistuksia</h2>
+
+<h3 id="yleiskatsaus">Yleiskatsaus</h3>
+
+<p>Access Review -toiminnallisuuden avulla organisaatiot voivat säännöllisesti tarkistaa ja hallita käyttäjien käyttöoikeuksia eri resursseihin. Tämä on keskeinen osa <strong>Microsoft Entra Identity Governance</strong> -kokonaisuutta ja sen tavoitteena on varmistaa, että oikeudet säilyvät ajan mittaan tarpeellisina, turvallisina ja organisaation käytäntöjen mukaisina.</p>
+
+<p>Tyypillinen legacy teknologia ongelma oli se, että organisaatioilta puuttui ymmärrys siitä, että kenellä on oikeuksia mihinkin resursseihin ja käyttäjien lähtiessä pois organisaatiosta ei ollut ymmärrystä siitä minne kaikkialle käyttäjän oikeudet periytyivät. Access Review M365 pilvipalveluiden vastaus tähän ongelmaan.</p>
+
+<p>Käyttöoikeustarkistusten avulla organisaatiot voivat:
+•	Ajoittaa säännölliset tai ad hoc -tarkistukset nähdäksesi selvittääkseen kenellä on pääsy mihinkin resursseihin
+•	Delegoida tarkistuksia järjestelmänvalvojille, palveluiden omistajille, ryhmäpääliköille tai vahvistaa itse käyttöoikeuksien jatkuvuus
+•	Automatisoida tarkistustulokset, kuten käyttäjien resurssien käyttöoikeuksien poistaminen
+•	Seurata access review dataa käyttöstatistiikan tai vaatimustenmukaisuuden saamiseksi</p>
+
+<p>Access Review on tehokas ja joustava työkalu, jolla voidaan varmistaa käyttöoikeuksien ajantasaisuus ja tietoturva. Se on olennainen osa identiteetinhallinnan kokonaisuutta ja erityisen tehokas yhdessä Access Packagien ja PIM:n kanssa. Soveltuu sekä sisäisten että ulkoisten käyttäjien käyttöoikeuksien hallintaan – skaalautuen yrityksen kokoon ja tarpeisiin.</p>
+
+<blockquote>
+  <p><strong>Vinkki:</strong> Yhdistä Access Review Microsoft Sentinel -valvontaan saadaksesi kokonaiskuvan käyttöoikeuksista ja poikkeamista reaaliaikaisesti.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="lisenssivaatimukset">Lisenssivaatimukset</h3>
+
+<p>Access Review -toiminto on käytettävissä Microsoft Entra -palvelussa seuraavin ehdoin:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Lisenssi</th>
+      <th>Tukee Access Review -toimintoa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+      <td>✅ Täysi tuki</td>
+    </tr>
+    <tr>
+      <td>Microsoft Entra ID P1</td>
+      <td>❌ Ei sisällä Access Review -toimintoa</td>
+    </tr>
+    <tr>
+      <td>Microsoft 365 E5 / EMS E5</td>
+      <td>✅ Sisältyy (koska sisältää Entra ID P2:n)</td>
+    </tr>
+    <tr>
+      <td>Microsoft 365 E3 / EMS E3</td>
+      <td>❌ Ei sisällä</td>
+    </tr>
+    <tr>
+      <td>Ilmainen Entra ID</td>
+      <td>❌ Ei sisällä</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Huom:</strong> Access Review edellyttää lisenssiä kaikille osallistujille – sekä käyttöoikeuksien tarkistettaville että tarkistajille!</p>
+</blockquote>
+
+<p>B2B Collaboration käyttäjien osalta lisenssisääntö 50:1 sääntö:
+→ 1 P2-lisenssi kattaa 50 ulkoista käyttäjää.
+Lisenssointi perustuu Monthly active users (MAU) malliin, eli 1 lisenssi per 50 käyttäjää tulee olla vapaana.</p>
+
+<hr />
+
+<h3 id="keskeiset-roolit-ja-niiden-oikeudet">Keskeiset roolit ja niiden oikeudet</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Rooli</th>
+      <th>Kuvaus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Global Administrator / Identity Governance Administrator</strong></td>
+      <td>Voi luoda ja hallita kaikkia Access Review -prosesseja.</td>
+    </tr>
+    <tr>
+      <td><strong>Group Owner</strong></td>
+      <td>Voi tarkistaa jäsenten oikeuksia ryhmässä, jonka omistaja hän on.</td>
+    </tr>
+    <tr>
+      <td><strong>Access Package Manager</strong></td>
+      <td>Voi luoda käyttöpaketteja ja liittää niihin Access Review -tarkistuksia.</td>
+    </tr>
+    <tr>
+      <td><strong>Reviewer (tarkistaja)</strong></td>
+      <td>Käyttäjä, jolle on delegoitu oikeus tarkistaa toisten käyttöoikeuksia (esim. tiiminvetäjä).</td>
+    </tr>
+    <tr>
+      <td><strong>Self-review target user</strong></td>
+      <td>Käyttäjä, joka tarkistaa omia käyttöoikeuksiaan.</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Kaikki roolit edellyttävät P2-lisenssiä. Ryhmän omistajalla voi olla oikeus tarkistaa omien ryhmiensä käyttöoikeuksia, mutta tämäkin vaatii lisenssin.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="tuetut-resurssityypit">Tuetut resurssityypit</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Resurssi</th>
+      <th>Roolien/ominaisuuksien tuki</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Entra ID -ryhmät</strong></td>
+      <td>Tukee omistajien tai nimettyjen tarkistajien suorittamia tarkistuksia.</td>
+    </tr>
+    <tr>
+      <td><strong>Entra ID roolit (PIM)</strong></td>
+      <td>Mahdollistaa roolien tarkistuksen käyttöoikeuksien hallinnassa (PIM).</td>
+    </tr>
+    <tr>
+      <td><strong>Access Packages</strong></td>
+      <td>Tukee automaattisia käyttöoikeustarkistuksia osana käyttöpakettien elinkaarta.</td>
+    </tr>
+    <tr>
+      <td><strong>Sovellukset</strong></td>
+      <td>Voidaan tarkistaa käyttäjäkohtaisia käyttöoikeuksia (esim. SSO-sovellukset).</td>
+    </tr>
+    <tr>
+      <td><strong>Ulkoiset käyttäjät (B2B collaboration)</strong></td>
+      <td>Mahdollistaa ulkoisten yhteistyökumppaneiden oikeuksien tarkistamisen.</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Joissain tapauksissa (esim. roolit PIM:n kautta) tarkistus vaatii lisäkonfiguraatioita ennen näkyvyyttä Access Reviewissa.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="access-review--access-package--yhteiskäyttö">Access Review + Access Package – yhteiskäyttö</h3>
+
+<p>Access Packages ovat käyttöpaketteja, jotka sisältävät resursseja ja määrittelevät, miten käyttäjät voivat niitä hakea.</p>
+
+<ul>
+  <li>Access Review voidaan <strong>liittää suoraan käyttöpakettiin</strong>.</li>
+  <li>Käyttäjien käyttöoikeudet tarkastellaan automaattisesti tietyin väliajoin.</li>
+  <li>Tarkistuksen jälkeen voidaan määrittää esimerkiksi:
+    <ul>
+      <li><strong>Automaattinen poisto</strong>, jos tarkistus epäonnistuu.</li>
+      <li><strong>Oikeuden säilyttäminen</strong>, jos tarkistus jää tekemättä.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Yhdistelmä mahdollistaa käyttöoikeuksien hallinnan ilman jatkuvaa manuaalista valvontaa.</p>
+
+<hr />
+<h3 id="käyttöoikeus-tarkistusten-suunnittelu">Käyttöoikeus tarkistusten suunnittelu</h3>
+
+<p>Käyttöoikeuksien tarkistusten suunnittelu ennen niiden toteuttamista on välttämätöntä, jotta organisaatiosi työntekijöille ja vieraskäyttäjille voidaan saavuttaa haluttu hallintostrategia. Halutun strategian saavuttamiseksi:</p>
+<ul>
+  <li>Sitouta oikeat sidosryhmät.</li>
+  <li>Suunnittele pilotti.</li>
+  <li>Luettele tarkistettavat resurssityypit.</li>
+  <li>Tunnista tarkistajat käyttöoikeuksien tarkistamista varten.</li>
+</ul>
+
+<h4 id="sitouta-oikeat-sidosryhmät">Sitouta oikeat sidosryhmät</h4>
+
+<p>Oikeiden sidosryhmien sitouttaminen on ratkaisevan tärkeää halutun vaikutuksen, tulosten ja vastuiden saavuttamiseksi. Käyttöoikeustarkistuksissa on todennäköisesti edustajia seuraavista tiimeistä:</p>
+<ul>
+  <li>IT-järjestelmänvalvoja – joka hallinnoi IT-infrastruktuuria, pilviinvestointeja ja SaaS (Software as a Service) -sovelluksia</li>
+  <li>Kehitystiimit – jotka rakentavat ja ylläpitävät sovelluksia organisaatiollesi</li>
+  <li>Liiketoimintayksiköt – jotka hallinnoivat projekteja ja omia sovelluksia</li>
+  <li>Corporate governance – kuka varmistaa, että organisaatio noudattaa sisäisiä käytäntöjä ja säädöksiä</li>
+</ul>
+
+<h4 id="suunnittele-pilotti">Suunnittele pilotti</h4>
+
+<p>On suositeltavaa suunnitella pilottikäyttöoikeuksien arvioinnit kohdennetulla pienellä ryhmällä ei-kriittisiä resursseja. Pilotin tulosten perusteella voit muokata prosesseja ja viestintää tarpeen mukaan.</p>
+<ul>
+  <li>Suosituksia pilotin suunnitteluun ovat:</li>
+  <li>Aloita arvioinneista, joissa tuloksia ei sovelleta automaattisesti.</li>
+  <li>Varmista, että kaikilla käyttäjillä on kelvollinen sähköpostiosoite, jotta he voivat vastaanottaa sähköpostiviestejä asianmukaisten toimien suorittamiseksi.</li>
+  <li>Dokumentoi kaikki pilotin aikana tekemäsi muutokset, kuten käyttöoikeuden poistaminen.</li>
+  <li>Valvo valvontalokeja varmistaaksesi, että kaikki tapahtumat kirjataan oikein.</li>
+</ul>
+
+<h4 id="luettelo-tarkastettavista-resurssityypeistä">Luettelo tarkastettavista resurssityypeistä</h4>
+
+<p>Resursseja, kuten käyttäjiä (sekä sisäisiä että ulkoisia käyttäjiä), sovelluksia ja ryhmiä, voidaan hallita ja tarkastella Access Review toiminnallisuuden avulla.
+Käyttöoikeuksien tarkistusten tyypillisiä kohteita ovat:</p>
+<ul>
+  <li>Käyttäjien pääsy sovelluksiin – SaaS- tai toimialakohtaiset sovellukset, jotka on integroitu Azure AD:hen kertakirjautumista varten</li>
+  <li>Ryhmän jäsenyys – ryhmät, jotka synkronoidaan Azure AD:hen tai jotka on luotu Azure AD:ssä tai Microsoft 365:ssä, mukaan lukien tiimit</li>
+  <li>Käyttöpaketit – resurssit, kuten ryhmät, sovellukset ja sivustot</li>
+  <li>Azure AD roolit ja Azure-resurssiroolit – roolit, jotka on määritetty Privileged Identity Management (PIM)</li>
+</ul>
+
+<h4 id="tunnista-tarkistajat-käyttöoikeuksien-tarkistamiseksi">Tunnista tarkistajat käyttöoikeuksien tarkistamiseksi</h4>
+
+<p>Käyttöoikeustarkistuksia luodessaan tekijä päättää, kuka suorittaa tarkistuksen. Käyttöoikeustarkistuksen luoja voi muokata tätä asetusta milloin tahansa, vaikka tarkistus olisi aloitettu. Kolme henkilöä edustaa yleensä arvioijia:</p>
+<ul>
+  <li>Resurssin omistajat – resurssin yrityksen omistaja</li>
+  <li>Yksilöllisesti valittujen edustajien joukko – käyttöoikeuksien tarkistuksen luojan valitsema</li>
+  <li>Loppukäyttäjä – itse varmentaa jatkuvan käytön</li>
+</ul>
+
+<p>Ennen kuin otat käyttöoikeuksien tarkistukset käyttöön, suunnittele organisaatiollesi merkitykselliset tarkistustyypit. Käyttöoikeuksien tarkistuskäytännön luomiseen tarvitaan seuraavat tiedot:</p>
+<ul>
+  <li>Mitä resursseja on tarkistettava?</li>
+  <li>Kenen käyttöoikeuksia tarkistetaan?</li>
+  <li>Kuinka usein tarkistus tulisi tehdä?</li>
+  <li>Kuka suorittaa arvioinnin?</li>
+  <li>Miten arvioijalle ilmoitetaan tarkistamisesta?</li>
+  <li>Mitkä ovat tarkistuksen määräajat?</li>
+  <li>Mitä tapahtuu, jos arvioija ei vastaa ajoissa?</li>
+  <li>Mitä automaattisia toimia tulisi panna täytäntöön?</li>
+  <li>Mitä manuaalisia toimia tehdään tarkistustulosten perusteella?</li>
+  <li>Mitä viestejä tulisi lähettää tehtyjen toimenpiteiden perusteella?</li>
+</ul>
+
+<h3 id="access-reviewin-luominen--vaiheittainen-ohje">Access Reviewin luominen – Vaiheittainen ohje</h3>
+
+<ol>
+  <li>
+    <p><strong>Avaa Azure-portaali</strong><br />
+Siirry: <em>Microsoft Entra ID &gt; Identity Governance &gt; Access Reviews</em></p>
+  </li>
+  <li>
+    <p><strong>Luo uusi tarkistus</strong><br />
+Valitse <strong>“New access review”</strong></p>
+  </li>
+  <li>
+    <p><strong>Valitse tarkistettava kohde (Review type)</strong><br />
+Esim. ryhmä, käyttöpaketti, rooli tai sovellus</p>
+
+    <p><img src="/accessreview1.png" alt="Kuva" /></p>
+  </li>
+  <li>
+    <p><strong>Määritä tarkistajat (Reviews) ja tarkistuksen toistuvuus</strong></p>
+
+    <p>Asetukset:</p>
+    <ul>
+      <li>Multistage review</li>
+      <li>Select Reviewers. Vaihtoehdot:
+        <ul>
+          <li>Group Owner</li>
+          <li>Nimetty henkilö</li>
+          <li>User’s manager</li>
+          <li>Self-review (käyttäjät itse)</li>
+        </ul>
+      </li>
+      <li>Duration (in Days)</li>
+      <li>Review recurrence
+        <ul>
+          <li>One time</li>
+          <li>Weekly</li>
+          <li>Monthly</li>
+          <li>Quarterly</li>
+          <li>Semi-annually</li>
+          <li>Annually</li>
+        </ul>
+      </li>
+      <li>Start Date</li>
+      <li>End
+        <ul>
+          <li>Never</li>
+          <li>End On Specfic date</li>
+          <li>End after number of occurences
+<img src="/accessreview2.png" alt="Kuva" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Toiminta tarkistuksen jälkeen (Settings)</strong>
+Asetukset:
+    <ul>
+      <li>Auto apply results to resource</li>
+      <li>If reviewers don’t respond</li>
+      <li>At end of review, send notification to</li>
+      <li>No sign-in within 30 days</li>
+      <li>User-to-Group Affiliation</li>
+      <li>Justification required</li>
+      <li>Email notifications</li>
+      <li>Reminders</li>
+      <li>Additional content for reviewer email
+<img src="/accessreview3.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+  <li><strong>Tarkista asetukset ja anna access review nimi(Review + Create)</strong>
+    <ul>
+      <li>Anna kuvaava nimi ja kuvaus. Tarkista asetukset ja klikkaa Create painiketta
+<img src="/accessreview4.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+</ol>
+
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Access Review" /><summary type="html"><![CDATA[Access Review]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 
