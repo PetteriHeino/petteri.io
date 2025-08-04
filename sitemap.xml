@@ -1,40 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://www.petteriheino.info/categories/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/tags/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/archives/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/contact/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/projects/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/cv/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/info/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
-<url>
-<loc>https://www.petteriheino.info/posts/</loc>
-<lastmod>2025-02-25T15:50:04+02:00</lastmod>
-</url>
+  <!-- ...lisää url-elementit tähän... -->
 </urlset>
 
