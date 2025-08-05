@@ -1,4 +1,339 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-04T14:59:25+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-05T15:22:45+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Privileged Identity Management (PIM)</title><link href="http://localhost:4000/posts/m365_id_gov_pim/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Privileged Identity Management (PIM)" /><published>2025-08-05T04:00:00+03:00</published><updated>2025-08-05T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_pim</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_pim/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Privileged Identity Management (PIM).</p>
+
+<p>Tämän blogisarjan tarkoitus on antaa kevyt kuvaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa nopeasti kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos myöhemmin haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy syventävä materiaali.</p>
+
+<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
+
+<hr />
+
+<h2 id="mikä-on-privileged-identity-management-pim">Mikä on Privileged Identity Management (PIM)?</h2>
+
+<p>Microsoft Entra Privileged Identity Management (PIM) on Microsoft Entra ID:n (ent. Azure AD) ominaisuus, joka mahdollistaa korkean riskin käyttöoikeuksien hallinnan ja valvonnan. Sen päätarkoituksena on vähentää ylimääräisten oikeuksien väärinkäytön riskiä tarjoamalla <strong>just-in-time (JIT)</strong> -pohjaista käyttöoikeuksien myöntämistä, <strong>hyväksyntäprosesseja</strong>, <strong>käyttöoikeuksien aikarajoituksia</strong> ja <strong>toimintojen auditointia</strong>.</p>
+
+<p>PIM keskittyy erityisesti:</p>
+<ul>
+  <li>Microsoft Entra ID:n (Azure AD) rooleihin (esim. Global Administrator, Security Reader)</li>
+  <li>Azure-resurssien rooleihin (esim. Contributor, Owner, Reader)</li>
+  <li>Privileged Access Groups -ryhmiin, joilla on hallinnollisia rooleja</li>
+  <li>Tunnusten käyttöoikeuksien aktivointipyyntöihin ja niihin liittyviin hyväksymisprosesseihin</li>
+  <li>Käyttöoikeushistorian ja auditointilokien tarkasteluun</li>
+</ul>
+
+<h3 id="miksi-pim">Miksi PIM?</h3>
+
+<p>Perinteinen tapa antaa käyttäjälle pysyvä rooli (esimerkiksi Global Administrator) altistaa ympäristön huomattavalle riskille. Jos tili kaapataan tai väärinkäytetään, sillä voi olla laajamittaiset seuraukset koko ympäristöön. PIM vähentää tätä riskiä tarjoamalla:</p>
+
+<ul>
+  <li><strong>Tilapäiset käyttöoikeudet</strong></li>
+  <li><strong>Hyväksyntä ennen roolin aktivointia</strong></li>
+  <li><strong>Monivaiheinen todennus (MFA)</strong></li>
+  <li><strong>Käyttöperusteiset aktivoinnit</strong></li>
+  <li><strong>Auditointi ja lokitus</strong></li>
+</ul>
+
+<hr />
+
+<h2 id="suunnittele-ja-hallitse-azure-rooleja-pimllä">Suunnittele ja hallitse Azure-rooleja PIM:llä</h2>
+
+<p>Microsoft Entra Privileged Identity Management (PIM) mahdollistaa Azure AD -hallintaroolien (esimerkiksi Global Administrator, User Administrator, Security Reader jne.) hallinnan dynaamisesti ja turvallisesti. Näiden roolien hallinta PIM:llä perustuu tilapäisiin ja valvottuihin käyttöoikeuksiin, jotka käyttäjät voivat aktivoida vain tarvittaessa.</p>
+
+<h3 id="roolien-tyypit-ja-käyttöoikeudet">Roolien tyypit ja käyttöoikeudet</h3>
+
+<p>PIM:ssä hallittavat roolit voivat olla joko:</p>
+
+<ul>
+  <li><strong>Pysyviä (permanent)</strong>: Käyttäjällä on rooli koko ajan.</li>
+  <li><strong>Kelpoisuuteen perustuvia (eligible)</strong>: Käyttäjä voi aktivoida roolin tarpeen mukaan (just-in-time).</li>
+</ul>
+
+<p>Käyttäjän roolikelpoisuus määritetään roolimääritysten (assignments) avulla.</p>
+
+<h3 id="roolien-määrittely-assignments">Roolien määrittely (Assignments)</h3>
+
+<p>Roolin määrityksessä asetetaan:</p>
+
+<ul>
+  <li><strong>Kohderooli</strong> (esim. Global Administrator)</li>
+  <li><strong>Käyttäjä tai ryhmä</strong>, jolle oikeus annetaan</li>
+  <li><strong>Tyyppi:</strong> Pysyvä tai kelpoinen (permanent vs. eligible)</li>
+  <li><strong>Aikaväli:</strong> Voidaan rajoittaa aikavälillä tai määritellä jatkuvaksi</li>
+  <li><strong>Aktivointiehdot:</strong>
+    <ul>
+      <li>Hyväksyntä vaaditaan (kyllä/ei)</li>
+      <li>Hyväksyjän määrittely (esim. toinen ylläpitäjä)</li>
+      <li>MFA vaaditaan</li>
+      <li>Aktivointiviive (esim. 5 minuuttia odotusaikaa)</li>
+      <li>Aktivointisyyn kirjoittaminen vaaditaan</li>
+      <li>Aktivointi vain tietyissä käyttöaikaikkunoissa (päivä/iltayö jne.)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="roolien-hallintatehtävät">Roolien hallintatehtävät</h3>
+
+<p>Entra ID -rooleja PIM:ssä hallitseva järjestelmänvalvoja voi:</p>
+
+<p>Tarkastella nykyisiä kelpoisuus- ja aktiivisia rooleja</p>
+
+<ul>
+  <li>Lisätä tai poistaa roolimäärityksiä</li>
+  <li>Asettaa roolien aktivointipolitiikan (MFA, hyväksyntä, aikarajat)</li>
+  <li>Hyväksyä tai hylätä roolin aktivointipyyntöjä</li>
+  <li>Seurata roolien käyttöä auditointilokien kautta</li>
+</ul>
+
+<h3 id="esimerkkirooleja-hallittavaksi-pimllä">Esimerkkirooleja hallittavaksi PIM:llä</h3>
+
+<ul>
+  <li><strong>Global Administrator</strong> – Korkeimmat oikeudet, aina PIM:n kautta suositeltava</li>
+  <li><strong>Privileged Role Administrator</strong> – Hallitsee PIM:iä, voi hyväksyä pyyntöjä</li>
+  <li><strong>User Administrator</strong> – Hallinnoi käyttäjiä ja ryhmiä</li>
+  <li><strong>Security Administrator</strong> – Näkee ja hallinnoi tietoturva-asetuksia</li>
+</ul>
+
+<h2 id="esimerkki-1-azure-roolin-määrittäminen">Esimerkki 1. Azure-roolin määrittäminen</h2>
+
+<p>Tässä esimerkissä PIMillä luodaan käyttäjälle Security Admin rooli assignment Azure Subscriptioniin</p>
+
+<ol>
+  <li>Kirjaudu <strong><em>Azure-portaaliin</em></strong> (portal.azure.com) tilillä, jolla on käyttöoikeuksien järjestelmänvalvojan tai omistajan roolin oikeudet.</li>
+  <li>Etsi Privileged Identity Management -palvelu ja valitse sitten Manage/Azure Resources kuvan mukaisesti.</li>
+  <li>Valitse resurssi, jota haluat hallita PIM:llä, esimerkissä Azure-tilaus.
+<img src="/pim1.png" alt="Kuva" /></li>
+  <li>Klikkaa Manage Resource painiketta.</li>
+  <li>Valitse Manage/Roles.
+<img src="/pim2.png" alt="Kuva" /></li>
+  <li>Klikkaa yläriviltä “+Add Assignments” -painiketta.</li>
+  <li>Valitse rooli (esimerkiksi Security Admin) ja määritä se sitten yksittäiselle käyttäjälle tai ryhmälle kuvan mukaisesti.</li>
+</ol>
+
+<p><img src="/pim3.png" alt="Kuva" /></p>
+<ol>
+  <li>Tee tästä tehtävästä joko kelvollinen tai aktiivinen organisaation tarpeiden mukaan ja määritä tehtävän alkamis- ja päättymispäivä kuvan 4-40 mukaisesti.
+<img src="/pim4.png" alt="Kuva" /></li>
+  <li>Lopuksi klikkaa Assign painiketta</li>
+  <li>Käyttäjä saa sähköpostiin ilmoituksen uudesta roolistaan</li>
+  <li>Koska käyttäjälle ei tehty active assignmentia, niin hänen täytyy käydä aktivoimassa assignment PIM:ssä oikeuksia tarvitseassaan
+    <ul>
+      <li>Käyttäjä kirjautuu Azuren hallintaportaaliin</li>
+      <li>Etsii PIM hallinnan</li>
+      <li>Valitsee Tasks/My Roles</li>
+      <li>Koska esimerkissä assignment tehtiin Azure Subscriptioniin, niin valitaan Activate/Azure Resources</li>
+      <li>Action kolumnista klikataan Activate valintaa ja suoritetaan aktivointiin liittyvät toiminteet mitä rooliryhmän aktivointiin liittyvissä asetuksissa on määritelty.
+<img src="/pim100.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="esimerkki-2---roolin-asetusten-säätäminen-pimissä">Esimerkki 2. - Roolin asetusten säätäminen PIMissä</h2>
+
+<p>Tässä esimerkissä määritetään Entra Roles-rooliasetukset</p>
+
+<ol>
+  <li>Kirjaudu <strong>Azure-portaaliin</strong> käyttäjätilillä (portal.azure.com), jolla on Privileged Role Administrator roolin käyttöoikeudet.</li>
+  <li>Etsi Privileged Identity Management ylähakupalkin avulla.</li>
+  <li>Valitse Manage-osiossa olevat Microsoft Entra Roloses -roolit.</li>
+  <li>Valitse seuraavaksi Settings-vaihtoehto kuvan mukaisesti.
+<img src="/pim5.png" alt="Kuva" /></li>
+  <li>Valitse rooli, jonka asetukset haluat määrittää (esimerkissä User Administrator)</li>
+  <li>Valitse seuraavaksi Edit muokataksesi rooliasetuksia.
+<img src="/pim6.png" alt="Kuva" /></li>
+  <li>Tarkista aktivointiin liittyvät kuvassa näkyvät asetukset ja muokkaa mikäli tarpeen.
+<img src="/pim67.png" alt="Kuva" /></li>
+  <li>Valitaan Assignment välilehti. Määritysasetusten avulla voit määrittää erilaisia vaihtoehtoja Active ja Elogible Assignmenteille, kuten alla olevassa kuvassa näkyy.
+<img src="/pim7.png" alt="Kuva" /></li>
+  <li>Valitse Notification välilehti ja muokkaa oletusasetuksia mikäli tarpeen.
+<img src="/pim8.png" alt="Kuva" /></li>
+  <li>Jos teit muutoksia oletus asetuksiin niin klikkaa lopuksi Päivitä painiketta tallentaaksesi määritysasetukset.</li>
+</ol>
+
+<p>##Hyvä käytäntö</p>
+
+<blockquote>
+  <p>Vältä pysyvien roolien käyttöä. Anna käyttäjille vain kelpoisuus rooliin ja vaadi hyväksyntä, MFA ja aktivointiperuste. Tämä vähentää riskejä huomattavasti.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="suunnittele-ja-hallitse-azure-resursseja-pimllä">Suunnittele ja hallitse Azure-resursseja PIM:llä</h2>
+
+<p>PIM ei rajoitu vain Entra ID -rooleihin — sillä voi hallita myös <strong>Azure-resurssien käyttöoikeuksia</strong>, kuten virtuaalikoneita, tietokantoja, tallennustilejä tai resurssiryhmiä. Tämä tehdään hallitsemalla <strong>Azure roolipohjaisen käyttöoikeusmallin (Azure RBAC)</strong> rooleja juuri oikeaan aikaan (Just-In-Time, JIT) -periaatteella.</p>
+
+<h3 id="mikä-muuttuu-pimllä">Mikä muuttuu PIM:llä?</h3>
+<p>Ilman PIM:iä Azure-resurssien roolit (esim. Owner, Contributor, Reader) annetaan käyttäjälle pysyvästi. PIM mahdollistaa roolien myöntämisen <strong>tilapäisesti</strong>, hyväksynnän kautta ja tarvittaessa monivaiheisella todennuksella.</p>
+
+<h3 id="tuetut-kohteet">Tuetut kohteet</h3>
+
+<ul>
+  <li><strong>Hallintaryhmät (Management groups)</strong></li>
+  <li><strong>Tilaukset (Subscriptions)</strong></li>
+  <li><strong>Resurssiryhmät (Resource groups)</strong></li>
+  <li><strong>Yksittäiset resurssit (esim. VM, SQL, Storage)</strong></li>
+</ul>
+
+<h3 id="roolimääritysten-asetukset-assignments">Roolimääritysten asetukset (Assignments)</h3>
+
+<p>Samalla tavalla kuin Entra ID -rooleissa, määritetään:</p>
+
+<ul>
+  <li><strong>Käyttäjä/ryhmä</strong> ja rooli (esim. Contributor tilaukseen X)</li>
+  <li><strong>Kelpoisuus (eligible)</strong> vs. <strong>aktiivisuus (active)</strong></li>
+  <li><strong>Aikajakso</strong>, jolloin käyttöoikeus on voimassa</li>
+  <li><strong>Aktivointipolitiikka</strong>, sisältäen:
+    <ul>
+      <li>Hyväksynnän vaatiminen</li>
+      <li>MFA:n käyttö</li>
+      <li>Aktivointiviive</li>
+      <li>Aktivointisyyn kirjoittaminen</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="azure-resurssiroolien-hallintatehtävät">Azure-resurssiroolien hallintatehtävät</h3>
+
+<ul>
+  <li>Tarkastellaan ja määritellään PIM-hallittuja rooleja tilauksissa tai resurssiryhmissä</li>
+  <li>Määritetään aktivointipolitiikat: hyväksyntä, MFA, aikarajat</li>
+  <li>Hyväksytään tai hylätään aktivointipyyntöjä</li>
+  <li>Tarkastellaan käyttöhistoriaa ja auditointeja</li>
+  <li>Käytetään automaattisia raportteja oikeuksien käyttötiheydestä</li>
+</ul>
+
+<h3 id="tyypillisiä-rooleja-pim-käyttöön-azure-resursseilla">Tyypillisiä rooleja PIM-käyttöön Azure-resursseilla</h3>
+
+<ul>
+  <li><strong>Owner</strong> – Hallitsee kaikkea resurssissa</li>
+  <li><strong>Contributor</strong> – Tekee muutoksia, mutta ei hallitse käyttöoikeuksia</li>
+  <li><strong>Reader</strong> – Näkee resurssit, mutta ei voi muokata</li>
+  <li><strong>User Access Administrator</strong> – Voi myöntää käyttöoikeuksia muihin rooleihin</li>
+</ul>
+
+<h3 id="esimerkki">Esimerkki</h3>
+
+<p>Kehitystiimin jäsen tarvitsee Contributor-oikeuden testiresurssiryhmään. PIM:n avulla jäsenelle määritetään kelpoisuus, joka vaatii:</p>
+
+<ul>
+  <li>Aktivointipyynnön</li>
+  <li>Hyväksynnän esimieheltä</li>
+  <li>MFA-varmennuksen</li>
+  <li>Enintään 4 tunnin oikeuden</li>
+</ul>
+
+<hr />
+
+<h2 id="pim-for-groups">PIM for Groups</h2>
+
+<p>PIM for Groups antaa mahdollisuuden hallita ryhmän jäsenyyttä tilapäisesti. Käyttäjät voidaan määrittää eligible-jäseniksi, jotka voivat aktivoida jäsenyyden tarvittaessa:</p>
+
+<ul>
+  <li>Jäsenyys on määräaikainen ja voidaan asettaa automaattisesti päättymään.</li>
+  <li>Aktivointi voidaan vaatia hyväksyntää tai perusteluja.</li>
+  <li>Kaikki tapahtumat kirjautuvat auditointilokeihin.</li>
+</ul>
+
+<h3 id="pimn-roolit-ryhmien-hallinnassa">PIM:n roolit ryhmien hallinnassa</h3>
+
+<p>PIM voi hallita kahta eri asiaa ryhmiin liittyen:</p>
+
+<ol>
+  <li><strong>Ryhmän jäsenyydet</strong> – PIM hallitsee tilapäisesti, ketkä käyttäjät voivat olla ryhmän jäseniä.</li>
+  <li><strong>Ryhmän assignment rooleihin</strong> – PIM hallitsee myös sitä, milloin ja miten itse ryhmä liitetään (assigned) rooliin (role-assignable groups).</li>
+</ol>
+
+<p>Näin PIM mahdollistaa joustavan ja turvallisen pääsynhallinnan sekä ryhmän jäsenten että rooliliittymien osalta.</p>
+
+<h3 id="ryhmien-ja-roolien-välinen-suhde">Ryhmien ja roolien välinen suhde</h3>
+
+<p>Microsoft Entra ID:ssä voidaan luoda <strong>role-assignable groups</strong> (aiemmin Privileged Access Groups) – ryhmiä, jotka voidaan liittää suoraan useisiin eri hallintaroolien rooleihin, kuten esimerkiksi:</p>
+
+<ul>
+  <li>Global Administrator</li>
+  <li>Exchange Administrator</li>
+  <li>Security Administrator</li>
+  <li>Ja muihin moniin Microsoft Entra -rooleihin</li>
+</ul>
+
+<p>Yksi role-assignable group voi siis olla liitettynä useisiin eri rooleihin samanaikaisesti.</p>
+
+<h3 id="miten-pim-for-groups-hallitsee-ryhmäjäsenyyksiä">Miten PIM for Groups hallitsee ryhmäjäsenyyksiä?</h3>
+
+<ol>
+  <li><strong>Tilapäinen jäsenyys:</strong> Käyttäjä ei ole suoraan ryhmän jäsen, vaan määritellään eligible-jäseneksi.</li>
+  <li><strong>Itsenäinen aktivointi:</strong> Käyttäjä voi aktivoida jäsenyyden itsepalveluna esimerkiksi työnsä ajaksi.</li>
+  <li><strong>Hyväksyntä:</strong> Aktivointi voidaan vaatia hyväksyntää esimieheltä tai ryhmän omistajalta.</li>
+  <li><strong>Aikarajoitus:</strong> Jäsenyys päättyy automaattisesti määritellyn ajan jälkeen.</li>
+  <li><strong>Auditointi:</strong> Kaikki jäsenyyteen liittyvät tapahtumat tallentuvat jäljitettävästi.</li>
+</ol>
+
+<h3 id="tuetut-ryhmätyypit">Tuetut ryhmätyypit</h3>
+
+<ul>
+  <li>Office 365 -ryhmät (Microsoft 365 -ryhmät)</li>
+  <li>Turvaryhmät (Security groups)</li>
+</ul>
+
+<p>Ei kuitenkaan dynaamisia ryhmiä eikä on-premises-synkronoituja ryhmiä.</p>
+
+<h3 id="esimerkki-rooliryhmän-jäsenyydet-pim-ryhmän-kautta">Esimerkki: Rooliryhmän jäsenyydet PIM ryhmän kautta</h3>
+
+<h4 id="1-luodaan-role-assignable-group">1. Luodaan Role-assignable group</h4>
+
+<ol>
+  <li>Avaa selain ja mene osoitteeseen: <a href="https://entra.microsoft.com">https://entra.microsoft.com</a></li>
+  <li>Valitse vasemmasta valikosta <strong>Entra ID &gt; Groups</strong></li>
+  <li>Klikkaa <strong>+ New group</strong></li>
+  <li>Valitse:
+    <ul>
+      <li><strong>Group type</strong>: Security</li>
+      <li><strong>Group name</strong>: esim. <code class="language-plaintext highlighter-rouge">PIM-PAG-GlobalAdmins</code></li>
+      <li><strong>Group description</strong>: esim. <code class="language-plaintext highlighter-rouge">Privileged Access Group for Global Admin role</code></li>
+      <li><strong>Membership type</strong>: Assigned (voit myös käyttää Dynamic-mallia)</li>
+      <li><strong>Microsoft Entra roles can be assigned to the group</strong>: Yes
+<img src="/pim9.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+  <li>Klikkaa <strong>Create</strong></li>
+</ol>
+
+<h4 id="2-ota-ryhmä-käyttöön-pim-for-groupsissa">2. Ota ryhmä käyttöön PIM for Groupsissa</h4>
+
+<ol>
+  <li>Siirry Entra Admin Centerissä ID Governance/Privileged Identity Management osioon ja valitse Manage/Groups</li>
+  <li>Klikkaa ylävalikosta <strong>Discover groups</strong></li>
+  <li>Valitse ryhmälistasta äskettäin luotu ryhmä ja sitten klikkaa ylävalikosta <strong>Manage groups</strong> ja klikkaa OK onboard kysymykseen <img src="/pim10.png" alt="Kuva" /></li>
+  <li>Klikkaa <strong>Save</strong></li>
+</ol>
+
+<p>Tämän jälkeen ryhmä näkyy myös PIM:n “Privileged access groups” -kohdassa.</p>
+
+<h4 id="3-liitä-ryhmä-hallintaryhmään-assignments">3. Liitä ryhmä hallintaryhmään (assignments)</h4>
+
+<ol>
+  <li>Siirry Entra Admin portaalissa kohtaan Roles &amp; Admins</li>
+  <li>Hae hakukentässä rooliryhmää mihin haluat tehdä assignmentin ja klikkaa rooliryhmää</li>
+  <li>Klikkaa “+Add assignments” painiketta ylävalikosta</li>
+  <li>Membership välilehden asetukset:
+    <ul>
+      <li><strong>Select Role</strong>: valitse rooliryhmä</li>
+      <li><strong>Select Members</strong>: valitse aikaisemmin luotu ryhmä listasta
+<img src="/pim13.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+  <li>Setting välilehden asetukset:
+    <ul>
+      <li><strong>Assignment type</strong>: Active</li>
+    </ul>
+
+    <p><img src="/pim14.png" alt="Kuva" /></p>
+  </li>
+  <li>Klikkaa <strong>Assign</strong></li>
+</ol>
+
+<h2 id="pim-auditointi-ja-raportit">PIM auditointi ja raportit</h2>
+
+<p>Kirjoitan mahdollisesti myöhemmin tästä osuudesta, kun omassa tenantissani on dataa, mitä käyttää esimerkkinä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Privileged Identity Management" /><category term="PIM" /><summary type="html"><![CDATA[Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn osa-alueeseen Access Review.</p>
 

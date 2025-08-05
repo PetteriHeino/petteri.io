@@ -1,5 +1,13 @@
 [
   {
+    "title": "Entra ID Identity Governance - Privileged Identity Management (PIM)",
+    "url": "/posts/m365_id_gov_pim/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Identity Governance, Privileged Identity Management, PIM",
+    "date": "2025-08-05 04:00:00 +0300",
+    "content": "Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group"
+  },
+  {
     "title": "Entra ID Identity Governance - Entitlement Management osa 2",
     "url": "/posts/m365_id_gov_entitlement_management2/",
     "categories": "M365",
