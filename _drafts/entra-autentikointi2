@@ -1,0 +1,104 @@
+---
+title: "Autentikoinnin suunnittelu Microsoft Entra ID -ympäristössä"
+date: 2025-08-05
+categories: [Microsoft Entra, Identiteetinhallinta]
+tags: [autentikointi, suunnittelu, Zero Trust, Entra ID, identiteetti]
+---
+
+Microsoft Entra ID -ympäristön autentikointistrategia ei synny vahingossa – se suunnitellaan. Autentikoinnin suunnittelu on kriittinen vaihe, jossa luodaan perusta käyttäjien, laitteiden ja sovellusten turvalliselle tunnistautumiselle.
+
+Tässä kirjoituksessa käsitellään mitä suunnitteluvaiheessa kannattaa huomioida, jotta valitut autentikointimenetelmät tukevat organisaation tietoturvapolitiikkaa ja käyttötarpeita.
+
+---
+
+## 🎯 Tavoite
+
+Tämän kirjoituksen jälkeen ymmärrät:
+
+- Mitä asioita tulee huomioida autentikoinnin suunnittelussa
+- Miten Zero Trust -malli ohjaa päätöksentekoa
+- Miten käyttäjä- ja laiteprofiilit vaikuttavat valittaviin menetelmiin
+- Millä tavalla valmistaudutaan monivaiheiseen autentikointiin ja itsepalvelutoimintoihin
+- Mitä lisenssivaatimuksia tulee ottaa huomioon
+
+---
+
+## 🧱 Suunnittelun kulmakivet
+
+### 1. **Zero Trust -lähestymistapa**
+Zero Trust -malli perustuu periaatteeseen _"älä luota mihinkään, varmista kaikki"_. Autentikoinnin suunnittelussa tämä tarkoittaa:
+
+- Jokainen kirjautuminen validoidaan erikseen
+- Vaatimus vahvalle todennukselle riippumatta siitä, mistä käyttäjä kirjautuu
+- Ehdollisen pääsyn (Conditional Access) hyödyntäminen
+
+### 2. **Käyttäjä- ja laiteprofiilit**
+Eri käyttäjäryhmät vaativat erilaisia todennustapoja:
+
+| Käyttäjäryhmä | Suositus |
+|---------------|----------|
+| Johto, hallinto | Vahva MFA + FIDO2 tai Authenticator |
+| Loppukäyttäjät | MFA + SSPR |
+| Ulkoiset käyttäjät (B2B) | Kevyempi MFA tai OTP sähköpostiin |
+| Palvelutilit / scriptit | Client secret, certificate tai managed identity |
+
+Sama pätee laitteisiin: hallitut yrityslaitteet voidaan tunnistaa automaattisesti, kun taas henkilökohtaiset laitteet saattavat vaatia lisätunnistautumista.
+
+---
+
+## 🛠️ Valittavat autentikointimenetelmät
+
+Microsoft Entra tukee useita todennusmenetelmiä, ja suunnitteluvaiheessa tulisi arvioida:
+
+- **Microsoft Authenticator**: helppo ja laajasti tuettu
+- **FIDO2/passkeys**: vahva ja salasanoja korvaava
+- **Tilapäinen pääsykoodi (TAP)**: uusi käyttäjä tai palautustilanne
+- **OAuth-tunnukset**: sovellusintegraatioita varten
+- **Sertifikaattipohjainen autentikointi**: erityisesti korkean turvatason ympäristöihin
+
+📌 **Huomio:** Kaikki todennusmenetelmät eivät ole käytettävissä ilman lisensointia (P1/P2). Esimerkiksi FIDO2 ja sertifikaattitodennus vaativat usein Entra ID P1 -lisenssin.
+
+---
+
+## 🔐 MFA ja ehdollinen pääsy
+
+MFA on autentikoinnin kivijalka, mutta pelkkä "pakota kaikille MFA" ei ole paras käytäntö.
+
+Suunnitteluvaiheessa tulisi:
+
+- Määritellä **MFA-käytännöt ehdollisella pääsyllä** (esim. vain ulkoa, tai riskipohjaisesti)
+- Määrittää fallback-menetelmät (esim. SSPR tai TAP)
+- Arvioida riskit eri kirjautumisskenaarioissa
+
+---
+
+## 🔄 Itsepalvelu ja käyttäjätuki
+
+**SSPR** eli Self-Service Password Reset keventää tukikuormaa, mutta vaatii huolellisen suunnittelun:
+
+- Varmista, että käyttäjät ovat rekisteröineet todennustietonsa
+- Varmista, että palautusmenetelmät ovat turvallisia ja luotettavia
+- SSPR hyödyntää samoja todennustapoja kuin MFA yhdistetyn rekisteröintikokemuksen kautta, joka on oletuksena käytössä uusissa ympäristöissä. Tarkista, että tämä asetus on organisaatiossasi aktivoitu
+
+---
+
+## 🪪 Tietoturvapolitiikat ja lisensointi
+
+| Ominaisuus | Vapaa | P1 | P2 |
+|------------|-------|----|----|
+| MFA (perustaso) | ✅ | ✅ | ✅ |
+| Ehdollinen pääsy (CA) | ❌ | ✅ | ✅ |
+| SSPR | ✅ | ✅ | ✅ |
+| FIDO2-autentikointi | ❌ | ✅ | ✅ |
+| Risk-based CA | ❌ | ❌ | ✅ |
+| Identity Protection | ❌ | ❌ | ✅ |
+
+➡️ **Vinkki:** Käytä [Microsoftin virallista lisenssivertailutaulukkoa](https://learn.microsoft.com/en-us/entra/fundamentals/licensing) suunnittelun tukena.
+
+---
+
+## ✅ Yhteenveto
+
+Autentikoinnin suunnittelu Microsoft Entra -ympäristössä vaatii teknisen ymmärryksen lisäksi kykyä hahmottaa käyttäjä- ja riskiprofiilit. Hyvin suunniteltu strategia mahdollistaa tehokkaan ja turvallisen käyttöönoton – ja säästää aikaa sekä tukikustannuksia myöhemmin.
+
+Seuraavassa osassa keskitymme modernien autentikointimenetelmien käyttöönottoon: **Microsoft Authenticator, FIDO2, OAUTH, sertifikaattipohjainen tunnistus ja tilapäiset pääsykoodit**.

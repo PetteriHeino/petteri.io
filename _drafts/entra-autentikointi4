@@ -1,0 +1,90 @@
+---
+title: "Tilien suojaaminen ja istuntojen hallinta Microsoft Entrassa"
+date: 2025-08-05
+categories: [Microsoft Entra, Identiteetinhallinta]
+tags: [tilin esto, istunnon mitätöinti, Entra Password Protection, break-glass]
+---
+
+Microsoft Entra tarjoaa useita työkaluja käyttäjien istuntojen hallintaan, tilien suojaamiseen ja tietoturvauhkien torjuntaan. Tässä kirjoituksessa käymme läpi keskeiset toiminnot ja niiden käyttöönoton askel askeleelta.
+
+---
+
+## ⛔ Tilin estäminen (Disable user account)
+
+Kun käyttäjä poistuu organisaatiosta tai tiliä epäillään kompromissista, **tilin välitön estäminen** on tärkeä toimenpide.
+
+### 🔧 Näin estät käyttäjätilin:
+- `Microsoft Entra admin center > Users > valitse käyttäjä`
+- Klikkaa **"Block sign-in"** ja valitse "Yes"
+
+Tämä estää kaikki kirjautumisyritykset (myös sessiot, jotka vaativat uudelleenautentikointia). Tilin esto **ei poista käyttäjää** tai sen postilaatikkoa.
+
+---
+
+## 🔄 Istunnon mitätöinti (Revoke user sessions)
+
+Jos epäillään, että käyttäjätili on vaarantunut tai kirjautumissessio on avoinna riskialttiissa ympäristössä (esim. julkinen kone), voidaan kaikki aktiiviset istunnot mitätöidä.
+
+### 🔧 Näin mitätöit istunnot:
+- `Microsoft Entra admin center > Users > valitse käyttäjä`
+- Klikkaa **"Revoke sessions"**  
+  → Tämä pakottaa käyttäjän kirjautumaan uudelleen kaikkiin palveluihin.
+
+📌 **Huom:** Voi kestää jopa 15 minuuttia ennen kuin istunnot päättyvät.
+
+---
+
+## 🔐 Microsoft Entra Password Protection
+
+Microsoft Entra Password Protection estää käyttäjiä asettamasta heikkoja tai helposti arvattavia salasanoja. Se toimii sekä pilvessä että hybrid AD -ympäristöissä.
+
+### 🟢 Hyödyt
+- Estää yleiset salasanat (esim. *123456*, *CompanyName2024*)
+- Organisaation oma estolista
+- Toimii myös paikallisessa AD-ympäristössä agentin avulla
+
+### 📋 Lisenssivaatimus
+- Sisältyy Entra ID P1 ja P2 -tasoon
+
+### 🔧 Pilvikäyttöönotto
+- `Microsoft Entra admin center > Security > Authentication methods > Password protection`
+- Määritä asetukset:
+  - **Lockout threshold** (esim. 10 epäonnistunutta yritystä)
+  - **Custom banned passwords** -lista
+  - **Enforce mode**: päällä vai testitilassa
+
+### 🔧 Paikallinen AD
+- Asenna **Password Protection Proxy** ja **DC-agentti**
+- Määritä GPO-asetukset → salasanakäytännöt ohjautuvat Microsoftin palvelusta
+
+📌 Vaatimuksena on Azure AD Connect ja yhteys Microsoftin pilvipalveluun.
+
+---
+
+## 🆘 Break-glass -tilit (hätäkäyttötilit)
+
+Break-glass-tilit ovat **monivarmennuksen ja ehdollisen pääsyn ulkopuolella olevia hätätilanteita varten luotuja ylläpitotilejä**.
+
+### 🛡️ Suositukset
+- Vähintään kaksi tiliä
+- Ei MFA:ta tai Conditional Access -rajoituksia (tai erikoissääntö, joka sallii kirjautumisen ilman niitä)
+- Vahva salasana + tarkka valvonta
+
+### 🔧 Konfigurointi
+1. Luo pilviylläpitotili (`Global Administrator`)
+2. Älä liitä tiliä mihinkään Conditional Access -politiikkaan
+3. Aseta pitkä ja monimutkainen salasana
+4. Ota kirjautumisvalvonta käyttöön (sign-in logs, alertit)
+
+📌 **Monitoroi:** Luo hälytys, jos tilillä kirjaudutaan sisään!
+
+---
+
+## ✅ Yhteenveto
+
+Tilien hallinta ja istuntojen hallinta ovat perustason mutta kriittisiä toimenpiteitä organisaation tietoturvan ylläpitämisessä. Näiden toimien avulla voidaan vastata nopeasti uhkiin, minimoida tietovuotoriski ja suojata kriittiset järjestelmät.
+
+---
+
+Seuraavassa osassa tarkastelemme hybridiympäristön erityispiirrettä: **Microsoft Entra Kerberos -autentikoinnin käyttöönottoa ja roolia pilviresurssien hallinnassa.**
+

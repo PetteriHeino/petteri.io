@@ -1,0 +1,104 @@
+---
+title: "SSPR, MFA ja Windows Hello for Business – käyttöönotto ja hallinta"
+date: 2025-08-05
+categories: [Microsoft Entra, Autentikointi]
+tags: [SSPR, MFA, Windows Hello for Business, Entra ID, turvallisuus]
+---
+
+Tässä kirjoituksessa keskitymme kolmeen Microsoft Entra -ympäristön tukevan autentikoinnin elementtiin: **itsepalautettava salasana (SSPR)**, **monivaiheinen todennus (MFA)** ja **Windows Hello for Business (WHfB)**. Kaikki nämä parantavat merkittävästi käyttäjien turvallisuutta ja käyttökokemusta – oikein suunniteltuna ja toteutettuna.
+
+---
+
+## 🔄 Self-Service Password Reset (SSPR)
+
+**SSPR** mahdollistaa käyttäjien palauttaa salasanansa itse, ilman IT-tukea. Oikein toteutettuna se vähentää palvelupyyntöjä ja nopeuttaa käyttäjien ongelmatilanteiden ratkaisua.
+
+### 🟢 Hyödyt
+- Tukikuorman keveneminen
+- Käyttäjäystävällinen ja nopea palautus
+- Käytettävissä selaimella miltä tahansa laitteelta
+
+### 📋 Lisenssivaatimus
+- Saatavilla kaikilla Entra ID -tasolla (myös Free)
+
+### 🔧 Käyttöönotto
+1. `Entra > Protection > Password reset > Properties`
+2. Aktivoi `Self Service Password Reset` ja valitse kohderyhmä (All / pilotti)
+3. Määritä tarvittavat todennustavat (esim. puhelin, sähköposti, sovellus)
+4. Ota käyttöön yhdistetty rekisteröintikokemus
+
+📌 **Muista:** Testaa toiminnallisuus itse osoitteessa `https://aka.ms/sspr` tai `https://passwordreset.microsoftonline.com`.
+
+---
+
+## 🔐 Tenant-wide Multi-Factor Authentication (MFA)
+
+**MFA** tuo lisäturvakerroksen kirjautumisiin. Microsoft Entra tukee useita tapoja hallita MFA:ta:
+
+- **Legacy per-user MFA** (vanhentunut)
+- **Tenant-wide security defaults**
+- **Conditional Access (ehdollinen pääsy)**
+
+### ✅ Suositeltu lähestymistapa
+> Käytä **ehdollista pääsyä (Conditional Access)** MFA:n hallintaan. Tämä mahdollistaa joustavan, tilanteeseen perustuvan todennuksen.
+
+### 🔧 Security defaults (Tenant-wide MFA)
+- Helpoin tapa ottaa MFA käyttöön kaikille
+- `Entra > Properties > Manage security defaults`
+- Aktivoi "Enable security defaults"
+
+📌 Rajoitettu hallinta – ei sovellu edistyneisiin tarpeisiin
+
+### 🔧 Conditional Access -pohjainen MFA
+- `Entra > Protection > Conditional Access`
+- Luo uusi käytäntö (esim. "MFA for all cloud apps")
+- Määritä käyttäjäryhmä, sovellukset ja "Grant access > Require MFA"
+
+### 🛑 Legacy per-user MFA
+- `Microsoft 365 admin center > Active users > Multi-factor authentication`
+- Ei suositella enää – siirtymä CA-pohjaiseen malliin
+
+---
+
+## 💻 Windows Hello for Business (WHfB)
+
+**WHfB** on salasanoja korvaava kirjautumistapa, joka yhdistää **laitetunnistuksen ja biometriset tunnisteet (tai PIN-koodin)** turvalliseksi todennusmekanismiksi.
+
+### 🟢 Käyttötapaukset
+- Windows 10/11 -laitteet Azure AD Join -tilassa
+- Hybridikäyttöönotto (AD + Entra)
+
+### 📋 Lisenssivaatimus
+- Entra ID Free riittää peruskäyttöön
+- Lisäominaisuudet edellyttävät P1 tai P2
+
+### 🔧 Käyttöönotto pilviympäristössä
+1. `Intune > Endpoint security > Account protection > Create policy`
+2. Valitse kohderyhmä ja määritä WHfB-politiikat (PIN, biometria, TPM)
+3. Varmista, että laitteet ovat **Azure AD Join**-tilassa ja hallittuna Intunessa
+
+### 🔧 Hybridikäyttöönotto (lisävaatimuksia)
+- AD Connect (hybrid sync)
+- WHfB-konfigurointi ryhmäkäytännöillä tai Intune-hybridikäytännöillä
+- Sertifikaatti-infrastruktuuri vaaditaan joissain skenaarioissa
+
+📌 WHfB tukee **passwordless-mallia**, ja se voidaan yhdistää myös FIDO2-avainkäyttöön.
+
+---
+
+## 🧾 Yhteenvetotaulukko
+
+| Toiminto | Hyödyt | Vaatii P1/P2? | Suositeltu hallintamalli |
+|----------|--------|---------------|---------------------------|
+| SSPR | Tukikuorman keveneminen | Ei | Yhdistetty rekisteröinti |
+| MFA | Lisäturva kirjautumisiin | Ei / P1 (CA) | Conditional Access |
+| WHfB | Passwordless, biometria | Ei / P1 (laajemmin) | Intune + Azure AD Join |
+
+---
+
+## ✅ Yhteenveto
+
+SSPR, MFA ja Windows Hello for Business täydentävät Entra ID:n autentikointikokonaisuutta tarjoamalla sekä turvaa että helppokäyttöisyyttä. Näiden ominaisuuksien oikein suunniteltu käyttöönotto parantaa turvallisuutta merkittävästi ilman, että käyttäjäkokemus kärsii.
+
+Seuraavassa osassa siirrymme tilien hallintaan ja suojaamiseen: **miten käyttäjien istunnot mitätöidään, tilit poistetaan käytöstä ja salasanojen suojausta parannetaan.**
+

@@ -1,0 +1,141 @@
+---
+title: "Modernit autentikointimenetelmät Microsoft Entra -ympäristössä"
+date: 2025-08-05
+categories: [Microsoft Entra, Autentikointi]
+tags: [Authenticator, FIDO2, OAUTH, TAP, sertifikaatit, Entra ID]
+---
+
+Moderni autentikointi on paljon enemmän kuin käyttäjätunnus ja salasana. Microsoft Entra tukee useita nykyaikaisia tunnistautumismenetelmiä, jotka parantavat turvallisuutta ja käyttäjäkokemusta. Tässä osassa tarkastelemme Microsoft Entra ID:n tukemia kehittyneitä todennusvaihtoehtoja – niiden käyttötapauksia ja käyttöönottoa.
+
+---
+
+## 🔐 Microsoft Authenticator
+
+**Microsoft Authenticator** on mobiilisovellus, joka tukee:
+
+- Push-ilmoituksia
+- Numeron vastaavuutta (number matching)
+- Salasanatonta kirjautumista (passwordless)
+
+### 🟢 Käyttötapaukset
+- Ensisijainen MFA-menetelmä mobiililaitteilla
+- Passwordless toteutus ilman FIDO2-laitteita
+
+### 🔧 Käyttöönotto (peruskäyttö)
+1. Varmista, että **Authenticator-sovellus** on sallittu menetelmänä:
+   `Entra > Authentication methods > Policies`
+2. Mikäli Enabled sarakeessa NO niin aktivoi `Microsoft Authenticator` ja valitse kohderyhmä (All users / pilottiryhmä)
+3. Ohjeista käyttäjiä lataamaan sovellus ja rekisteröimään se yhdistetyssä rekisteröinnissä
+
+### 🔒 Passwordless-konfigurointi
+- Vaatimus: Entra ID P1
+- Lisää erikseen Authenticator-menetelmäksi *Passwordless sign-in*
+
+---
+
+## 🪪 FIDO2-avaimet (passkeys)
+
+- Microsoft Entra mahdollistaa passkey (FIDO2) -autentikoinnin suoraan Microsoft Authenticator -sovelluksessa, mikä tarjoaa biometrisen tai PIN-pohjaisen kirjautumisen ilman salasanaa.
+- Passkey-menetelmät ovat **phishing-resistenttejä**, laitesidonnaisia ja turvallisempia kuin perinteiset push-ilmoitukset tai kertakäyttökoodit (OTP).
+- Tukee **fyysisiä turvallisuusavaimia** (esim. YubiKey) tai **integroituja biometrisiä tunnisteita** (esim. Windows Hello, sormenjälkitunnistin).
+
+
+### 🟢 Käyttötapaukset
+- Salasanoista luopuminen
+- Korkean suojaustason käyttäjät ja pääsynvalvojat
+
+## Vaatimukset
+
+- Tenantissa pitää olla Multi-Factor Authentication (MFA) käytössä (Azure AD Premium P1/P2).
+- Laitteissa tulee olla iOS 17 tai uudempi, tai Android 14 tai uudempi.
+- Cross-device -rekisteröinti vaatii Bluetooth-yhteyden ja verkkoyhteyden Microsoftin passkey-palveluihin.
+  - https://cable.ua5v.com
+  - https://cable.auth.com
+
+
+### 🔧 Käyttöönotto
+1. Entra-portaalista: `Protection > Authentication methods > FIDO2 Security Key`
+2. Salli FIDO2 ja määritä kohderyhmä
+3. Varmista, että käyttäjät voivat rekisteröidä avaimet (SSPR + yhdistetty rekisteröinti)
+
+---
+
+## 🎫 Tilapäinen pääsykoodi (Temporary Access Pass, TAP)
+
+**TAP** on kertakäyttöinen pääsykoodi, jolla käyttäjä voi:
+
+- Rekisteröidä MFA-menetelmän
+- Palauttaa pääsyn esimerkiksi kadonneen puhelimen jälkeen
+
+### 🟢 Käyttötapaukset
+- Ensimmäinen MFA-rekisteröinti (esim. uusi työntekijä)
+- Palautustilanteet ilman tukipyyntöä
+
+### 📋 Lisenssi
+- Entra ID P1 suositeltu
+
+### 🔧 Käyttöönotto
+1. `Entra > Protection > Authentication methods > Temporary Access Pass`
+2. Aktivoi ja määritä asetukset (kesto, kertakäyttöisyys)
+3. Luo TAP yksittäiselle käyttäjälle:
+   - `User > Authentication methods > Add method > Temporary Access Pass`
+
+---
+
+## 🔑 Sertifikaattipohjainen todennus (CBA)
+
+**Certificate-Based Authentication (CBA)** tukee tunnistautumista **asiakasvarmenteilla** esim. älykorteilla tai mobiilivarmenteilla.
+
+### 🟢 Käyttötapaukset
+- Säännellyille aloille, kuten pankki ja terveydenhuolto
+- Hallituille laitteille, joissa ei haluta mobiilisovelluksia
+
+### 📋 Lisenssi
+- Entra ID P1 **tai** Microsoft Entra ID Free + Exchange Online tai SharePoint Online -käyttöoikeus (rajoitetussa muodossa)
+
+### 🔧 Käyttöönotto
+1. Varmista HTTPS-sertifikaatin tunnistus Entra ID:ssä
+2. Konfiguroi `Authentication methods > Certificate-based authentication`
+3. Aseta sallitut varmenteen myöntäjät (Issuer)
+4. Testaa laitekohtaisesti (Windows, iOS tuki rajallinen)
+
+📌 Vinkki: CBA toimii vain **SAML/WS-Fed-pohjaisissa** sovelluksissa, ei modernin OAUTH-sovelluksen kanssa.
+
+---
+
+## 🔁 OAUTH 2.0 -pohjainen todennus
+
+**OAUTH-tunnistautuminen** ei ole suoraan käyttäjän näkyvillä, mutta se on keskeinen osa:
+
+- Sovellusten pääsyoikeuksia (tokenit)
+- Käyttäjän puolesta toimimista (delegointi)
+
+### 🟢 Käyttötapaukset
+- Identity federation ja kolmansien osapuolten sovellukset
+- PowerShell- tai API-integraatiot
+
+### 🔧 Käyttöönotto
+1. Rekisteröi sovellus: `Entra > App registrations`
+2. Määritä API-käyttöoikeudet ja grant-tyypit (Authorization code, client credentials)
+3. Suojaa client secret tai käytä varmenteita
+
+---
+
+## 🧾 Yhteenvetotaulukko
+
+| Menetelmä | Käyttötapaus | Vaatii P1/P2? |
+|-----------|---------------|----------------|
+| Authenticator | MFA, passwordless | Passwordless vaatii P1 |
+| FIDO2 | Passwordless | Kyllä |
+| TAP | Rekisteröinti, palautus | Suositeltu P1 |
+| Sertifikaatti | Regulaatio, hallitut laitteet | Kyllä |
+| OAUTH | Sovellukset, API:t | Riippuu käyttötapauksesta |
+
+---
+
+## ✅ Yhteenveto
+
+Modernit todennusmenetelmät ovat keskeinen osa Microsoft Entra -tunnistautumista. Ne tarjoavat käyttäjäystävällisiä ja turvallisia vaihtoehtoja salasanojen rinnalle – tai tilalle. 
+
+Seuraavassa osassa käymme läpi tukevat menetelmät ja järjestelmäasetukset: **SSPR, MFA-käytännöt ja Windows Hello for Business** – sekä miten ne otetaan käyttöön käytännössä.
+

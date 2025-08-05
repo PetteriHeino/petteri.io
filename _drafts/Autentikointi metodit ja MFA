@@ -1,0 +1,179 @@
+
+
+## Microsoft Entra ID – Authentication Methods (Policies)
+
+
+Tässä ovat Microsoft Entra ID -hallintaportaalin kohdasta **Authentication methods → Policies** löytyvät todennusmenetelmät. Mukana ovat menetelmän kuvaus, edellytykset, turvallisuustaso, riskit ja suositeltavuus.
+
+---
+
+## Microsoft Authenticator (push + numerovahvistus)
+
+- Sovellus puhelimessa, joka hyväksyy kirjautumisen ilmoituksella tai numerolla
+- **Edellytykset:** Älypuhelin, MFA-rekisteröinti
+- **Turvallisuus:** Korkea
+- **Suositus:** **Ensisijainen menetelmä**
+- **Riskit:** Push bombing (useiden ilmoitusten hyväksyminen vahingossa), SIM-kaappaus fallback-menetelmänä
+
+### Microsoft Authenticator (push + numerovahvistus) – käyttöönotto
+
+Microsoft Authenticator on vahva ja käyttäjäystävällinen todennusmenetelmä, mutta sen käyttöönottoon liittyy sekä ylläpitäjän että loppukäyttäjän toimenpiteitä.
+
+#### Ylläpitäjän toimet
+
+1. **Ota käyttöön "Microsoft Authenticator" -menetelmä**
+   - Sijainti: `Microsoft Entra admin center → Protection → Authentication methods → Policies`
+   - Varmista, että menetelmä on **Enabled** ja kohdistettu sopivaan käyttäjäryhmään.
+
+2. **Ota käyttöön "Number Matching" ja App Context (suositeltu)**
+   - Sijainti: `Microsoft Entra admin center → Security → Authentication methods → Microsoft Authenticator settings`
+   - Suositellut asetukset:
+     - Require number matching
+     - Show application name and location (App context + sijainti)
+
+3. **(Valinnainen mutta suositeltava)** Tee MFA-rekisteröinti pakolliseksi
+   - Voidaan toteuttaa **Authentication registration policy**n avulla.
+     - Selaa kohtaan ID Protection > Dashboard > Multifactor authentication registration policy.
+       - Kohdassa Assignments > Users.
+         - Valitse Include - kohdasta All users tai Select individuals and groups, jos rajoitat käyttöönottoa.
+         - Valitse Exclude- kohdasta Users and groups ja valitse organisaatiosi hätäkäyttö- tai lasinmurto-oikeudet.
+   - Aseta Policy enforcement -asetukseksi Enabled.
+   - Valitse Save.
+
+#### Loppukäyttäjän toimet
+
+1. **Lataa ja asenna Microsoft Authenticator -sovellus**
+   - Saatavilla Androidille ja iOS:lle.
+
+2. **Rekisteröi tili sovellukseen**
+   - Mene osoitteeseen: [https://mysignins.microsoft.com/security-info](https://mysignins.microsoft.com/security-info)
+   - Valitse `Add method → Authenticator app`
+   - Skannaa QR-koodi sovelluksella.
+
+3. **Käytä sovellusta kirjautumisen yhteydessä**
+   - Kun käyttäjä kirjautuu M365-palveluun, hän saa push-ilmoituksen sovellukseen.
+   - Jos number matching on käytössä:
+     - Ruudulle ilmestyy numero, jonka käyttäjän tulee valita oikein sovelluksesta.
+
+---
+
+## ✅ FIDO2 Security Key
+
+- Fyysinen turva-avain (USB/NFC), toimii ilman salasanaa
+- **Edellytykset:** Tuettu selain, rekisteröity avain, käyttöönottopolitiikka sallii
+- **Turvallisuus:** Erittäin korkea
+- **Suositus:** **Ensisijainen menetelmä (salasanaton)**
+- **Riskit:** Fyysisen avaimen katoaminen
+
+---
+
+## ✅ Windows Hello for Business
+
+- PIN- tai biometrinen kirjautuminen laitteeseen
+- **Edellytykset:** TPM-laitteisto, Azure AD Join tai Hybrid Join
+- **Turvallisuus:** Erittäin korkea
+- **Suositus:** **Ensisijainen salasanaless-menelmä**
+- **Riskit:** Käytettävissä vain rekisteröidyissä laitteissa
+
+---
+
+## ☑️ Temporary Access Pass (TAP)
+
+- Kertakäyttöinen, aikarajoitettu kirjautumiskoodi
+- **Edellytykset:** Entra ID P1/P2, admin määrittää TAPin
+- **Turvallisuus:** Korkea
+- **Suositus:** **Toissijainen menetelmä**, erityisesti salasanattoman käyttöönottoon
+- **Riskit:** Kertakoodin väärinkäyttö, jos jaetaan epävarmasti
+
+---
+
+## ☑️ OATH Software Token (esim. Microsoft tai Google Authenticator)
+
+- Aikaperustainen koodi sovelluksessa
+- **Edellytykset:** TOTP-yhteensopiva sovellus
+- **Turvallisuus:** Hyvä
+- **Suositus:** **Toissijainen menetelmä**
+- **Riskit:** Phishing, manuaalinen koodinsyöttö on virheherkkä
+
+---
+
+## ☑️ OATH Hardware Token
+
+- Fyysinen laite, joka näyttää TOTP-koodin
+- **Edellytykset:** Admin rekisteröi laitteet
+- **Turvallisuus:** Hyvä
+- **Suositus:** **Toissijainen menetelmä**, erityistilanteisiin
+- **Riskit:** Fyysinen katoaminen, rajoitettu käytettävyys
+
+---
+
+## ⚠️ SMS (tekstiviesti)
+
+- Koodi lähetetään tekstiviestinä
+- **Edellytykset:** Rekisteröity puhelinnumero
+- **Turvallisuus:** Matala
+- **Suositus:** **Vältettävä**, korkeintaan fallback-käyttöön
+- **Riskit:** SIM-kaappaus, viestien sieppaus
+
+---
+
+## ⚠️ Puhelusoitto
+
+- Automaattinen puhelu, jossa käyttäjä hyväksyy kirjautumisen
+- **Edellytykset:** Rekisteröity puhelinnumero
+- **Turvallisuus:** Matala
+- **Suositus:** **Vältettävä**
+- **Riskit:** Soitonsieppaus, huijaussoitot
+
+---
+
+## ⚠️ Salasana
+
+- Perinteinen käyttäjätunnus + salasana
+- **Edellytykset:** Käyttäjätili
+- **Turvallisuus:** Matala
+- **Suositus:** **Ei yksinään riittävä**
+- **Riskit:** Helppo murtaa tai vuotaa
+
+---
+
+## ☑️ Certificate-based Authentication (CBA)
+
+- X.509-varmenteisiin perustuva autentikointi (esim. älykortti)
+- **Edellytykset:** PKI-infrastruktuuri, CBA-konfiguraatio
+- **Turvallisuus:** Erittäin korkea
+- **Suositus:** **Erityistapauksiin**, esim. korkean varmuuden vaatimuksissa
+- **Riskit:** Monimutkainen käyttöönotto ja hallinta
+
+---
+
+## Yhteenveto suosituksista
+
+- **Ensisijaiset menetelmät:**  
+  `Microsoft Authenticator`, `FIDO2`, `Windows Hello for Business`
+
+- **Hyvät toissijaiset:**  
+  `Temporary Access Pass`, `OATH (soft/hard token)`, `CBA (erikoistilanteet)`
+
+- **Vältettävät:**  
+  `SMS`, `Puhelut`, `Pelkkä salasana`
+
+### Mitä tarkoitetaan ensisijaisella ja toissijaisella menetelmällä?
+
+"Ensisijainen" ja "toissijainen" eivät ole Microsoft Entra ID:n virallisia tai teknisesti määritettyjä termejä, vaan ne kuvastavat **suositeltavuutta ja käyttötilannetta** autentikointimenetelmien valinnassa.
+
+- **Ensisijainen menetelmä** tarkoittaa todennusmenetelmää, jota **kannattaa suosia** aina kun se on mahdollista ottaa käyttöön. Se on yleensä:
+  - Turvallinen (esim. phishing-resistentti)
+  - Käyttäjäystävällinen
+  - Microsoftin suosittelema
+
+- **Toissijainen menetelmä** tarkoittaa vaihtoehtoista menetelmää, jota voidaan käyttää jos:
+  - Ensisijaista ei voida käyttää (esim. käyttäjällä ei ole tarvittavaa laitetta)
+  - Tarvitaan fallback- tai varamenetelmä
+  - Kyseessä on erityistilanne (esim. väliaikainen kirjautuminen)
+
+Tavoitteena on tarjota ensisijaisesti paras mahdollinen suojaus ja käyttökokemus, mutta samalla huolehtia siitä, että käyttäjillä on **aina käytettävissä vähintään yksi toimiva kirjautumistapa**
+
+---
+
+

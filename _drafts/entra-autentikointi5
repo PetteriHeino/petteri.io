@@ -1,0 +1,48 @@
+---
+title: "Microsoft Entra Kerberos -autentikointi hybridikäytössä"
+date: 2025-08-05
+categories: [Microsoft Entra, Hybrid Identity]
+tags: [Kerberos, hybridikäyttö, autentikointi, Entra ID]
+---
+
+Microsoft Entra Kerberos mahdollistaa Kerberos-todennuksen pilvipalveluissa, kuten SharePoint Online ja Exchange Online, ilman riippuvuutta paikallisista domain-kontrollereista. Ratkaisu toimii hybridikäytössä ja parantaa sekä suorituskykyä että tietoturvaa.
+
+## 🎯 Mitä Microsoft Entra Kerberos tekee?
+
+- Korvaa paikallisen domain-kontrollerin Kerberos-palvelut pilvipohjaisella toiminnallisuudella
+- Mahdollistaa Single Sign-Onin (SSO) sovelluksiin, jotka vaativat Kerberos-todennusta
+- Tukee skenaarioita, kuten:
+  - Office Online Server + SharePoint Server -integraatiot
+  - Hybriditulostusratkaisut, kuten Universal Print
+  - Muut SPN (Service Principal Name) -pohjaiset sovellukset
+
+## 🧾 Lisenssivaatimukset
+
+- Vaatii vähintään Microsoft Entra ID P1 -lisenssin
+- Edellyttää hybriditoteutusta:
+  - Paikallinen Active Directory -ympäristö
+  - Käytössä oleva Azure AD Connect -synkronointi
+
+## 🧱 Vaatimukset ja esivalmistelut
+
+- Paikallinen AD ja toimiva hybriditoteutus (Azure AD Connect)
+- Synkronoidut käyttäjäobjektit (hybrid identity)
+- SPN määritetty palvelulle, joka käyttää Kerberosta
+- Sovellus tai palvelu tukee Kerberos-todennusta
+
+## ⚙️ Käyttöönoton vaiheet
+
+1. Luo Microsoft Entra Kerberos -palveluobjekti Entra-hakemistoon
+2. Määritä tarvittavat SPN-tiedot paikallisiin käyttäjä- tai palvelutileihin
+3. Varmista, että SPN:t synkronoituvat Azure AD:hen Azure AD Connectin kautta
+4. Testaa SSO-toiminnallisuus pilvipalvelusta käsin
+
+## ✅ Huomioitavaa
+
+- Tämä ratkaisu ei ole tarkoitettu korvaamaan kaikkia paikallisia DC-toiminnallisuuksia, vaan tukemaan tietyissä hybridiskenaarioissa
+- Microsoft Entra Kerberos ei tue kaikkia mahdollisia SPN-sovelluksia – varmista yhteensopivuus dokumentaatiosta
+- Toimii erityisen hyvin skenaarioissa, joissa halutaan päästä eroon VPN-riippuvuudesta
+
+## 📚 Lisätietoa
+
+- Microsoft Learn: [Enable Microsoft Entra Kerberos authentication](https://learn.microsoft.com/en-us/entra/identity/hybrid/kerberos-cloud-trust)
