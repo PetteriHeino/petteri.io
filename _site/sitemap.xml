@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- ...lisää url-elementit tähän... -->
+  <url>
+    <loc>https://www.petteriheino.info/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/kategoriat/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/tunnisteet/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/arkisto/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/cv/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/info/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/yhteystiedot/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/projektit/</loc>
+  </url>
+  <url>
+    <loc>https://www.petteriheino.info/julkaisut/</loc>
+  </url>
 </urlset>
 
