@@ -1,1 +1,0 @@
-**Microsoft Entra roles can be assigned to the group = Yes**
