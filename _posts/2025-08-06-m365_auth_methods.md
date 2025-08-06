@@ -2,7 +2,7 @@
 title: Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)
 description: M365 autentikointi metodit, niiden halllinta ja suositukset
 authors: Petteri
-date: 2025-08-05 04:00:00 +0200
+date: 2025-08-06 09:00:00 +0200
 categories: [M365]
 tags: [SC-300, Microsoft, Entra ID, Authentication Methods]
 pin: false
