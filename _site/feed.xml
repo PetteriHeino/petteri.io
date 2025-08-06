@@ -1,4 +1,380 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://www.petteriheino.info/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.petteriheino.info/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-05T21:03:30+03:00</updated><id>https://www.petteriheino.info/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Entra ID Identity Governance - Privileged Identity Management (PIM)</title><link href="https://www.petteriheino.info/posts/m365_id_gov_pim/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Privileged Identity Management (PIM)" /><published>2025-08-05T04:00:00+03:00</published><updated>2025-08-05T15:31:54+03:00</updated><id>https://www.petteriheino.info/posts/m365_id_gov_pim</id><content type="html" xml:base="https://www.petteriheino.info/posts/m365_id_gov_pim/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-06T13:54:14+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)</title><link href="http://localhost:4000/posts/m365_auth_methods/" rel="alternate" type="text/html" title="Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)" /><published>2025-08-05T05:00:00+03:00</published><updated>2025-08-05T05:00:00+03:00</updated><id>http://localhost:4000/posts/m365_auth_methods</id><content type="html" xml:base="http://localhost:4000/posts/m365_auth_methods/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
+
+<p>Todennuskäytännöt (Authentication Methods) ovat yksi pieni osa SC-300 sertifiointitestiä. Oma kokemus testistä on se, että on hyvä tietää mitä kaikkia todennuskäytäntöjä on ja mikä niiden käyttösuositus on. Tarkemmalla tasolla kannattaa tietää Authenticator, Passkey ja Temporary Access Pass (TAP) ja näitä kannattaa tutkia MS Learnistä vähän tarkemmin.</p>
+
+<h2 id="microsoft-entra-id--authentication-methods-policies">Microsoft Entra ID – Authentication Methods (Policies)</h2>
+
+<p>Microsoft suosittelee salasanattomia todennusmenetelmiä, kuten Windows Helloa, salasanoja (FIDO2) ja Microsoft Authenticator -sovellusta, koska ne tarjoavat turvallisimman kirjautumiskokemuksen. Vaikka käyttäjä voi kirjautua sisään muilla yleisillä menetelmillä, kuten käyttäjätunnuksella ja salasanalla, salasanat tulisi korvata turvallisemmilla todennusmenetelmillä.</p>
+
+<p>Tässä alla on lista todennusmenetelmistä jotka löytyvät Microsoft Entra ID -hallintaportaalin kohdasta <strong>Authentication methods → Policies</strong>.</p>
+
+<p><img src="/auth1.png" alt="Kuva" /></p>
+
+<p>Mukana ovat menetelmän kuvaus, edellytykset, turvallisuustaso, riskit ja suositeltavuus. Joistakin on konfigurointiohjeet mukana (suositellut ja helpot esivaatimuksiltaan kuten Authenticator).</p>
+
+<p>Tarkoituksena tällä listalla on saada todennusmenetelmät haltuun yleisellä tasolla.</p>
+
+<hr />
+
+<h2 id="-microsoft-authenticator-push--numerovahvistus">✅ Microsoft Authenticator (push + numerovahvistus)</h2>
+
+<ul>
+  <li>Sovellus puhelimessa, joka hyväksyy kirjautumisen ilmoituksella tai numerolla</li>
+  <li><strong>Edellytykset:</strong> Älypuhelin, MFA-rekisteröinti</li>
+  <li><strong>Turvallisuus:</strong> Korkea</li>
+  <li><strong>Suositus:</strong> <strong>Ensisijainen menetelmä</strong></li>
+  <li><strong>Riskit:</strong> Push bombing (useiden ilmoitusten hyväksyminen vahingossa), SIM-kaappaus fallback-menetelmänä</li>
+</ul>
+
+<h3 id="microsoft-authenticator-push--numerovahvistus--käyttöönotto">Microsoft Authenticator (push + numerovahvistus) – käyttöönotto</h3>
+
+<p>Microsoft Authenticator on vahva ja käyttäjäystävällinen todennusmenetelmä, mutta sen käyttöönottoon liittyy sekä ylläpitäjän että loppukäyttäjän toimenpiteitä.</p>
+
+<h4 id="ylläpitäjän-toimet">Ylläpitäjän toimet</h4>
+
+<ol>
+  <li><strong>Ota käyttöön “Microsoft Authenticator” -menetelmä</strong>
+    <ul>
+      <li>Sijainti: <code class="language-plaintext highlighter-rouge">Microsoft Entra admin center → Authentication methods → Policies</code></li>
+      <li>Varmista, että menetelmä on <strong>Enabled</strong> ja kohdistettu sopivaan käyttäjäryhmään.</li>
+    </ul>
+  </li>
+  <li><strong>Ota käyttöön “Number Matching” ja App Context asetukset(suositeltu)</strong>
+    <ul>
+      <li>Sijainti: <code class="language-plaintext highlighter-rouge">Microsoft Entra admin center → Authentication methods → Policies → Microsoft Authenticator</code></li>
+      <li>Suositellut asetukset:
+        <ul>
+          <li>Require number matching</li>
+          <li>Show application name and location (App context + sijainti)
+<img src="/auth2.png" alt="Kuva" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="loppukäyttäjän-toimet">Loppukäyttäjän toimet</h4>
+
+<ol>
+  <li><strong>Käyttäjä lataa ja asentaa Microsoft Authenticator -sovellus</strong>
+    <ul>
+      <li>Saatavilla Androidille ja iOS:lle.</li>
+    </ul>
+  </li>
+  <li><strong>Rekisteröi tilin sovellukseen</strong>
+    <ul>
+      <li>Käyttäjä kirjautuu selaimella M365 palveluun, jossa käyttäjä saa kehotteen, missä häntä pyydetään antamaan lisätietoja ennen kuin tiliä voi käyttää -&gt; next niin pitkään että kehoite näyttää QR koodin</li>
+      <li>Käyttäjä avaa Microsoft Authenticator -sovelluksen
+        <ul>
+          <li>valitsee ilmoitusten salliminen (jos sitä pyydetään)</li>
+          <li>valitsee oikeassa yläkulmassa olevasta Customize and control  -kuvakkeesta Add account</li>
+          <li>valitsee sitten Work or school account</li>
+          <li>Skannaa annettu koodi Microsoft Authenticator -sovelluksen QR-koodinlukijalla</li>
+          <li>Authenticator -sovellukseen lähetetään ilmoitus tilisi testaamiseksi. Vastaa ilmoitukseen ja tekee wizardin tehtävät loppuun asti.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/auth4.png" alt="Kuva" /></p>
+
+<p><strong>vaihtoehtoisesti</strong> uutena autentikointi metodina</p>
+<ul>
+  <li>Mene osoitteeseen: <a href="https://mysignins.microsoft.com/security-info">https://mysignins.microsoft.com/security-info</a></li>
+  <li>Valitse <code class="language-plaintext highlighter-rouge">Security info → Add sign-in method → Microsoft Authenticator </code></li>
+  <li>Skannaa QR-koodi sovelluksella.</li>
+</ul>
+
+<ol>
+  <li><strong>Käyttää sovellusta kirjautumisen yhteydessä</strong>
+    <ul>
+      <li>Kun käyttäjä kirjautuu M365-palveluun, hän saa push-ilmoituksen Authenticator sovellukseen.</li>
+      <li>Jos number matching on käytössä:
+        <ul>
+          <li>Ruudulle ilmestyy numero, jonka käyttäjän tulee valita oikein sovelluksesta.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="-passkey-fido2-security-key">✅ Passkey (FIDO2 Security Key)</h2>
+
+<ul>
+  <li>Fyysinen turva-avain (USB/NFC), toimii ilman salasanaa</li>
+  <li><strong>Edellytykset:</strong> Tuettu selain, rekisteröity avain, käyttöönottopolitiikka sallii</li>
+  <li><strong>Turvallisuus:</strong> Erittäin korkea</li>
+  <li><strong>Suositus:</strong> <strong>Ensisijainen menetelmä (salasanaton)</strong></li>
+  <li><strong>Riskit:</strong> Fyysisen avaimen katoaminen</li>
+</ul>
+
+<p>Kirjoitan Passkey käyttöönotosta mahdollisesti myöhemmin erillisen kirjoituksen.</p>
+
+<hr />
+
+<h2 id="-windows-hello-for-business">✅ Windows Hello for Business</h2>
+
+<ul>
+  <li>PIN- tai biometrinen kirjautuminen laitteeseen</li>
+  <li><strong>Edellytykset:</strong> TPM-laitteisto, Azure AD Join tai Hybrid Join</li>
+  <li><strong>Turvallisuus:</strong> Erittäin korkea</li>
+  <li><strong>Suositus:</strong> <strong>Ensisijainen salasanaless-menelmä</strong></li>
+  <li><strong>Riskit:</strong> Käytettävissä vain rekisteröidyissä laitteissa</li>
+</ul>
+
+<hr />
+
+<h2 id="️-temporary-access-pass-tap">☑️ Temporary Access Pass (TAP)</h2>
+
+<ul>
+  <li>Kertakäyttöinen, aikarajoitettu kirjautumiskoodi</li>
+  <li><strong>Edellytykset:</strong> Entra ID P1/P2, admin määrittää TAPin</li>
+  <li><strong>Turvallisuus:</strong> Korkea</li>
+  <li><strong>Suositus:</strong> <strong>Toissijainen menetelmä</strong> Väliaikainen käyttöoikeustunnus (TAP) on määräaikainen salasana, joka voidaan määrittää kertakäyttöiseksi tai useille kirjautumisille. Käyttäjät voivat kirjautua sisään TAP-tunnuksella ottaakseen käyttöön muita salasanattomia todennusmenetelmiä. TAP helpottaa myös vahvan todennusmenetelmän palauttamista, jos käyttäjä kadottaa tai unohtaa sen.</li>
+  <li><strong>Riskit:</strong> Kertakoodin väärinkäyttö, jos jaetaan epävarmasti</li>
+</ul>
+
+<h3 id="ylläpitäjän-toimet-1">Ylläpitäjän toimet</h3>
+
+<p><strong>TAP-protokollan määrittäminen</strong></p>
+
+<ol>
+  <li>Kirjaudu <strong>Microsoft Entra amdin centeriin</strong></li>
+  <li>Selaa kohtaan <strong>Entra ID &gt; Authentication methods &gt; Policies</strong></li>
+  <li>Valitse käytettävissä olevien todennusmenetelmien luettelosta <strong>Temporary Access Pass</strong></li>
+  <li>Valitse <strong>Enable</strong> ja valitse sitten käyttäjät, jotka haluat sisällyttää käytäntöön tai jättää siitä pois.</li>
+  <li>(Valinnainen) Valitse <strong>Configure</strong> välilehti muokataksesi väliaikaisen käyttöoikeuden oletusasetuksia, kuten enimmäiskäyttöaikaa tai pituutta, ja valitse <strong>Update</strong>.</li>
+  <li>Save</li>
+</ol>
+
+<p><strong>Luo TAP käyttäjätunnukselle</strong></p>
+
+<ol>
+  <li>Kirjaudu <strong>Microsoft Entra admin centeriin</strong>.</li>
+  <li>Selaa kohtaan <strong>Entra ID &gt; Users</strong>.</li>
+  <li>Valitse käyttäjä, jolle haluat luoda TAP-tilin.</li>
+  <li>Valitse <strong>Authentication methods</strong> ja valitse <strong>Add authentication method</strong>.</li>
+  <li>Valitse <strong>Temporary Access Pass</strong>.</li>
+  <li>Määritä mukautettu aktivointiaika tai kesto ja valitse <strong>Add</strong>.</li>
+  <li>Lisäyksen jälkeen TAP:n tiedot näytetään.</li>
+  <li>Valitse <strong>OK</strong></li>
+</ol>
+
+<h3 id="loppukäyttäjän-tap-käyttö">Loppukäyttäjän TAP käyttö</h3>
+<p>Yleisin tapa TAP:lle on rekisteröidä todennustiedot ensimmäisen kirjautumisen tai laitteen asennuksen yhteydessä ilman ylimääräisiä suojauskehotteita. Todennusmenetelmät rekisteröidään osoitteessa https://aka.ms/mysecurityinfo . Käyttäjät voivat myös päivittää olemassa olevia todennusmenetelmiä täällä.</p>
+
+<ol>
+  <li>Avaa verkkoselain ja siirry osoitteeseen <strong>https://aka.ms/mysecurityinfo</strong>.</li>
+  <li>Anna sen tilin UPN, jolle loit TAP-osoitteen, kuten tapuser@contoso.com.</li>
+  <li>Jos käyttäjä on mukana TAP-käytännössä, hän näkee näytön TAP-tunnuksensa syöttämiseksi.</li>
+  <li>Syötä Microsoft Entra -hallintakeskuksessa näytetty TAP.</li>
+</ol>
+
+<hr />
+
+<h2 id="️-oath-software-token-esim-microsoft-tai-google-authenticator">☑️ OATH Software Token (esim. Microsoft tai Google Authenticator)</h2>
+
+<ul>
+  <li>Aikaperustainen koodi sovelluksessa</li>
+  <li><strong>Edellytykset:</strong> TOTP-yhteensopiva sovellus</li>
+  <li><strong>Turvallisuus:</strong> Hyvä</li>
+  <li><strong>Suositus:</strong> <strong>Toissijainen menetelmä</strong></li>
+  <li><strong>Riskit:</strong> Phishing, manuaalinen koodinsyöttö on virheherkkä</li>
+</ul>
+
+<hr />
+
+<h2 id="️-oath-hardware-token">☑️ OATH Hardware Token</h2>
+
+<ul>
+  <li>Fyysinen laite, joka näyttää TOTP-koodin</li>
+  <li><strong>Edellytykset:</strong> Admin rekisteröi laitteet</li>
+  <li><strong>Turvallisuus:</strong> Hyvä</li>
+  <li><strong>Suositus:</strong> <strong>Toissijainen menetelmä</strong>, erityistilanteisiin</li>
+  <li><strong>Riskit:</strong> Fyysinen katoaminen, rajoitettu käytettävyys</li>
+</ul>
+
+<hr />
+
+<h2 id="️-sms-tekstiviesti">⚠️ SMS (tekstiviesti)</h2>
+
+<ul>
+  <li>Koodi lähetetään tekstiviestinä</li>
+  <li><strong>Edellytykset:</strong> Rekisteröity puhelinnumero</li>
+  <li><strong>Turvallisuus:</strong> Matala</li>
+  <li><strong>Suositus:</strong> <strong>Vältettävä</strong>, korkeintaan fallback-käyttöön</li>
+  <li><strong>Riskit:</strong> SIM-kaappaus, viestien sieppaus</li>
+</ul>
+
+<hr />
+
+<h2 id="️-puhelusoitto">⚠️ Puhelusoitto</h2>
+
+<ul>
+  <li>Automaattinen puhelu, jossa käyttäjä hyväksyy kirjautumisen</li>
+  <li><strong>Edellytykset:</strong> Rekisteröity puhelinnumero</li>
+  <li><strong>Turvallisuus:</strong> Matala</li>
+  <li><strong>Suositus:</strong> <strong>Vältettävä</strong></li>
+  <li><strong>Riskit:</strong> Soitonsieppaus, huijaussoitot</li>
+</ul>
+
+<hr />
+
+<h2 id="️-certificate-based-authentication-cba">☑️ Certificate-based Authentication (CBA)</h2>
+
+<ul>
+  <li>X.509-varmenteisiin perustuva autentikointi (esim. älykortti)</li>
+  <li><strong>Edellytykset:</strong> PKI-infrastruktuuri, CBA-konfiguraatio</li>
+  <li><strong>Turvallisuus:</strong> Erittäin korkea</li>
+  <li><strong>Suositus:</strong> <strong>Erityistapauksiin</strong>, esim. korkean varmuuden vaatimuksissa</li>
+  <li><strong>Riskit:</strong> Monimutkainen käyttöönotto ja hallinta</li>
+</ul>
+
+<hr />
+
+<h2 id="️-email-otp">✉️ Email OTP</h2>
+
+<ul>
+  <li><strong>Lyhyt kuvaus:</strong><br />
+Kertakäyttöinen salasana (OTP) lähetetään käyttäjän ensisijaiseen sähköpostiosoitteeseen. Käytetään vain B2B-vieraskäyttäjien tunnistautumiseen.</li>
+  <li><strong>Edellytykset käyttöönotolle:</strong>
+    <ul>
+      <li>Käytettävissä vain <strong>B2B guest users</strong> -tyyppisille tileille</li>
+      <li>Oltava sallittu Authentication methods -käytännöissä</li>
+      <li>Vieraskäyttäjän sähköpostin on oltava saavutettavissa</li>
+      <li>Ei vaadi MFA-rekisteröintiä tai sovellusta</li>
+    </ul>
+  </li>
+  <li><strong>Turvallisuus:</strong>
+    <ul>
+      <li>Soveltuu matalan riskin tilanteisiin, kuten satunnaisiin vieraskäyttöihin</li>
+      <li>Salaamaton sähköposti ei ole yhtä turvallinen kuin muut MFA-metodit</li>
+      <li>Ei vahvaa sidosta fyysiseen laitteeseen</li>
+    </ul>
+  </li>
+  <li><strong>Suositus:</strong>
+    <ul>
+      <li>Käytä vain vieraskäyttöön silloin, kun vahvempaa todennusta ei voida käyttää</li>
+      <li>Ei suositella sisäisille käyttäjille</li>
+    </ul>
+  </li>
+  <li><strong>Riskit:</strong>
+    <ul>
+      <li>Ei estä käyttäjän sähköpostin kaappausta (phishing, credential stuffing)</li>
+      <li>Riippuvainen sähköpostin toimitettavuudesta (spam/viive)</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="-qr-code-sign-in">🧾 QR Code Sign-In</h2>
+
+<ul>
+  <li>
+    <p><strong>Lyhyt kuvaus:</strong><br />
+Kirjautuminen tapahtuu Authenticator-sovelluksella skannaamalla jaetulla laitteella näkyvä QR-koodi. Soveltuu jaettujen laitteiden nopeaan käyttäjävaihtoon.</p>
+  </li>
+  <li><strong>Edellytykset käyttöönotolle:</strong>
+    <ul>
+      <li>Oltava sallittu Authentication methods -käytännöissä</li>
+      <li>Käyttäjän on rekisteröitävä Microsoft Authenticator -sovellus</li>
+      <li>Laite on oltava <strong>shared device mode</strong> -konfiguroitu (Intune tai vastaava)</li>
+      <li>Vain <strong>Entra ID Premium P1/P2</strong> -ympäristössä (koska vaatii jaettujen laitteiden hallintaa)</li>
+      <li>QR-sign-in pitää ottaa käyttöön Intune-konfiguraatiossa</li>
+    </ul>
+  </li>
+  <li><strong>Turvallisuus:</strong>
+    <ul>
+      <li>Todennus perustuu vahvaan sidokseen laitteeseen ja käyttäjän sovellukseen</li>
+      <li>QR-koodi vanhenee nopeasti eikä ole uudelleenkäytettävissä</li>
+      <li>Ei vaadi salasanan syöttämistä → pienentää keylogger-riskiä</li>
+    </ul>
+  </li>
+  <li><strong>Suositus:</strong>
+    <ul>
+      <li>Suositellaan vain <strong>shared device</strong> -skenaarioihin (esim. terveydenhuolto, vähittäiskauppa)</li>
+      <li>Ei sovellu henkilökohtaisten tai pysyvien työasemien kirjautumiseen</li>
+    </ul>
+  </li>
+  <li><strong>Riskit:</strong>
+    <ul>
+      <li>Käytön väärinkäyttö mahdollista, jos jaettu laite ei ole lukittuna</li>
+      <li>Käyttöönotto vaatii tarkkaa hallintaa ja Intune-yhteensopivuuden</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="yhteenveto-suosituksista">Yhteenveto suosituksista</h2>
+
+<h2 id="-yhteenveto-suosituksista">✅ Yhteenveto suosituksista</h2>
+
+<h3 id="-ensisijaiset-menetelmät">🔐 Ensisijaiset menetelmät</h3>
+<p>Nämä tarjoavat vahvan suojan, hyvän käyttökokemuksen ja phishing-resistenssin. Suositellaan aina ensisijaisesti, kun mahdollista.</p>
+
+<ul>
+  <li><strong>Microsoft Authenticator (push + numerovahvistus)</strong></li>
+  <li><strong>FIDO2-avaimet</strong></li>
+  <li><strong>Windows Hello for Business</strong></li>
+</ul>
+
+<h3 id="-hyvät-toissijaiset-tilannekohtaisesti-suositeltavat">🧩 Hyvät toissijaiset (tilannekohtaisesti suositeltavat)</h3>
+<p>Käyttöön tilanteissa, joissa ensisijaisia ei voida käyttää, tai osana fallback-strategiaa.</p>
+
+<ul>
+  <li><strong>Temporary Access Pass</strong> – tilapäinen pääsy esim. uusille tai lukkiutuneille käyttäjille</li>
+  <li><strong>OATH (soft/hard token)</strong> – sopii offline-ympäristöihin tai käyttäjille ilman älypuhelinta</li>
+  <li><strong>CBA (Certificate-based authentication)</strong> – erikoistilanteisiin (esim. hallittu kortti-infra)</li>
+  <li><strong>QR code sign-in</strong> – jaetuille laitteille esim. terveydenhuolto tai kioskiympäristö</li>
+</ul>
+
+<h3 id="-rajatusti-hyväksyttävät-vain-tietyissä-skenaarioissa">🔄 Rajatusti hyväksyttävät (vain tietyissä skenaarioissa)</h3>
+<p>Näitä voidaan käyttää rajoitetuissa tapauksissa, mutta niitä ei suositella ensisijaisiksi metodeiksi.</p>
+
+<ul>
+  <li><strong>Email OTP</strong> – vain B2B guest -käyttöön, ei sisäiseen todennukseen</li>
+</ul>
+
+<h3 id="-vältettävät-menetelmät">🚫 Vältettävät menetelmät</h3>
+<p>Heikko suojaustaso, alttiita kalastelulle tai teknisesti vanhentuneita. Suositellaan poistettavaksi tai rajoitettavaksi.</p>
+
+<ul>
+  <li><strong>Tekstiviestit (SMS)</strong></li>
+  <li><strong>Puhelut (Voice call)</strong></li>
+  <li><strong>Pelkkä salasana (ilman MFA)</strong></li>
+</ul>
+
+<h3 id="mitä-tarkoitetaan-ensisijaisella-ja-toissijaisella-menetelmällä">Mitä tarkoitetaan ensisijaisella ja toissijaisella menetelmällä?</h3>
+
+<p>“Ensisijainen” ja “toissijainen” eivät ole Microsoft Entra ID:n virallisia tai teknisesti määritettyjä termejä, vaan ne kuvastavat <strong>suositeltavuutta ja käyttötilannetta</strong> autentikointimenetelmien valinnassa.</p>
+
+<ul>
+  <li><strong>Ensisijainen menetelmä</strong> tarkoittaa todennusmenetelmää, jota <strong>kannattaa suosia</strong> aina kun se on mahdollista ottaa käyttöön. Se on yleensä:
+    <ul>
+      <li>Turvallinen (esim. phishing-resistentti)</li>
+      <li>Käyttäjäystävällinen</li>
+      <li>Microsoftin suosittelema</li>
+    </ul>
+  </li>
+  <li><strong>Toissijainen menetelmä</strong> tarkoittaa vaihtoehtoista menetelmää, jota voidaan käyttää jos:
+    <ul>
+      <li>Ensisijaista ei voida käyttää (esim. käyttäjällä ei ole tarvittavaa laitetta)</li>
+      <li>Tarvitaan fallback- tai varamenetelmä</li>
+      <li>Kyseessä on erityistilanne (esim. väliaikainen kirjautuminen)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Tavoitteena on tarjota ensisijaisesti paras mahdollinen suojaus ja käyttökokemus, mutta samalla huolehtia siitä, että käyttäjillä on <strong>aina käytettävissä vähintään yksi toimiva kirjautumistapa</strong></p>
+
+<p>Vältettäviä menetelmiä ei pitäisi käyttää ensinkään, ellei ole jostain syystä pakko niin tehdä.</p>
+
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Authentication Methods" /><summary type="html"><![CDATA[M365 autentikointi metodit, niiden halllinta ja suositukset]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Privileged Identity Management (PIM)</title><link href="http://localhost:4000/posts/m365_id_gov_pim/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Privileged Identity Management (PIM)" /><published>2025-08-05T04:00:00+03:00</published><updated>2025-08-05T15:31:54+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_pim</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_pim/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Privileged Identity Management (PIM).</p>
 
@@ -333,7 +709,7 @@
 
 <h2 id="pim-auditointi-ja-raportit">PIM auditointi ja raportit</h2>
 
-<p>Kirjoitan mahdollisesti myöhemmin tästä osuudesta, kun omassa tenantissani on dataa, mitä käyttää esimerkkinä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Privileged Identity Management" /><category term="PIM" /><summary type="html"><![CDATA[Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="https://www.petteriheino.info/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>https://www.petteriheino.info/posts/M365_id_gov_access_review</id><content type="html" xml:base="https://www.petteriheino.info/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<p>Kirjoitan mahdollisesti myöhemmin tästä osuudesta, kun omassa tenantissani on dataa, mitä käyttää esimerkkinä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Privileged Identity Management" /><category term="PIM" /><summary type="html"><![CDATA[Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn osa-alueeseen Access Review.</p>
 
@@ -647,7 +1023,7 @@ Asetukset:
   </li>
 </ol>
 
-<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Access Review" /><summary type="html"><![CDATA[Access Review]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="https://www.petteriheino.info/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>https://www.petteriheino.info/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="https://www.petteriheino.info/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Access Review" /><summary type="html"><![CDATA[Access Review]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 
@@ -968,7 +1344,7 @@ Kun käyttäjällä ei ole enää pääsyä mihinkään access packageen, laskur
 
 <p>→ Käyttäjällä ei ole enää access package -oikeuksia.
 → 14 päivän kuluttua: käyttäjän kirjautuminen estetään.
-→ Poistetaan kokonaan tenantista seuraavana päivänä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="https://www.petteriheino.info/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-04T11:05:14+03:00</updated><id>https://www.petteriheino.info/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="https://www.petteriheino.info/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+→ Poistetaan kokonaan tenantista seuraavana päivänä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-04T11:05:14+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 

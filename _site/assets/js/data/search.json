@@ -1,5 +1,13 @@
 [
   {
+    "title": "Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)",
+    "url": "/posts/m365_auth_methods/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Authentication Methods",
+    "date": "2025-08-05 05:00:00 +0300",
+    "content": "M365 autentikointi metodit, niiden halllinta ja suositukset"
+  },
+  {
     "title": "Entra ID Identity Governance - Privileged Identity Management (PIM)",
     "url": "/posts/m365_id_gov_pim/",
     "categories": "M365",
