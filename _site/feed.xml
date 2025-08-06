@@ -1,4 +1,359 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-06T13:54:14+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)</title><link href="http://localhost:4000/posts/m365_auth_methods/" rel="alternate" type="text/html" title="Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)" /><published>2025-08-05T05:00:00+03:00</published><updated>2025-08-05T05:00:00+03:00</updated><id>http://localhost:4000/posts/m365_auth_methods</id><content type="html" xml:base="http://localhost:4000/posts/m365_auth_methods/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-06T16:50:44+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Multifactor authentication</title><link href="http://localhost:4000/posts/m365_mfa/" rel="alternate" type="text/html" title="Microsoft Entra ID – Multifactor authentication" /><published>2025-08-06T10:01:00+03:00</published><updated>2025-08-06T10:01:00+03:00</updated><id>http://localhost:4000/posts/m365_mfa</id><content type="html" xml:base="http://localhost:4000/posts/m365_mfa/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
+
+<p>Multifactor authentication on periaatteessa jatkoa aikaisemmin kirjoittamaani Todennuskäytännöt (Authentication Methods) blogikirjoitukseen. Ensin määritellään mitä todennuskäytäntöjä tenantissa tuetaan, sitten käyttäjät rekisteröivät todennuskäytönnöt, minkä jälkeen todennuskäytäntöjä käytetään MFA tunnistautumisen osana.</p>
+
+<p>Multifactor autentikointi on yksi pieni osa SC-300 sertifiointitestiä.</p>
+
+<h1 id="monivaiheinen-tunnistautuminen-mfa-microsoft-365--ympäristössä">Monivaiheinen tunnistautuminen (MFA) Microsoft 365 -ympäristössä</h1>
+
+<p>Tietoturvauhkien lisääntyessä monivaiheisesta tunnistautumisesta (Multi-Factor Authentication, MFA) on tullut yksi tärkeimmistä keinoista suojata organisaation käyttäjätilejä. Tässä kirjoituksessa käydään läpi, miten MFA otetaan käyttöön Microsoft 365 -ympäristössä, mitä vaihtoehtoja sen hallintaan on, ja mitä asioita ylläpitäjän tulisi ottaa huomioon.</p>
+
+<h2 id="mikä-mfa-on-ja-miksi-se-on-tärkeää">Mikä MFA on ja miksi se on tärkeää?</h2>
+
+<p>MFA edellyttää käyttäjältä kahta tai useampaa todennustapaa kirjautumisen yhteydessä: esimerkiksi salasana ja vahvistus puhelimella. Tämä vaikeuttaa merkittävästi luvattomia kirjautumisyrityksiä, vaikka salasana olisi päätynyt vääriin käsiin.</p>
+
+<h2 id="mfan-käyttöönoton-vaihtoehdot">MFA:n käyttöönoton vaihtoehdot</h2>
+
+<p>Microsoft 365 -ympäristössä MFA:n voi ottaa käyttöön eri tavoin riippuen organisaation tarpeista ja käytössä olevista lisensseistä:</p>
+
+<h3 id="1-security-defaults-oletusturva-asetukset">1. Security defaults (oletusturva-asetukset)</h3>
+
+<p>Microsoft on ottanut käyttöön <em>security defaults</em> -toiminnon uusille vuokraajille oletuksena. Se sisältää useita perussuojauksia, kuten pakotetun MFA:n kaikille käyttäjille – myös ylläpitäjille.</p>
+
+<p><strong>Mistä tämän näkee ja hallitsee:</strong></p>
+<ul>
+  <li>Avaa <strong>Microsoft Entra -hallintakeskus</strong></li>
+  <li>Navigoi kohtaan <strong>Entra ID &gt; Overview &gt; Properties &gt; Manage security defaults</strong></li>
+  <li>Täällä voit tarkistaa, onko security defaults käytössä ja halutessasi ottaa sen pois päältä (esim. jos käytät ehdollista käyttöoikeutta).</li>
+</ul>
+
+<blockquote>
+  <p><strong>Huom:</strong> Security defaults -toiminnossa ei ole mahdollisuutta säätää käyttäjäkohtaisia asetuksia tai rajata MFA:n käyttöä tietyissä tilanteissa – kaikki saavat samanlaisen suojauksen.</p>
+</blockquote>
+
+<h3 id="2-conditional-access-ehdollinen-käyttöoikeus">2. Conditional Access (ehdollinen käyttöoikeus)</h3>
+
+<p>Ehdollinen käyttöoikeus tarjoaa joustavamman ja tehokkaamman tavan hallita MFA:n käyttöä.</p>
+
+<p>Esimerkiksi voit määrittää:</p>
+<ul>
+  <li>MFA:n pakolliseksi vain hallintakäyttäjille</li>
+  <li>MFA:n käyttöön vain organisaation ulkopuolelta kirjautuessa</li>
+  <li>Poikkeuksia tietyille sovelluksille tai laiteryhmille</li>
+</ul>
+
+<p><strong>Lisenssivaatimus:</strong><br />
+Ehdollisen käyttöoikeuden hyödyntäminen vaatii <strong>Microsoft Entra ID P1</strong> -lisenssin (entinen Azure AD Premium P1). P2-lisenssillä saa käyttöön myös Identity Protection -ominaisuudet, jotka mahdollistavat riskiperusteisen MFA:n.</p>
+
+<h3 id="3-perinteinen-mfa-käyttöönotto-käyttäjäkohtaisesti">3. Perinteinen MFA-käyttöönotto käyttäjäkohtaisesti</h3>
+
+<p>Ennen ehdollista käyttöoikeutta MFA otettiin usein käyttöön suoraan käyttäjätileille. Tämä malli on edelleen tuettu, mutta ei suositeltu uusiin käyttöönottoihin.</p>
+
+<p><strong>Hallinta:</strong> Microsoft 365 -hallintakeskus &gt; Active users &gt; Multi-factor authentication</p>
+
+<p><strong>Poista käyttäjäkohtainen MFA käytöstä</strong></p>
+<ol>
+  <li>Valitse Microsoft 365 -hallintakeskuksessa vasemmasta navigointipaneelista <strong>Users &gt; Active users</strong>.</li>
+  <li>Valitse <strong>Active users</strong> -sivulla <strong>multifactor authentication</strong>.</li>
+  <li>Valitse monivaiheisen todennuksen sivulla jokainen käyttäjä ja aseta heidän monivaiheisen todennuksen status <strong>Disabled</strong> tilaan.</li>
+</ol>
+
+<h2 id="mfa-menetelmien-rekisteröinti">MFA-menetelmien rekisteröinti</h2>
+
+<p>Käyttäjät voivat itse rekisteröidä MFA-menetelmänsä joko kirjautumisen yhteydessä tai siirtymällä osoitteeseen:<br />
+👉 <a href="https://aka.ms/mfasetup">https://aka.ms/mfasetup</a></p>
+
+<p><strong>Tärkeää:</strong> Käyttäjien käytettävissä olevat todennustavat riippuvat siitä, mitä menetelmiä ylläpitäjä on sallinut Authentication Methods -asetuksissa. Esimerkiksi monissa ympäristöissä oletuksena sallitaan vain <strong>Microsoft Authenticator</strong>, jolloin käyttäjät eivät voi valita muita vaihtoehtoja, kuten tekstiviestivahvistusta.</p>
+
+<p>Tuetut todennustavat voivat sisältää esimerkiksi:</p>
+<ul>
+  <li>Microsoft Authenticator -sovellus (suositeltu)</li>
+  <li>Tekstiviestivahvistus</li>
+  <li>Puhelu</li>
+  <li>Muut TOTP-yhteensopivat sovellukset</li>
+</ul>
+
+<p>Rekisteröintiprosessi on selkeä ja opastettu. Käyttäjät valitsevat itse käytettävät menetelmät, mutta vain niistä vaihtoehdoista, jotka ylläpitäjä on ottanut käyttöön. Ylläpitäjän ei tarvitse määrittää metodeja manuaalisesti käyttäjäkohtaisesti.</p>
+
+<hr />
+
+<h2 id="mfa-rekisteröinnin-ohjaus-kaksi-vaihtoehtoa">MFA-rekisteröinnin ohjaus: kaksi vaihtoehtoa</h2>
+
+<p>Kun MFA otetaan käyttöön, on tärkeää varmistaa, että käyttäjät rekisteröivät vähintään yhden todennustavan ennen kuin MFA vaaditaan kirjautumisen yhteydessä. Tähän on kaksi vaihtoehtoista tapaa:</p>
+
+<h3 id="-1-registration-campaign-authentication-methods--asetuksissa">🔹 1. Registration campaign (Authentication Methods -asetuksissa)</h3>
+
+<ul>
+  <li>Käytettävissä <strong>ilman lisenssiä</strong></li>
+  <li>Näyttää käyttäjälle kehotuksen rekisteröidä todennustapa, mutta ei pakota sitä heti</li>
+  <li>Käyttäjä voi ohittaa ilmoituksen useita kertoja (määrä säädettävissä)</li>
+  <li>Hyvä vaihtoehto kevyempään, asteittaiseen käyttöönottoon</li>
+</ul>
+
+<p><strong>Käyttöönotto:</strong></p>
+<ul>
+  <li>Avaa <strong>Microsoft Entra -hallintakeskus</strong></li>
+  <li>Navigoi kohtaan <strong>Entra &gt; Authentication methods &gt; Registration campaign</strong></li>
+  <li>Ota kampanja käyttöön ja määritä kohderyhmät</li>
+</ul>
+
+<p><strong>Huom:</strong> Oletusarvoisesti kampanja on asetettu tilaan <em>“Microsoft managed”</em>, jolloin Microsoft hallitsee sen tilaa automaattisesti – mutta kannattaa asettaa <strong>Microsoft Managed</strong> tilasta <strong>Enabled</strong> tilaan, jotta varmistat aktivoinnin ja kohderyhmien hallinnan.</p>
+
+<h3 id="-2-mfa-registration-policy-identity-protection--ominaisuus">🔸 2. MFA registration policy (Identity Protection -ominaisuus)</h3>
+
+<ul>
+  <li>Vaatii <strong>Microsoft Entra ID P2</strong> -lisenssin</li>
+  <li><strong>Pakottaa käyttäjät</strong> rekisteröimään MFA-menetelmän ennen kuin he pääsevät kirjautumaan</li>
+  <li>Ei ohitusta – rekisteröinti on tehtävä kirjautumisen yhteydessä</li>
+  <li>Suositeltava tapa, jos lisenssi sallii, sillä se takaa kattavan ja valvotun käyttöönoton</li>
+</ul>
+
+<p><strong>Käyttöönotto:</strong></p>
+<ul>
+  <li>Avaa <strong>Microsoft Entra -hallintakeskus</strong></li>
+  <li>Navigoi kohtaan <strong>Protection &gt; Identity Protection &gt; MFA registration policy</strong></li>
+  <li>Valitse kohderyhmät (esim. All users) ja poissulje tarvittaessa break-glass-tilit</li>
+  <li>Ota policy käyttöön</li>
+</ul>
+
+<blockquote>
+  <p><strong>Huom:</strong> Jos käytössä on sekä <em>Authentication methods registration campaign</em> että <em>MFA registration policy</em> (Identity Protectionin kautta), niin <strong>MFA registration policy ohittaa kampanjan</strong> ja pakottaa käyttäjät rekisteröimään MFA-menetelmät ennen kirjautumista. <strong>Huom!</strong> Jos Security defaults on käytössä, se ohittaa kaikki ehdollisen käyttöoikeuden sekä todennustapojen hallinnan asetukset, mukaan lukien Authentication methods registration campaignin.</p>
+</blockquote>
+
+<h3 id="yhteenveto-kumman-valitsen">Yhteenveto: kumman valitsen?</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ominaisuus</th>
+      <th>Registration Campaign</th>
+      <th>Identity Protection MFA Policy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Lisenssivaatimus</strong></td>
+      <td>Ei vaadi</td>
+      <td>Entra ID P2</td>
+    </tr>
+    <tr>
+      <td><strong>Pakottava</strong></td>
+      <td>Ei (muistutus)</td>
+      <td>Kyllä (pakko rekisteröidä)</td>
+    </tr>
+    <tr>
+      <td><strong>Käyttäjäkokemus</strong></td>
+      <td>Voidaan ohittaa</td>
+      <td>Estää kirjautumisen, kunnes valmis</td>
+    </tr>
+    <tr>
+      <td><strong>Hallinta</strong></td>
+      <td>Kevyt, helppo ottaa käyttöön</td>
+      <td>Vahva kontrolli, mutta vaatii lisenssin</td>
+    </tr>
+    <tr>
+      <td><strong>Suositus</strong></td>
+      <td>Hyvä oletusratkaisu ilman lisenssiä</td>
+      <td>Paras vaihtoehto, jos P2 on käytössä</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<p>Käyttöönoton onnistumisen kannalta on suositeltavaa valita rekisteröintitapa sen mukaan, mitä lisenssejä organisaatiossa on käytössä. Mikäli Entra ID P2 -lisenssi löytyy, Identity Protectionin MFA-politiikka on selkeästi tehokkain ja suositeltavin ratkaisu.</p>
+
+<h3 id="mfa-ja-sspr-self-service-password-reset">MFA ja SSPR (Self-Service Password Reset)</h3>
+
+<p>MFA-menetelmien rekisteröinti toimii myös pohjana (Combined Registration) itsepalautettavan salasanan (SSPR) käyttöönotolle. Näin käyttäjät voivat palauttaa unohtuneen salasanansa samoilla tunnistautumismenetelmillä. Kirjoitan SSPR:n käyttöönotosta tarkemmin tulevassa artikkelissa.</p>
+
+<h2 id="yhteenveto">Yhteenveto</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vaihtoehto</th>
+      <th>Kuvaus</th>
+      <th>Lisenssivaatimus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Security defaults</strong></td>
+      <td>Oletusarvoinen MFA kaikille</td>
+      <td>Ei vaadi maksullista lisenssiä</td>
+    </tr>
+    <tr>
+      <td><strong>Conditional Access</strong></td>
+      <td>Sääntöihin perustuva joustava hallinta</td>
+      <td>Microsoft Entra ID P1 tai P2</td>
+    </tr>
+    <tr>
+      <td><strong>Perinteinen MFA</strong></td>
+      <td>Käyttäjäkohtainen hallinta</td>
+      <td>Ei vaadi lisenssiä, mutta ei suositeltu</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="mfan-käyttöönotto-microsoft-365ssä--conditional-access--käytännön-avulla">MFA:n käyttöönotto Microsoft 365:ssä – Conditional Access -käytännön avulla</h2>
+
+<p>Tässä ohjeessa käydään läpi vaiheittain, kuinka otat monivaiheisen tunnistautumisen (MFA) käyttöön <strong>Conditional Accessin</strong> avulla Microsoft 365 -ympäristössä. Ennen sitä varmistetaan, että <strong>Security defaults</strong> on poistettu käytöstä, jotta voit hallita MFA-asetuksia itse.</p>
+
+<hr />
+
+<h3 id="-poista-security-defaults-käytöstä">🔧 Poista Security Defaults käytöstä</h3>
+
+<blockquote>
+  <p><strong>Security defaults</strong> voi estää omien MFA-käytäntöjen (kuten Conditional Access) toiminnan. Poista se ensin käytöstä.</p>
+</blockquote>
+
+<h4 id="vaiheet">Vaiheet:</h4>
+
+<ol>
+  <li>Siirry <a href="https://entra.microsoft.com/">Microsoft Entra -hallintakeskukseen</a></li>
+  <li>Valitse vasemmalta <strong>“Identity”</strong> ja sitten <strong>“Overview”</strong></li>
+  <li>Valitse <strong>“Properties”</strong></li>
+  <li>Vieritä alas ja klikkaa <strong>“Manage security defaults”</strong></li>
+  <li>Avaa paneeli ja valitse:
+    <ul>
+      <li><strong>Enable security defaults</strong> → <strong>No</strong></li>
+    </ul>
+  </li>
+  <li>Tallenna muutokset</li>
+</ol>
+
+<h3 id="-ota-mfa-käyttöön-conditional-accessin-avulla">✅ Ota MFA käyttöön Conditional Accessin avulla</h3>
+
+<p>Nyt voit määrittää käytännön, joka pakottaa MFA:n halutuille käyttäjille.</p>
+
+<p><strong>Huom!</strong> Tämä ohje toimii <strong>pohjana ensimmäiselle MFA-käytännölle</strong>, jonka tarkoitus on varmistaa, että <strong>kaikilla käyttäjillä on MFA käytössä</strong>. Käytettävyyden parantamiseksi tätä käytäntöä saatetaan myöhemmin <strong>löysentää</strong> tai <strong>jakaa osiin</strong>, kun MFA halutaan kohdistaa tarkemmin eri tilanteisiin tai käyttäjäryhmiin.</p>
+
+<p>Jatkossa voidaan luoda erillisiä käytäntöjä esimerkiksi:</p>
+<ul>
+  <li>Vain <strong>etäkäyttäjille</strong></li>
+  <li>Vain <strong>hallintaoikeuksia omaaville</strong></li>
+  <li>Käytettäväksi <strong>riskipohjaisesti</strong> (Identity Protectionin kanssa)</li>
+  <li>Käytettäessä <strong>tiettyjä sovelluksia tai sijainteja</strong></li>
+</ul>
+
+<p>Tavoitteena on rakentaa hallittu ja tasapainoinen MFA-strategia, joka ei kuormita käyttäjiä tarpeettomasti, mutta säilyttää tietoturvan korkealla tasolla.</p>
+
+<h4 id="vaiheet-1">Vaiheet:</h4>
+
+<ol>
+  <li>Siirry <a href="https://entra.microsoft.com/">Microsoft Entra -hallintakeskukseen</a></li>
+  <li>Valitse vasemmalta <strong>“Entra ID”</strong> → <strong>“Conditional Access”</strong></li>
+  <li>Klikkaa <strong>”+ Create new policy”</strong></li>
+</ol>
+
+<p><img src="/mfa1.png" alt="Kuva" /></p>
+
+<h4 id="1️⃣-nimeä-käytäntö">1️⃣ Nimeä käytäntö</h4>
+<ul>
+  <li><strong>Policy name</strong>: esim. <code class="language-plaintext highlighter-rouge">Require MFA for all users</code></li>
+</ul>
+
+<h4 id="2️⃣-valitse-käyttäjät-users">2️⃣ Valitse käyttäjät (<strong>Users</strong>)</h4>
+<ul>
+  <li>Klikkaa <strong>“Users or workload identities”</strong></li>
+  <li>Valitse:
+    <ul>
+      <li><strong>Include</strong> → esim. <strong>All users</strong></li>
+      <li><strong>Exclude</strong> → esim. ylläpitotili (break-glass), testiympäristö</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="/mfa2.png" alt="Kuva" /></p>
+
+<h4 id="3️⃣-valitse-kohteet-target-resources">3️⃣ Valitse kohteet (<strong>Target resources</strong>)</h4>
+<ul>
+  <li>Valitse:
+    <ul>
+      <li><strong>Select what this policy applies to</strong> → <strong>Resources</strong></li>
+      <li><strong>Include</strong> → All resources</li>
+    </ul>
+
+    <p><img src="/mfa3.png" alt="Kuva" /></p>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Tämä varmistaa, että MFA vaaditaan kaikissa kirjautumisissa M365-palveluihin</p>
+</blockquote>
+
+<h3 id="4️⃣-lisää-ehdot-conditions-valinnainen">4️⃣ Lisää ehdot (<strong>Conditions</strong>) (valinnainen)</h3>
+<ul>
+  <li>Voit lisätä esimerkiksi:
+    <ul>
+      <li><strong>Locations</strong> → Vaadi MFA vain, jos kirjautuminen tulee organisaation ulkopuolelta</li>
+      <li><strong>Device platform</strong> → Kohdista tietyille laitetyypeille</li>
+      <li><strong>Client apps</strong> → Rajaa tietyille sovelluksille</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="5️⃣-määritä-kontrollit-grant">5️⃣ Määritä kontrollit (<strong>Grant</strong>)</h3>
+<ul>
+  <li>Valitse <strong>Grant access</strong></li>
+  <li>
+    <p>Ruksaa <strong>Require multi-factor authentication</strong></p>
+
+    <p><img src="/mfa4.png" alt="Kuva" /></p>
+  </li>
+</ul>
+
+<h4 id="6️⃣-ota-käytäntö-käyttöön">6️⃣ Ota käytäntö käyttöön</h4>
+<ul>
+  <li>Valitse <strong>Enable policy</strong>: <strong>On</strong>
+    <ul>
+      <li>Vaihtoehtoisesti: valitse <strong>Report-only</strong> testausvaiheessa</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="7️⃣-tallenna">7️⃣ Tallenna</h4>
+<ul>
+  <li>Klikkaa <strong>Create</strong> tallentaaksesi ja aktivoidaksesi käytännön</li>
+</ul>
+
+<h3 id="-testaus">🧪 Testaus</h3>
+
+<ol>
+  <li>Kokeile kirjautua käyttäjällä, johon käytäntö kohdistuu</li>
+  <li>Jos MFA ei ole vielä rekisteröity, käyttäjää pyydetään rekisteröimään todennustavat</li>
+  <li>Käyttäjä voi rekisteröidä ne osoitteessa:<br />
+👉 <a href="https://aka.ms/mfasetup">https://aka.ms/mfasetup</a></li>
+</ol>
+
+<h3 id="-vinkkejä-käyttöönottoon">📝 Vinkkejä käyttöönottoon</h3>
+
+<ul>
+  <li>Aloita <strong>Report-only</strong>-tilassa, jotta voit tarkkailla vaikutuksia ilman estävää vaikutusta käyttäjille</li>
+  <li>Luo <strong>pilottikäyttäjäryhmä</strong>, johon kohdistat käytännön ensimmäisessä vaiheessa</li>
+  <li>Luo erilliset käytännöt eri käyttötarpeisiin, kuten:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Require MFA for admins</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Require MFA outside trusted locations</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Require MFA for high-risk users</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="-muistutus-kampanjat-ja-rekisteröintipolitiikat">🔁 Muistutus: Kampanjat ja rekisteröintipolitiikat</h3>
+
+<p>Jos sinulla on käytössä:</p>
+<ul>
+  <li><strong>Authentication methods registration campaign</strong></li>
+  <li><strong>MFA registration policy</strong> (Identity Protectionin kautta)</li>
+</ul>
+
+<blockquote>
+  <p><strong>MFA registration policy ohittaa registration campaignin</strong> ja pakottaa käyttäjän rekisteröimään MFA:n ennen kirjautumista.</p>
+</blockquote>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Multifactor Authentication" /><category term="MFA" /><summary type="html"><![CDATA[MFA]]></summary></entry><entry><title type="html">Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)</title><link href="http://localhost:4000/posts/m365_auth_methods/" rel="alternate" type="text/html" title="Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)" /><published>2025-08-06T10:00:00+03:00</published><updated>2025-08-06T14:29:15+03:00</updated><id>http://localhost:4000/posts/m365_auth_methods</id><content type="html" xml:base="http://localhost:4000/posts/m365_auth_methods/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
 
@@ -34,26 +389,14 @@
 
 <h4 id="ylläpitäjän-toimet">Ylläpitäjän toimet</h4>
 
-<ol>
+<ul>
   <li><strong>Ota käyttöön “Microsoft Authenticator” -menetelmä</strong>
     <ul>
       <li>Sijainti: <code class="language-plaintext highlighter-rouge">Microsoft Entra admin center → Authentication methods → Policies</code></li>
-      <li>Varmista, että menetelmä on <strong>Enabled</strong> ja kohdistettu sopivaan käyttäjäryhmään.</li>
+      <li>Varmista, että menetelmä on <strong>Enabled</strong> ja kohdistettu sopivaan käyttäjäryhmään. Authenticator on oletuksena päällä, mikäli ei ole tehty muutoksia.</li>
     </ul>
   </li>
-  <li><strong>Ota käyttöön “Number Matching” ja App Context asetukset(suositeltu)</strong>
-    <ul>
-      <li>Sijainti: <code class="language-plaintext highlighter-rouge">Microsoft Entra admin center → Authentication methods → Policies → Microsoft Authenticator</code></li>
-      <li>Suositellut asetukset:
-        <ul>
-          <li>Require number matching</li>
-          <li>Show application name and location (App context + sijainti)
-<img src="/auth2.png" alt="Kuva" /></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
+</ul>
 
 <h4 id="loppukäyttäjän-toimet">Loppukäyttäjän toimet</h4>
 
