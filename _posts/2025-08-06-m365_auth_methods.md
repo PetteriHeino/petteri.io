@@ -42,16 +42,9 @@ Microsoft Authenticator on vahva ja käyttäjäystävällinen todennusmenetelmä
 
 #### Ylläpitäjän toimet
 
-1. **Ota käyttöön "Microsoft Authenticator" -menetelmä**
+-  **Ota käyttöön "Microsoft Authenticator" -menetelmä**
    - Sijainti: `Microsoft Entra admin center → Authentication methods → Policies`
-   - Varmista, että menetelmä on **Enabled** ja kohdistettu sopivaan käyttäjäryhmään.
-
-2. **Ota käyttöön "Number Matching" ja App Context asetukset(suositeltu)**
-   - Sijainti: `Microsoft Entra admin center → Authentication methods → Policies → Microsoft Authenticator`
-   - Suositellut asetukset:
-     - Require number matching
-     - Show application name and location (App context + sijainti)
-     ![Kuva]({{ site.baseurl }}/auth2.png)
+   - Varmista, että menetelmä on **Enabled** ja kohdistettu sopivaan käyttäjäryhmään. Authenticator on oletuksena päällä, mikäli ei ole tehty muutoksia.
 
 #### Loppukäyttäjän toimet
 
