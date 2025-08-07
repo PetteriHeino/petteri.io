@@ -1,4 +1,937 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-06T16:50:44+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Multifactor authentication</title><link href="http://localhost:4000/posts/m365_mfa/" rel="alternate" type="text/html" title="Microsoft Entra ID – Multifactor authentication" /><published>2025-08-06T10:01:00+03:00</published><updated>2025-08-06T10:01:00+03:00</updated><id>http://localhost:4000/posts/m365_mfa</id><content type="html" xml:base="http://localhost:4000/posts/m365_mfa/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-07T16:11:44+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID –Conditional Access (CA)</title><link href="http://localhost:4000/posts/conditional_access/" rel="alternate" type="text/html" title="Microsoft Entra ID –Conditional Access (CA)" /><published>2025-08-07T10:02:00+03:00</published><updated>2025-08-07T10:02:00+03:00</updated><id>http://localhost:4000/posts/conditional_access</id><content type="html" xml:base="http://localhost:4000/posts/conditional_access/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
+
+<p>Conditional Access on erittäin tärkeä osa Microsoft pilvipalveluiden tietoturva palveluita. Se on yksi pieni SC-300 sertifiointitestiä. Olen käsitellyt tässä kirjoituksessa jonkun verran asioita, joita ei testissä kysytä, mutta mitkä ovat olennaisia Conditional Access ylläpidon kannalta.</p>
+
+<hr />
+
+<h2 id="conditional-access-ca---mikä-on-conditional-access">Conditional Access (CA) - Mikä on Conditional Access?</h2>
+
+<p><strong>Conditional Access (ehdollinen käyttöoikeus)</strong> on Microsoftin pilvipalveluissa (kuten Azure AD:ssä) käytettävä tietoturvaominaisuus, jonka avulla voidaan hallita ja suojata käyttäjien pääsyä sovelluksiin ja tietoihin. Ajatuksena on yksinkertainen: <strong>pääsy myönnetään tai estetään ehtojen perusteella</strong>.</p>
+
+<p>Perinteisesti käyttäjän tunnistaminen perustui vain käyttäjätunnukseen ja salasanaan. Conditional Access lisää tähän joukon älykkäitä ehtoja, kuten:</p>
+
+<ul>
+  <li>Mistä sijainnista käyttäjä kirjautuu</li>
+  <li>Mitä laitetta hän käyttää</li>
+  <li>Mikä on kirjautumisen riskiarvio</li>
+  <li>Mikä sovellus on kyseessä</li>
+  <li>Kuuluuko käyttäjä tiettyyn ryhmään</li>
+</ul>
+
+<p>Näiden tietojen perusteella voidaan määrittää, pitääkö esimerkiksi:</p>
+
+<ul>
+  <li>Vaatia monivaiheinen tunnistautuminen (MFA)</li>
+  <li>Estää pääsy kokonaan</li>
+  <li>Sallia pääsy vain tietyin rajoituksin (esim. vain hallituilla laitteilla)</li>
+</ul>
+
+<p><strong>Conditional Access yhdistää turvallisuuden ja käytettävyyden.</strong> Sen avulla organisaatio voi suojata tietonsa ilman, että se vaikeuttaa loppukäyttäjän arkea – ja mikä tärkeintä, se reagoi älykkäästi muuttuviin olosuhteisiin.</p>
+
+<h2 id="conditional-access--lisensointi">Conditional Access -lisensointi</h2>
+
+<p><strong>Conditional Access (CA)</strong> on Microsoft Entra ID:n (ent. Azure AD) tarjoama toiminto, jolla voidaan hallita pääsyä resursseihin ehtojen perusteella.<br />
+Käytettävissä olevat ominaisuudet riippuvat käytössä olevasta lisenssitasosta.</p>
+
+<h3 id="perusperiaate">Perusperiaate</h3>
+
+<ul>
+  <li><strong>Conditional Access -käytännöt eivät ole käytettävissä ilmaisessa Entra ID -versiossa.</strong></li>
+  <li>Perustoiminnallisuus edellyttää vähintään <strong>Microsoft Entra ID P1</strong> -lisenssiä (tai sitä sisältävää pakettia).</li>
+  <li>Kehittyneet toiminnot, kuten riskiperusteinen pääsynhallinta, vaativat <strong>Entra ID P2</strong> -lisenssin.</li>
+</ul>
+
+<blockquote>
+  <p>⚠️ Jokaisella käyttäjällä, johon käytäntö kohdistuu, tulee olla vaadittu lisenssi.</p>
+</blockquote>
+
+<h3 id="microsoft-entra-id-p1">Microsoft Entra ID P1</h3>
+
+<h4 id="sisältyvät-ominaisuudet">Sisältyvät ominaisuudet:</h4>
+
+<ul>
+  <li>Conditional Access -käytäntöjen luonti ja käyttö</li>
+  <li>Perustason käyttöehdot:
+    <ul>
+      <li>Käyttäjäryhmät</li>
+      <li>Sovellukset</li>
+      <li>Sijainti (IP/location)</li>
+      <li>Laitetyypit ja -tilat</li>
+    </ul>
+  </li>
+  <li>Multi-Factor Authentication (MFA) vaatiminen</li>
+  <li>Laitteen vaatimukset (hyväksytty tai hybrid-joined)</li>
+  <li>Istunnon hallinta (esim. sign-in frequency)</li>
+  <li><strong>Use app enforced restrictions</strong></li>
+  <li><strong>Use Conditional Access App Control</strong> (vaatii lisäksi Defender for Cloud Apps -lisenssin)</li>
+</ul>
+
+<h4 id="mukana-seuraavissa-lisenssipaketeissa">Mukana seuraavissa lisenssipaketeissa:</h4>
+
+<ul>
+  <li>Microsoft Entra ID P1 (itsenäinen)</li>
+  <li>Microsoft 365 E3</li>
+  <li>Enterprise Mobility + Security (EMS) E3</li>
+  <li>Microsoft Business Premium (osittain – katso huomautus alla)</li>
+</ul>
+
+<blockquote>
+  <p>ℹ️ <em>Microsoft 365 Business Premium -paketissa on rajoitettu Conditional Access -tuki, mutta ei kaikkia P1-ominaisuuksia.</em></p>
+</blockquote>
+
+<h3 id="microsoft-entra-id-p2">Microsoft Entra ID P2</h3>
+
+<h4 id="sisältyvät-lisäominaisuudet">Sisältyvät lisäominaisuudet:</h4>
+
+<ul>
+  <li><strong>Riskipohjaiset ehdot:</strong>
+    <ul>
+      <li>User risk</li>
+      <li>Sign-in risk</li>
+    </ul>
+  </li>
+  <li><strong>Identity Protection</strong> -integraatio</li>
+  <li><strong>Continuous Access Evaluation (CAE)</strong> täydellä tuella</li>
+  <li><strong>Custom authentication context</strong> -käytöt</li>
+  <li><strong>Require token protection for sign-in sessions</strong></li>
+  <li>Insider risk -ehtojen käyttö (esim. käyttäjän käyttäytymisen analysointi)</li>
+  <li>Käytännön vaikutusten simulointi (report-only -tila) ja analytiikka</li>
+</ul>
+
+<h4 id="mukana-seuraavissa-lisenssipaketeissa-1">Mukana seuraavissa lisenssipaketeissa:</h4>
+
+<ul>
+  <li>Microsoft Entra ID P2 (itsenäinen)</li>
+  <li>Microsoft 365 E5</li>
+  <li>EMS E5</li>
+</ul>
+
+<h3 id="muita-lisensseihin-liittyviä-huomioita">Muita lisensseihin liittyviä huomioita</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Toiminto</th>
+      <th>Vähimmäisvaatimus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Conditional Access -käytännöt yleensä</td>
+      <td>Entra ID P1</td>
+    </tr>
+    <tr>
+      <td>Sign-in risk / User risk ehdot</td>
+      <td>Entra ID P2</td>
+    </tr>
+    <tr>
+      <td>Authentication context</td>
+      <td>Entra ID P2</td>
+    </tr>
+    <tr>
+      <td>Use Conditional Access App Control</td>
+      <td>Entra ID P1 + Defender for Cloud Apps</td>
+    </tr>
+    <tr>
+      <td>Token protection for sessions</td>
+      <td>Entra ID P2</td>
+    </tr>
+    <tr>
+      <td>Global Secure Access -integraatio</td>
+      <td>GSA + erillinen lisenssi (esim. Entra Internet Access)</td>
+    </tr>
+    <tr>
+      <td>Insider risk -ehdot</td>
+      <td>Entra ID P2 (tai Microsoft Purview riippuen käytöstä)</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>⚠️ Käytännön voi kohdistaa vain käyttäjiin, joilla on vaadittu lisenssi. Microsoft tarkistaa lisenssien vaatimustenmukaisuuden aktiivisesti.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="conditional-access-rakenne">Conditional Access rakenne</h2>
+
+<p>Conditional Access -käytäntö koostuu eri osista, joita kutsutaan <strong>elementeiksi</strong>. Käytännössä kyseessä on kuin <em>“IF–THEN”-tyyppinen sääntö</em>, jossa määritellään <strong>ehtoja</strong> (IF) ja niiden perusteella <strong>toimintoja</strong> (THEN).</p>
+
+<p>CA-käytännön logiikka rakentuu näiden elementtien alle konfiguroitavista asetuksista. Näin saadaan aikaan joustavia ja tarkasti kohdennettuja sääntöjä, jotka määrittävät, milloin pääsy sallitaan, estetään tai esimerkiksi edellytetään monivaiheista tunnistautumista.</p>
+
+<p>Alla olevassa kuvassa on esitetty CA-käytännön päätaso, jossa näkyvät kaikki käytettävissä olevat elementit.</p>
+
+<p><img src="/ca01.png" alt="Kuva" /></p>
+
+<h3 id="ca-assignments---users-elementti">CA assignments - Users elementti</h3>
+
+<p><img src="/ca02_users_a_2.png" alt="Kuva" /></p>
+
+<p><strong>Users</strong>-elementti määrittelee, keitä käyttäjiä Conditional Access -käytäntö koskee. Tämä on yksi käytännön tärkeimmistä osista, sillä sen avulla kohdennetaan käytäntö oikeille henkilöille tai järjestelmäidentiteeteille. Käytännön voi kohdistaa koko organisaatioon, valittuihin ryhmiin tai yksittäisiin käyttäjiin – ja vastaavasti poissulkea käyttäjiä tarpeen mukaan.</p>
+
+<h4 id="include-sisällytä-käyttäjät">Include (Sisällytä käyttäjät)</h4>
+
+<p><strong>Include</strong>-välilehdellä määritetään, keihin käytäntöä sovelletaan. Tämä tehdään valitsemalla jokin seuraavista vaihtoehdoista:</p>
+
+<h5 id="none-ja-all-users">None ja All Users</h5>
+
+<p>Nämä vaihtoehdot ymmärrettävät ja itsensä selittävät.</p>
+
+<h5 id="select-users-and-groups">Select users and groups</h5>
+
+<p>Valittavina ovat seuraavat kolme alikategoriaa:</p>
+
+<h5 id="1-select-users-and-groups---guest-or-external-users-and-groups"><strong>1 Select Users and groups - Guest or external users and groups</strong></h5>
+
+<p>Kun valitaan <strong>Guest or external users and groups</strong>, Conditional Access -käytäntö kohdistetaan organisaation ulkopuolisiin käyttäjiin. Tämä on tärkeä osa-alue erityisesti ympäristöissä, joissa käytetään <strong>Azure AD B2B -yhteistyötä</strong> eli jaetaan resursseja ulkopuolisten tahojen kanssa.</p>
+
+<p><img src="/ca02_users_b_2.png" alt="Kuva" /></p>
+
+<p>Valittavissa olevat käyttäjätyypit:</p>
+
+<ul>
+  <li>
+    <p><strong>B2B collaboration guest users</strong><br />
+Vieraskäyttäjät, jotka on kutsuttu Azure AD -hakemistoon roolilla <em>Guest</em>. He käyttävät omaa organisaatiotunnustaan, mutta heille on luotu käyttäjäobjekti isäntäorganisaation hakemistoon. Nämä ovat yleisimpiä B2B-käyttäjiä.</p>
+  </li>
+  <li>
+    <p><strong>B2B collaboration member users</strong><br />
+Ulkopuolisia käyttäjiä, joille on poikkeuksellisesti annettu <em>Member</em>-rooli <em>Guest</em>-roolin sijaan. Tämä voi olla tarpeen, jos halutaan tarjota heille enemmän oikeuksia tai pääsyä sisäisiin palveluihin.</p>
+  </li>
+  <li>
+    <p><strong>B2B direct connect users</strong><br />
+Käyttäjiä, jotka muodostavat suoran yhteyden toiseen organisaatioon esimerkiksi <strong>Teamsin jaettujen kanavien</strong> (shared channels) kautta. He eivät ole varsinaisesti kutsuttuja vieraita hakemistossa, mutta silti ulkoisia käyttäjiä.</p>
+  </li>
+  <li>
+    <p><strong>Local guest users</strong><br />
+Käyttäjät, jotka on luotu paikallisesti Azure AD -hakemistoon ilman ulkoista B2B-kutsua. Näitä voi syntyä esimerkiksi erikoistapauksissa tai manuaalisesti. Ne muistuttavat sisäisiä käyttäjiä, mutta niillä on <em>Guest</em>-rooli.</p>
+  </li>
+  <li>
+    <p><strong>Service provider users</strong><br />
+Käyttäjät, jotka liittyvät palveluntarjoajiin ja ovat osa <strong>Microsoft Entra cross-tenant management</strong> -ratkaisuja. Näillä käyttäjillä voi olla erityisiä oikeuksia hallita, tukea tai ylläpitää toisen tenantin ympäristöä. Erottelu mahdollistaa hallitun pääsyn ulkopuolisille palvelutoimittajille.</p>
+  </li>
+  <li>
+    <p><strong>Other external users</strong><br />
+Kaikki muut ulkoiset käyttäjät, joita ei suoraan luokitella yllä oleviin ryhmiin. Tämä voi sisältää tunnistautumattomia, tilapäisiä tai muita ei-standardimuotoisia ulkopuolisia identiteettejä.</p>
+  </li>
+</ul>
+
+<h5 id="2-select-users-and-groups---directory-roles"><strong>2 Select users and groups - Directory roles</strong></h5>
+
+<p><img src="/ca02_users_a_3.png" alt="Kuva" /></p>
+
+<p>Tämän avulla käytäntö voidaan kohdistaa tiettyihin Azure AD -hakemistoroolin käyttäjiin (esimerkiksi <strong>Global Administrator</strong>, <strong>Security Reader</strong>, <strong>Helpdesk Administrator</strong> jne.). Tämä mahdollistaa erityisen tarkat suojaukset hallintakäyttöön.</p>
+
+<h5 id="3-select-users-and-groups---users-and-groups"><strong>3 Select users and groups - Users and groups</strong></h5>
+
+<p><img src="/ca02_users_a_4.png" alt="Kuva" /></p>
+
+<p>Tässä osiossa voit valita tietyt käyttäjät ja/tai ryhmät, joihin Conditional Access -käytäntö kohdistuu.</p>
+
+<h4 id="exclude-poissulje-käyttäjät">Exclude (Poissulje käyttäjät)</h4>
+
+<p><strong>Exclude</strong>-välilehdellä voidaan määrittää poikkeuksia siihen, keihin Conditional Access -käytäntö <em>ei</em> kohdistu, vaikka he muuten sisältyisivät Include-valintojen piiriin.</p>
+
+<p>Tätä käytetään esimerkiksi tilanteissa, joissa halutaan jättää tietyt ylläpitäjät, testikäyttäjät tai järjestelmätilit käytännön ulkopuolelle.</p>
+
+<p>Valintavaihtoehdot ovat pitkälti samat kuin <strong>Include</strong>-välilehdellä: voit poissulkea yksittäisiä käyttäjiä, ryhmiä, ulkoisia käyttäjiä tai hakemistoroolien perusteella. Exclude toimii ikään kuin suodattimena Include-ryhmän sisällä.</p>
+
+<blockquote>
+  <p>💡 <em>Huom:</em> Jos käyttäjä sisältyy sekä Include- että Exclude-listalle, <strong>Exclude voittaa</strong> — käytäntöä ei sovelleta kyseiseen käyttäjään.</p>
+</blockquote>
+
+<h3 id="ca-assignments---target-resources-kohderesurssit-elementti">CA assignments - Target resources (Kohderesurssit) elementti</h3>
+
+<p><strong>Target resources</strong> -elementillä määritellään, mihin resursseihin tai toimintoihin Conditional Access -käytäntö kohdistuu. Tämä on keskeinen osa käytäntöä, sillä sen avulla voidaan rajata, mitkä sovellukset, palvelut tai toiminnot vaativat lisäsuojausta.</p>
+
+<p><img src="/ca03_resources_a_0.png" alt="Kuva" /></p>
+
+<p>Target resources -asetukset on jaettu alasvetovalikon alle kohdassa <strong>Select what this policy applies to</strong>, jossa on kolme päävälilehteä:</p>
+
+<h4 id="1-select-what-this-policy-applies-to-resources">1. Select what this policy applies to: Resources</h4>
+
+<p>Tässä valikossa määritellään, mihin resursseihin Conditional Access -käytäntö kohdistuu. Vaihtoehtoja on useita, joilla voidaan hallita käytännön vaikutusalaa tarkasti:</p>
+
+<ul>
+  <li>
+    <p><strong>None</strong><br />
+Käytäntöä ei kohdisteta mihinkään resurssiin. Tämä valinta tarkoittaa, ettei käytäntö aktivoidu missään resurssissa.</p>
+  </li>
+  <li>
+    <p><strong>All internet resources with Global secure access</strong><br />
+Tämä vaihtoehto kohdistaa käytännön kaikkiin internetin kautta saavutettaviin resursseihin, jotka tukevat <em>Global secure access</em> -mallia. Se on laaja kohdistus, joka kattaa kaikki verkkoon pääsyä vaativat sovellukset ja palvelut, jotka on integroitu Microsoftin turvallisuusmalliin.</p>
+  </li>
+  <li>
+    <p><strong>All resources</strong><br />
+Valitse tämä, jos haluat, että käytäntö vaikuttaa kaikkiin organisaation hallinnoimiin resursseihin ilman poikkeuksia.</p>
+  </li>
+  <li>
+    <p><strong>Select resources</strong><br />
+Tämän valinnan kautta voidaan tarkasti rajata, mihin yksittäisiin resursseihin käytäntö sovelletaan.<br />
+Kun valitset <strong>Select resources</strong>, saat käyttöösi kaksi lisäasetusta:</p>
+
+    <ul>
+      <li>
+        <p><strong>Edit filter</strong><br />
+Tällä asetuksella voit määritellä suodattimia, joiden avulla voit rajata resurssit esimerkiksi sovellustyypin, julkaisumuodon tai muun metatiedon perusteella. Filterin avulla voidaan luoda dynaamisia kohdistuksia ilman, että jokaista resurssia tarvitsee valita erikseen.</p>
+      </li>
+      <li>
+        <p><strong>Select</strong><br />
+Tässä osassa voit valita yksittäiset resurssit listalta, esimerkiksi tietyt pilvisovellukset tai palvelut, joihin käytäntö halutaan kohdistaa.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Näiden vaihtoehtojen avulla Conditional Access -käytännön kohdistaminen voidaan tehdä joko hyvin laajasti tai erittäin tarkasti, tarpeen mukaan.</p>
+
+<h4 id="2-select-what-this-policy-applies-to-user-actions">2. Select what this policy applies to: User actions</h4>
+
+<p><img src="/ca03_resources_a_3.png" alt="Kuva" /></p>
+
+<p>Tässä valinnassa määritellään, mihin käyttäjän suorittamiin toimintoihin Conditional Access -käytäntö kohdistuu. Käytännössä tämä tarkoittaa, että käytäntö aktivoituu vain, kun käyttäjä yrittää suorittaa tiettyjä valittuja toimenpiteitä.</p>
+
+<p>Valittavissa olevat käyttäjätoiminnot ovat:</p>
+
+<ul>
+  <li>
+    <p><strong>Register security information</strong><br />
+Tämä koskee käyttäjän toimenpiteitä, joissa hän rekisteröi tai päivittää turvallisuustietojaan, kuten monivaiheisen tunnistautumisen asetuksia (MFA), varmistussähköpostia tai puhelinnumeroa. Käytännöllä voidaan esimerkiksi vaatia lisäturvaa näissä kriittisissä toiminnoissa.</p>
+  </li>
+  <li>
+    <p><strong>Register or join devices</strong><br />
+Tämä kattaa käyttäjän toimet, joissa hän rekisteröi laitteen Azure AD:hen tai liittyy organisaation hallintaan (esim. liittää laitteen Intuneen). Tämän asetuksen avulla voidaan suojata laitehallintaan liittyvät prosessit ja varmistaa, että vain hyväksytyt käyttäjät ja laitteet voivat rekisteröityä.</p>
+  </li>
+</ul>
+
+<p>Näiden asetusten avulla voidaan kohdistaa Conditional Access -käytäntö kriittisiin käyttäjätoimintoihin ja siten vahvistaa organisaation turvallisuutta entisestään.</p>
+
+<h4 id="3-select-what-this-policy-applies-to-authentication-context">3. Select what this policy applies to: Authentication context</h4>
+
+<p><img src="/ca03_resources_a_4.png" alt="Kuva" /></p>
+
+<p><strong>Authentication context</strong> eli todennusympäristö tarkoittaa erityisiä olosuhteita tai tunnisteita, jotka kuvaavat, millaisessa tilanteessa käyttäjä kirjautuu tai käyttää palvelua.</p>
+
+<p>Se toimii lisäkeinona hallita ja suojata pääsyä kriittisiin resursseihin tai toimintoihin. Käytännössä authentication contextilla voidaan esimerkiksi:</p>
+
+<ul>
+  <li>Vaadita vahvempaa todennusta (kuten monivaiheista tunnistautumista) vain tietyissä tilanteissa, kuten riskialttiissa kirjautumisissa</li>
+  <li>Erottaa tavallinen kirjautuminen kriittisestä toiminnosta, kuten talousjärjestelmään kirjautumisesta</li>
+  <li>Soveltaa erilaisia pääsynhallinnan sääntöjä riippuen siitä, mistä sovelluksesta tai verkosta käyttäjä kirjautuu</li>
+</ul>
+
+<p>Azure AD:ssä nämä authentication contextit määritellään erikseen, ja ne toimivat ikään kuin “tunnisteina” tai “tiloina”, joiden perusteella Conditional Access -käytännöt voidaan aktivoida tai jättää käyttämättä.</p>
+
+<p>💡 <em>Huom:</em> Jos tenantissasi näkyy viesti <strong>“No authentication contexts have been configured”</strong>, se tarkoittaa, että organisaatiossasi ei ole vielä luotu tai otettu käyttöön tällaisia tunnisteita. Tällöin et voi käyttää tätä asetusta ennen kuin authentication contextit on määritelty.</p>
+
+<p>Authentication contextin luominen vaatii lisäkonfiguraatiota Azure AD:ssa, ja sen käyttöönotto kannattaa suunnitella osana laajempaa turvallisuusstrategiaa.</p>
+
+<h3 id="ca-assignments---network-elementti">CA assignments - Network elementti</h3>
+
+<p><img src="/ca04__network_a_1.png" alt="Kuva" /></p>
+
+<p><strong>Network</strong>-elementti määrittää, mistä verkko-osoitteista tai sijainneista Conditional Access -käytäntö aktivoituu. Tällä voidaan rajata käytännön vaikutus vain tietyille verkoille, kuten organisaation sisäverkoille tai luotetuille sijainneille, parantaen näin turvallisuutta ja hallittavuutta.</p>
+
+<h4 id="network---include-sisällytä">Network - Include (Sisällytä):</h4>
+
+<ul>
+  <li>
+    <p><strong>Any Network and location</strong><br />
+Käytäntö koskee kirjautumisia ja toimintoja <em>kaikista verkko-osoitteista</em> ja sijainneista. Tämä on laajin mahdollinen kohdistus.</p>
+  </li>
+  <li>
+    <p><strong>All trusted networks and locations</strong><br />
+Käytäntö kohdistuu vain ennalta määriteltyihin luotettuihin verkkoihin ja sijainteihin. Näihin voi kuulua esimerkiksi yrityksen toimipisteiden IP-osoitteet tai tunnetut VPN-yhteydet.</p>
+  </li>
+  <li>
+    <p><strong>All Compliant Network locations</strong> (harmaana)<br />
+Tämä vaihtoehto tarkoittaa verkkoja tai sijainteja, jotka on todettu <em>vaatimusten mukaisiksi</em> (compliant) esimerkiksi Microsoft Endpoint Managerin (Intunen) hallinnan kautta.<br />
+Jos tämä asetus on harmaana, tarkoittaa se yleensä, ettei tenantissasi ole määriteltynä compliant network location -kohteita tai sinulla ei ole tarvittavia lisenssejä tai oikeuksia tämän käytön aktivoimiseen.</p>
+  </li>
+  <li>
+    <p><strong>Selected networks and locations</strong><br />
+Voit valita tarkasti ne verkot ja sijainnit, joihin käytäntö sovelletaan. Tämä mahdollistaa käytännön kohdistamisen esimerkiksi vain tiettyihin IP-alueisiin tai maantieteellisiin sijainteihin.</p>
+  </li>
+</ul>
+
+<p>💡 <em>Huom:</em> Microsoft on uudistanut Conditional Access -kokonaisuutta, ja <strong>Network</strong>-elementti korvaa vähitellen aiemmin käytetyn <strong>Conditions</strong>-osion <strong>Locations</strong>-asetukset. Tämä tuo uusia toiminnallisuuksia ja parempaa hallintaa verkkoehtojen määrittelyyn.</p>
+
+<h4 id="network---exclude-poissulje">Network - Exclude (Poissulje):</h4>
+
+<p><strong>Exclude</strong>-välilehdellä määritellään ne verkot tai sijainnit, joista Conditional Access -käytäntö <em>ei</em> koske käyttäjiä, vaikka nämä verkot sisältyisivät Include-valintoihin.</p>
+
+<p>Valintojen perusteet ovat samankaltaiset kuin Include-välilehdellä, mutta niiden merkitys on päinvastainen: ne toimivat poikkeuksina, eli käytäntöä ei sovelleta näissä verkoissa tai sijainneissa oleviin kirjautumisiin.</p>
+
+<p>💡 <em>Huom:</em> Jos käyttäjä kirjautuu verkosta, joka on sekä Include- että Exclude-listalla, <strong>Exclude</strong>-asetus menee voimaan eli käytäntöä ei sovelleta.</p>
+
+<h3 id="ca-assignments---conditions-elementti">CA assignments - Conditions elementti</h3>
+
+<p><strong>Conditions</strong>-elementin avulla Conditional Access -käytäntö voidaan kohdistaa tarkemmin käyttäjän kontekstiin perustuen. Täällä määritellään erilaisia ehtoja, kuten riskiarvioita, laitetyyppejä tai maantieteellisiä sijainteja, jotka vaikuttavat siihen, aktivoituuko käytäntö.</p>
+
+<p><img src="/ca05__conditions_0_1.png" alt="Kuva" /></p>
+
+<p>Conditions toimii käytännössä “IF”-osuutena: jos jokin ehto täyttyy, määritetty toimenpide (esim. MFA-vaatimus) käynnistyy.</p>
+
+<p>Seuraavassa käydään läpi käytettävissä olevat ehtotyypit:</p>
+
+<h4 id="user-risk">User risk</h4>
+
+<p>Tämä ehto perustuu Microsoftin tekemään arvioon siitä, onko käyttäjätili vaarantunut. Riskitasot voivat olla matala, keskitaso tai korkea, ja ne perustuvat mm. epätavalliseen toimintaan tai tietovuotoihin.</p>
+
+<p>Esimerkiksi: <em>Vaadi MFA, jos käyttäjän riski on keskitasoinen tai korkeampi.</em></p>
+
+<h4 id="sign-in-risk">Sign-in risk</h4>
+
+<p>Tämä ehto liittyy nimenomaan yksittäiseen kirjautumistapahtumaan, ei käyttäjään yleisesti. Riskit arvioidaan mm. seuraavien perusteella:</p>
+
+<ul>
+  <li>Kirjautuminen uudelta laitteelta tai sijainnista</li>
+  <li>Epätavallinen käyttäytyminen</li>
+  <li>Tunnetuista uhkalähteistä kirjautuminen</li>
+</ul>
+
+<p>Tällä voidaan esimerkiksi estää pääsy kokonaan, jos kirjautumisriski on korkea.</p>
+
+<h4 id="insider-risk">Insider risk</h4>
+
+<p>Tämä ehto perustuu Microsoft Purview Insider Risk Management -toimintoihin ja vaatii erillisen konfiguroinnin. Ehto tunnistaa tilanteita, joissa käyttäjän toiminta viittaa sisäiseen uhkaan, kuten tietojen vuotamiseen tai tarkoitukselliseen haitantekoon.</p>
+
+<p>Useimmissa ympäristöissä tämä asetus ei ole oletuksena käytettävissä.</p>
+
+<h4 id="device-platforms">Device platforms</h4>
+
+<p>Täällä voidaan määrittää, koskeeko käytäntö tiettyjä käyttöjärjestelmiä, kuten:</p>
+
+<ul>
+  <li>Windows</li>
+  <li>macOS</li>
+  <li>iOS</li>
+  <li>Android</li>
+  <li>Linux</li>
+</ul>
+
+<p>Tämän avulla voidaan esimerkiksi sallia pääsy vain hallituilta Windows-laitteilta tai estää tietyntyyppiset laitteet.</p>
+
+<h4 id="locations">Locations</h4>
+
+<p>Tämä asetus mahdollistaa käytännön kohdistamisen sijaintien (esim. IP-alueet, maat tai luotetut verkot) perusteella.</p>
+<blockquote>
+  <p>💡 <em>Huom:</em> Tämä on sama toiminto, jonka <strong>Network</strong>-elementti on vähitellen korvaamassa.<br />
+Location-asetuksia käytetään edelleen monissa ympäristöissä, mutta uudet ominaisuudet löytyvät jatkossa Network-elementin alta.</p>
+</blockquote>
+
+<h4 id="client-apps">Client apps</h4>
+
+<p>Tämä asetus rajaa käytännön sovellettavaksi käytetyn sovellustyypin perusteella:</p>
+
+<ul>
+  <li>Selain (browser)</li>
+  <li>Modernit sovellukset (modern authentication)</li>
+  <li>Perinteiset sovellukset (legacy authentication, esim. vanhat Outlook-versiot)</li>
+  <li>Mobiili- ja työpöytäsovellukset</li>
+</ul>
+
+<p>Tällä voidaan esimerkiksi estää perinteisten sovellusten käyttö tai vaatia MFA vain selainpohjaisessa kirjautumisessa.</p>
+
+<h4 id="filter-for-devices">Filter for devices</h4>
+
+<p>Tämä mahdollistaa käytännön kohdistamisen laiteominaisuuksiin perustuen (esim. Intunen tai Entra ID:n hallinnoimat ominaisuudet). Käytetään yleensä yhdessä <strong>device compliance</strong> -ehtojen kanssa.</p>
+
+<p>Esimerkiksi: <em>Salli pääsy vain, jos laitteessa on tietty tagi, tai se on suojattu BitLockerilla.</em></p>
+
+<h4 id="authentication-flows">Authentication flows</h4>
+
+<p>Tämä on uudempi ehto, jolla voidaan kohdistaa käytäntö tiettyihin kirjautumisprosessin vaiheisiin tai menetelmiin, kuten:</p>
+
+<ul>
+  <li>Passwordless-kirjautuminen</li>
+  <li>FIDO2</li>
+  <li>Windows Hello for Business</li>
+  <li>Temporary Access Pass</li>
+</ul>
+
+<p>Tällä voidaan hallita tarkemmin, millaisia todennustapoja hyväksytään eri tilanteissa.</p>
+
+<h3 id="ca-access-controls---grant-elementti">CA access controls - Grant elementti</h3>
+
+<p><strong>Grant controls</strong> -osio määrittää, mitä ehtoja käyttäjän on täytettävä, jotta hän saa pääsyn valittuun resurssiin. Tämä on käytännön <em>“THEN”</em> -osa: jos käyttäjä täyttää asetetut <strong>Conditions</strong>-ehdot, <strong>Grant</strong>-asetukset määrittävät, myönnetäänkö pääsy ja millä lisävaatimuksilla.</p>
+
+<p><img src="/ca06__grant_1_1.png" alt="Kuva" /></p>
+
+<p>Käytössä on kaksi päätapaa:</p>
+
+<ul>
+  <li><strong>Grant access</strong> (Myönnä pääsy tietyin ehdoin)</li>
+  <li><strong>Block access</strong> (Estä pääsy kokonaan)</li>
+</ul>
+
+<h4 id="grant-access--valinnan-lisäehdot">Grant access -valinnan lisäehdot</h4>
+
+<p>Kun valitset <em>Grant access</em>, voit lisätä pääsyn ehdoksi yhden tai useamman seuraavista toimenpiteistä:</p>
+
+<ul>
+  <li>
+    <p><strong>Require multi-factor authentication</strong><br />
+Käyttäjän on tunnistauduttava monivaiheisesti (MFA) ennen kuin pääsy sallitaan.</p>
+  </li>
+  <li>
+    <p><strong>Require device to be marked as compliant</strong><br />
+Käyttäjän laitteen on oltava <em>vaatimusten mukainen</em> Microsoft Intunen hallinnan mukaan (esim. salattu levy, virustorjunta päällä, ajantasainen käyttöjärjestelmä).</p>
+  </li>
+  <li>
+    <p><strong>Require Hybrid Azure AD joined device</strong><br />
+Laitteen on oltava liitetty sekä paikalliseen Active Directoryyn että Azure AD:hen – yleistä erityisesti organisaatioissa, joilla on hybridiympäristö.</p>
+  </li>
+  <li>
+    <p><strong>Require approved client app</strong><br />
+Käyttäjän on käytettävä Microsoftin <em>hyväksyttyä sovellusta</em>, kuten Outlookia, Teamsia tai OneDrive-sovellusta – ei esimerkiksi kolmannen osapuolen sähköpostiohjelmaa tai selainta.</p>
+  </li>
+  <li>
+    <p><strong>Require app protection policy</strong><br />
+Edellyttää, että sovellukselle on määritetty <strong>App Protection Policy</strong> (esim. estetään tiedostojen tallennus laitteen muistiin). Sovelluksen on oltava Intunen hallitsema ja suojattu.</p>
+  </li>
+  <li>
+    <p><strong>Require password change</strong><br />
+Käyttäjän on vaihdettava salasanansa ennen pääsyä. Tämä on käytössä tietyissä riskiskenaarioissa (esim. korkea käyttäjäriski).</p>
+  </li>
+</ul>
+
+<h4 id="valintalogiikka-require-one-of-the-selected-controls-vs-require-all-the-selected-controls">Valintalogiikka: “Require one of the selected controls” vs. “Require all the selected controls”</h4>
+
+<p>Kun valitset useita ehtoja, sinun on määritettävä, sovelletaanko:</p>
+
+<ul>
+  <li>
+    <p><strong>Require one of the selected controls</strong><br />
+Riittää, että käyttäjä täyttää <em>yhden</em> valituista ehdoista.</p>
+  </li>
+  <li>
+    <p><strong>Require all the selected controls</strong><br />
+Käyttäjän on täytettävä <em>kaikki</em> valitut ehdot päästäkseen sisään.</p>
+  </li>
+</ul>
+
+<h4 id="block-access">Block access</h4>
+
+<p>Tällä asetuksella pääsy estetään kokonaan valitun käytännön piiriin kuuluvissa tilanteissa. Tämä on selkeä tapa sulkea tietyt käyttäjät, laitteet tai olosuhteet kokonaan pois pääsystä.</p>
+
+<h3 id="ca-access-controls---session-elementti">CA access controls - Session elementti</h3>
+
+<p><strong>Session controls</strong> määrittävät, miten käyttäjän istuntoa hallitaan sen jälkeen, kun pääsy on myönnetty. Näillä asetuksilla voidaan rajoittaa käyttäjän toimintaa, hallita kirjautumisen kestoa ja parantaa turvallisuutta istunnon aikana.</p>
+
+<p><img src="/ca07__session_1_1.png" alt="Kuva" /></p>
+
+<h4 id="use-app-enforced-restrictions"><strong>Use app enforced restrictions</strong></h4>
+
+<p>Tämä asetus käyttää Microsoft 365 -sovellusten sisäänrakennettuja rajoituksia.<br />
+Esimerkkejä:</p>
+
+<ul>
+  <li>Outlook Web Access (OWA): estetään liitteiden lataaminen, tulostaminen tai kopiointi.</li>
+  <li>SharePoint ja OneDrive: rajoitetaan tiedostojen käyttö vain selaamiseen.</li>
+</ul>
+
+<blockquote>
+  <p>🔹 Ei vaadi Defender for Cloud Apps -integraatiota.<br />
+🔹 Sovellukset tunnistavat, että Conditional Access on voimassa, ja rajoittavat toimintoja sen mukaisesti.</p>
+</blockquote>
+
+<h4 id="use-conditional-access-app-control"><strong>Use Conditional Access App Control</strong></h4>
+
+<p>Tällä asetuksella ohjataan liikennettä <strong>Microsoft Defender for Cloud Apps</strong> -palvelun kautta. Tämä mahdollistaa istuntopohjaisen valvonnan ja tarkat käytännöt sovellusten käyttöön.<br />
+Kolme toimintavaihtoehtoa:</p>
+
+<ul>
+  <li><strong>Monitor only</strong> – Seuraa käyttöä ilman rajoituksia.</li>
+  <li><strong>Block downloads</strong> – Estää tiedostojen lataamisen tuetuista sovelluksista.</li>
+  <li><strong>Use custom policy</strong> – Käytä MDCA:ssa määriteltyjä tarkempia sääntöjä.</li>
+</ul>
+
+<blockquote>
+  <p>⚠️ Edellyttää Defender for Cloud Apps -lisenssiä ja konfiguroitua MDCA-yhdistämistä.</p>
+</blockquote>
+
+<h4 id="sign-in-frequency"><strong>Sign-in frequency</strong></h4>
+
+<p>Määrittää, kuinka usein käyttäjän on kirjauduttava uudelleen (uudelleenautentikointi).<br />
+Asetus ohittaa Azure AD:n oletustokenien elinkaariasetukset.</p>
+
+<ul>
+  <li>Voidaan asettaa tunneissa tai päivissä (esim. 1h, 12h, 7d, 90d).</li>
+  <li>Vaikuttaa sekä salasanaan että MFA:han, riippuen käytännön kohteista.</li>
+</ul>
+
+<blockquote>
+  <p>🔹 Esimerkiksi käytäntö: “pakota kirjautuminen kerran vuorokaudessa riskialttiilla käyttäjillä”.</p>
+</blockquote>
+
+<h4 id="persistent-browser-session"><strong>Persistent browser session</strong></h4>
+
+<p>Määrittää, jääkö selainistunto pysyväksi:</p>
+
+<ul>
+  <li><strong>Always persistent</strong> – Istunto säilyy selaimen sulkemisen jälkeen.</li>
+  <li><strong>Never persistent</strong> – Käyttäjän on kirjauduttava uudelleen selaimen sulkemisen jälkeen.</li>
+  <li><strong>Use Azure AD default</strong> – Noudattaa Entra ID:n oletusasetusta (esim. “Keep me signed in”).</li>
+</ul>
+
+<blockquote>
+  <p>🔹 Vaikuttaa vain selainpohjaiseen kirjautumiseen.</p>
+</blockquote>
+
+<h4 id="customize-continuous-access-evaluation-cae"><strong>Customize continuous access evaluation (CAE)</strong></h4>
+
+<p>CAE mahdollistaa lähes reaaliaikaisen istuntojen hallinnan ilman, että odotetaan tokenin vanhenemista.<br />
+Tällä asetuksella voi määrittää, mitä tapahtumia tulkitaan istunnon katkaisua aiheuttavina.</p>
+
+<ul>
+  <li>Esimerkiksi: käyttäjä poistetaan ryhmästä, tili estetään, IP-osoite muuttuu → istunto päättyy heti.</li>
+</ul>
+
+<blockquote>
+  <p>🔹 Tukee Microsoft 365 -palveluita (esim. Exchange, SharePoint) ja jatkuvasti laajenevaa sovellusvalikoimaa.</p>
+</blockquote>
+
+<h4 id="disable-resilience-defaults"><strong>Disable resilience defaults</strong></h4>
+
+<p>Tällä asetuksella voidaan poistaa käytöstä Microsoftin oletuskäytäntöjä, jotka mahdollistavat kirjautumisen jatkumisen lyhyen katkoyhteyden tai tunnistautumishäiriön aikana (resilience).<br />
+Jos käytäntö on <strong>päällä</strong>, kirjautuminen voi epäonnistua nopeammin, mutta se lisää turvallisuutta, erityisesti poikkeustilanteissa.</p>
+
+<blockquote>
+  <p>⚠️ Käyttö vaatii huolellista suunnittelua ja testausta – voi vaikuttaa loppukäyttäjän kokemukseen.</p>
+</blockquote>
+
+<h4 id="require-token-protection-for-sign-in-sessions"><strong>Require token protection for sign-in sessions</strong></h4>
+<p><em>(Generally available for Windows, preview for macOS ja iOS)</em></p>
+
+<p>Tällä asetuksella otetaan käyttöön <strong>Token Protection</strong>, joka sitoo kirjautumiseen käytetyn tokenin tiettyyn laitteeseen.<br />
+Estää tokenin varastamisen ja käytön toisella laitteella.</p>
+
+<ul>
+  <li>Suojaa erityisesti selaimessa tai Office-sovelluksissa käytettyjä kirjautumisia.</li>
+  <li>Toimii vain tuetuilla käyttöjärjestelmillä ja sovellusversioilla.</li>
+</ul>
+
+<blockquote>
+  <p>🔐 Parantaa merkittävästi istunnon turvallisuutta – suositeltava korkean suojaustason ympäristöihin.</p>
+</blockquote>
+
+<h4 id="use-global-secure-access-security-profile"><strong>Use Global Secure Access security profile</strong></h4>
+
+<p>Tämä valinta käyttää Microsoftin <strong>Global Secure Access</strong> -ratkaisun (osa Microsoft Entra Internet Access / Private Access) turvallisuusprofiilia.<br />
+Sitä käytetään kun halutaan yhdistää Conditional Access -hallinta Entra Network Access -ratkaisuihin.</p>
+
+<blockquote>
+  <p>🔹 Edellyttää Global Secure Access -konfiguraatiota ja lisenssejä.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="conditional-access-templates">Conditional Access Templates</h2>
+
+<p><strong>Conditional Access Templates</strong> ovat Microsoftin tarjoamia valmiita mallipohjia, joiden avulla voidaan nopeasti luoda tietoturvaa parantavia Conditional Access -käytäntöjä.<br />
+Ne tarjoavat suositeltuja määrityksiä yleisimpiin skenaarioihin ja ovat hyödyllisiä niin aloitteleville kuin kokeneillekin ylläpitäjille.</p>
+
+<h3 id="miksi-käyttää-ca-templateja">Miksi käyttää CA-templateja?</h3>
+
+<ul>
+  <li>Nopea ja helppo tapa ottaa käyttöön Microsoftin suosittelemia käytäntöjä</li>
+  <li>Johdonmukaisuus eri ympäristöissä</li>
+  <li>Toimivat hyvänä lähtökohtana manuaalisille käytännöille</li>
+  <li>Mukautettavissa organisaation tarpeisiin ennen käyttöönottoa</li>
+</ul>
+
+<blockquote>
+  <p>💡 Template ei ole automaattisesti aktiivinen – voit tarkastella ja muokata sitä ennen kuin otat sen käyttöön.</p>
+</blockquote>
+
+<h3 id="templaten-kategoriat-2025">Templaten kategoriat (2025)</h3>
+
+<p>Microsoft jakaa CA-templatet seuraaviin <strong>viitekehykseen perustuviin kategorioihin</strong>:</p>
+
+<h4 id="secure-foundation">Secure Foundation</h4>
+
+<p>Perustason suojauskäytännöt, jotka tulisi olla käytössä lähes kaikissa ympäristöissä.</p>
+
+<p><strong>Esimerkkejä:</strong></p>
+
+<ul>
+  <li>Estä perinteiset kirjautumismenetelmät (Block legacy authentication)</li>
+  <li>Edellytä MFA kaikille käyttäjille</li>
+  <li>Istuntojen hallinta (esim. sign-in frequency)</li>
+  <li>Salli vain suojatut sovellukset (app protection)</li>
+</ul>
+
+<h4 id="protect-administrator">Protect Administrator</h4>
+
+<p>Kriittisten roolien (kuten Global Administrator tai Privileged Role Administrator) suojaukseen tarkoitettuja käytäntöjä.</p>
+
+<p><strong>Esimerkkejä:</strong></p>
+
+<ul>
+  <li>MFA aina vaatimuksena admin-käyttäjille</li>
+  <li>Rajoita kirjautumiset vain luotettuihin sijainteihin</li>
+  <li>Estä pääsy ei-hallituilta laitteilta</li>
+</ul>
+
+<h4 id="zero-trust">Zero Trust</h4>
+
+<p>Käytännöt, jotka tukevat <strong>Zero Trust -arkkitehtuuria</strong>: pääsy myönnetään vain, jos konteksti on hyväksyttävä (ei sijainnin tai verkon perusteella).</p>
+
+<p><strong>Esimerkkejä:</strong></p>
+
+<ul>
+  <li>Edellytä laitteen olevan hyväksytty tai hallittu</li>
+  <li>Käytä authentication context -ehtoja tiettyihin toimintoihin</li>
+  <li>Käytä Continuous Access Evaluation -ominaisuuksia</li>
+</ul>
+
+<hr />
+
+<h4 id="remote-network">Remote Network</h4>
+
+<p>Skenaariot, joissa käytetään pilviresursseja etäverkoista tai halutaan valvoa pääsyä tiettyjen verkkoyhteyksien kautta.</p>
+
+<p><strong>Esimerkkejä:</strong></p>
+
+<ul>
+  <li>Rajoita pääsy vain organisaation tunnetuista verkoista</li>
+  <li>Käytä Global Secure Access -integraatiota</li>
+  <li>Salli pääsy vain luotetuista sijainneista tai hybrid-verkosta</li>
+</ul>
+
+<hr />
+
+<h4 id="emerging-threats">Emerging Threats</h4>
+
+<p>Käytännöt, jotka perustuvat uhkatilanteiden kehittymiseen ja riskiarviointiin. Vaativat yleensä <strong>Entra ID P2</strong> -lisenssin.</p>
+
+<p><strong>Esimerkkejä:</strong></p>
+
+<ul>
+  <li>Käytä Sign-in risk tai User risk ehtoja</li>
+  <li>Edellytä lisätodennus riskitilanteissa</li>
+  <li>Estä kirjautuminen epäilyttävässä kontekstissa automaattisesti</li>
+</ul>
+
+<hr />
+
+<h3 id="templaten-käyttö-käytännössä">Templaten käyttö käytännössä</h3>
+
+<ol>
+  <li>Siirry Microsoft Entra -hallintaportaalissa kohtaan:<br />
+<strong>Protection &gt; Conditional Access &gt; Templates</strong></li>
+  <li>Valitse haluamasi template</li>
+  <li>Tarkastele ja muokkaa esiasetuksia tarpeen mukaan</li>
+  <li>Tallenna ja määritä käytännön tila: <strong>On</strong>, <strong>Off</strong> tai <strong>Report-only</strong></li>
+</ol>
+
+<hr />
+
+<h3 id="yhteenveto">Yhteenveto</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ominaisuus</th>
+      <th>Kuvaus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Käyttötarkoitus</strong></td>
+      <td>Nopea ja turvallinen Conditional Access -politiikan luonti</td>
+    </tr>
+    <tr>
+      <td><strong>Kategoriaesimerkit</strong></td>
+      <td>Secure foundation, Protect administrator, Zero Trust jne.</td>
+    </tr>
+    <tr>
+      <td><strong>Mukautettavuus</strong></td>
+      <td>Täysin muokattavissa ennen käyttöönottoa</td>
+    </tr>
+    <tr>
+      <td><strong>Lisenssivaatimus</strong></td>
+      <td>Entra ID P1 tai P2 riippuen käytännön ehdoista</td>
+    </tr>
+    <tr>
+      <td><strong>Käyttöönotto</strong></td>
+      <td>Entra admin centerissä Templates-välilehdeltä</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>CA Templates on erinomainen lähtöpiste, jolla varmistetaan, että tietoturvakäytännöt pohjautuvat Microsoftin suosituksiin ja viimeisimpiin uhkamalleihin.</p>
+
+<hr />
+
+<h2 id="nimeämiskäytännöt">Nimeämiskäytännöt</h2>
+
+<p>Kun Conditional Access politiikkoja ryhdytään hienosäätämään, niin politiikkojen määrä saattaa kasvaa hyvinkin paljon. Noudattamalla hyvää nimeämiskäytöntöä voidaan välttää hämmennystä siitä, mitkä käytännöt koskevat mitäkin. Ilman yhtenäistä nimeämiskäytäntöä voi olla vaikea päätellä, että mitä vaikutuksia yhden käytännön muuttamisella voi olla. Siksi on suositeltavaa suunnitella ja dokumentoida hyvä nimeämiskäytäntö ja noudattaa mallia kaikissa Conditional Access politiikoissa.</p>
+
+<p>Esimerkki nimeämiskäytäntö mallista: <CAnumber>-&lt;Persona/User type&gt;-&lt; PolicyType&gt;-<App>-<Platform>-<Grant>-<OptionalDescription></OptionalDescription></Grant></Platform></App></CAnumber></p>
+
+<p>Tuotannossa CA politiikoiden nimet voisivat näyttää esimerkiksi tältä:</p>
+
+<ul>
+  <li>CA001-Global-BaseProtection-AllApps-AnyPlatforms-EntraIdJorCompliant</li>
+  <li>CA002-Global-IdentityProtection-AllApps-AnyPlatforms-Block-BlockLegacy</li>
+  <li>CA100-Admins-BaseProtection-AllApps-AnyPlatforms-Unmanaged</li>
+  <li>CA101-Admins-AttackSurfaceReduction-AllApps-Unknown-Block</li>
+  <li>CA200-Internals-AppProtection-O365-Windows10-EntraIdHJ</li>
+  <li>CA201-Internals-AppProtection-O365-Windows10-Unmanaged</li>
+  <li>CA202-Internals-DataProtection-O365-Windows10-Unmanaged-DLPSessioncontrol</li>
+  <li>CA203-Internals-AppProtection-O365-iOSAndroid-EMAppProtection</li>
+  <li>CA204-Internals-AppProtection-SPO-iOSAndroid</li>
+  <li>CA300-Externals-BaseProtection-AllApps-AnyPlatform</li>
+  <li>CA301-Guests-Compliance-AllApps-AllDevices-RequireTOU (TOU = Terms Of Use)</li>
+  <li>CA401-GuestAdmins-Compliance-AllApps-AllDevices-RequireTOU (TOU = Terms Of Use)</li>
+</ul>
+
+<p>Nimeämiskäytännässä numerointi pohjautuu seuraavankaltaiseen rakenteeseen:</p>
+
+<ul>
+  <li>Global protection (CA001-CA099)</li>
+  <li>Admins protection (CA100-CA199)</li>
+  <li>Internals user protection (CA200-CA299)</li>
+  <li>Externals user protection (CA300-CA399)</li>
+  <li>Guests user protection (CA400-CA499)</li>
+  <li>GuestAdmins user admins protection (CA500-CA599)</li>
+  <li>Microsoft365ServiceAccounts (CA600-CA699)</li>
+  <li>AzureServiceAccounts (CA700-CA799)</li>
+  <li>CorpServiceAccounts (CA800-CA899)</li>
+</ul>
+
+<h2 id="hyvät-käytännöt">Hyvät käytännöt</h2>
+
+<ul>
+  <li>Käytä report-only tilaa ennen käytännön käyttöönottoa tuotantoympäristössä.</li>
+  <li>Testaa sekä positiivisia että negatiivisia skenaarioita</li>
+  <li>Käytä muutos- ja versionhallintaa CA-käytännöissä</li>
+  <li>Automatisoi CA-käytäntöjen hallinta työkaluilla, kuten Azure DevOps/GitHub tai Logic Apps</li>
+  <li>Sovella Zero Trust periaatteita Conditional Access käytäntöihin</li>
+  <li>Rajoitta Block tilan käyttöä, vain tarvittaessa</li>
+  <li>Varmista, että kaikki sovellukset ja alusta ovat suojattuja (CA:lla ei ole implisiittistä “estä kaikki” -käytäntöä)</li>
+  <li>Suojaa käyttäjät, joilla on hallintaoikeuksia, kaikissa M365 RBAC -järjestelmissä</li>
+  <li>Vaadi salasanan vaihto ja monitoiminen vahvistus korkean riskin käyttäjille ja kirjautumisille (identity protection)</li>
+  <li>Rajoita pääsyä korkean riskin laitteilta (Intune-vaatimustenmukaisuuskäytäntö vaatimustenmukaisuuden tarkistuksella ehdollisessa pääsyssä)</li>
+  <li>Suojaa etuoikeutetut järjestelmät (kuten Azure Mgt. Portal, AWS, GCP)</li>
+  <li>Estä jatkuvat selainistunnot järjestelmänvalvojilta ja epäluotettavilta laitteilta</li>
+  <li>Estä legacy (basic authentication) todennus</li>
+  <li>Rajoita pääsyä tuntemattomilta tai ei-tuetuilta laitealustoilta</li>
+  <li>Rajoita vahvojen tunnistetietojen rekisteröintiä</li>
+</ul>
+
+<p><strong>CA-poikkeukset (Exclusions)</strong></p>
+
+<ul>
+  <li>Käytä suojausryhmiä (security group) poissulkemisille (exclusions) (pilvipohjaiset ryhmät ovat optimaalisia, koska tällaisten ryhmien muutokset otetaan käyttöön nopeasti, toisin kuin on-premises synkronoidussa ryhmässä)</li>
+  <li>Luo poissulkemisryhmä (exclusion group) jokaiselle käytännölle tai ehkä vain käytäntötyypille ja henkilölle, joka on normaalisti tyhjä ja jota käytetään väliaikaisten poissulkemisten määrittämiseen. Staattiset poissulkemiset määritetään suorana poissulkemismäärityksenä väliaikaisten poissulkemisten lisäksi.</li>
+  <li>Poista hätäkäyttötilit (break glass) kaikista käytännöistä hätäkäyttötilien poissulkemisryhmällä</li>
+  <li>Tarkista poissulkemisryhmäsi jäsenet säännöllisesti (esim. Access Review)</li>
+  <li>Poista Entra ID Connect -palvelutilisi käytännöistä, jotka estäisivät sitä synkronoitumasta EntraC-palvelutilien poissulkemisryhmän kanssa</li>
+</ul>
+
+<h2 id="ca-käytäntöjen-testaaminen---uudet-käytännöt-ja-muutokset">CA käytäntöjen testaaminen - uudet käytännöt ja muutokset</h2>
+
+<h3 id="testiryhmä-pohjainen-testaus">Testiryhmä-pohjainen testaus</h3>
+
+<p>Testiryhmä edustaa annettua käyttäjämäärää, ja ajatuksena on ensin soveltaa CA käytäntöä ryhmään 0, jossa on vain hyvin vähän testikäyttäjiä, ja jos/kun se toimii, ottaa sama käytäntö käyttöön testiryhmässä, jossa on enemmän käyttäjiä, kuten ryhmä 1, ryhmä 2 ja niin edelleen, ennen kuin sitä sovelletaan kaikkiin käyttäjiin.</p>
+
+<h3 id="muutoshallinta---vaiheistettu-testaus-ja-käyttöönotto">Muutoshallinta - vaiheistettu testaus ja käyttöönotto</h3>
+
+<p>Kun uusia käytäntöjä tai muutoksia olemassa oleviin käytäntöihin otetaan käyttöön, haluamme pystyä ottamaan ne käyttöön vaiheittain. Tämä tarkoittaa, että sovellamme uusia käytäntöjä rajoitettuun käyttäjäjoukkoon ja testaamme niitä. Palautteen perusteella otamme CA käytännön käyttöön suuremmalle käyttäjäjoukolle ja lopulta sovellamme sitä kaikkiin käyttäjiin, kun kaikki vaiheet on hyväksytty.</p>
+
+<p>Jotkut yritykset saattavat haluta hallita näitä testikäyttäjiä ad hoc -tavalla ja sisällyttää merkitykselliset käyttäjät testiryhmään ja laajentaa jäsenyyttä kyseisessä ryhmässä, kunnes se on täysin testattu ja sovellettu kaikkiin käyttäjiin. CA käytäntöihin on kuitenkin odotettavissa jatkuvia muutoksia, ja on hyödyllistä, että muutosten käyttöönottoon on jäsennelty strukturoidumpi lähestymistapa. Tämä tarkoittaa myös helpompaa ja jäsennellympää viestintää ja yhteistyötä sidosryhmien kanssa yksittäisten persoonien eri ominaisuuksien tarkasta statuksesta.</p>
+
+<p>**CA policy testiryhmät: **</p>
+<ul>
+  <li>CA-Persona-Internals-Ryhmä0
+    <ul>
+      <li>Vain muutama 1-5 käyttäjää, jotka ovat mukana CA-käytäntöjen kehittämisessä, kuten CA-järjestelmänvalvojat.
+        <ul>
+          <li>CA:n järjestelmänvalvojien odotetaan käyttävän omia loppukäyttäjätunnuksiaan Ryhmä 0:n jäseninä, mutta vain Internals pernoonana. Järjestelmänvalvojien on ehkä luotava erilliset testitilit muille persoonille, jotta he voivat testata näiden henkilöiden käytäntöjä ilman, että heidän tarvitsee vaihtaa testiryhmää.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>CA-Persona-Internals-Ryhmä1
+    <ul>
+      <li>Muutamia IT-henkilöstön käyttäjä, jotka eivät ole mukana CA-käytäntöjen kehittämisessä, 5–10 käyttäjää
+        <ul>
+          <li>Määritä uusi CA-käytäntö tälle ryhmälle vasta, kun Ryhmä 0:n käyttöönotto ja käyttökokemus on hyväksytty.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>CA-Persona-Internals-Ryhmä2
+    <ul>
+      <li>Sekoitus IT-henkilöstöä ja loppukäyttäjiä, jotka ovat suostuneet olemaan staattisia CA ryhmä 2 -käyttäjiä ja ymmärtävät vaikutukset, 10-50 käyttäjää (yrityksen koosta riippuen)
+        <ul>
+          <li>Määritä uusi CA-käytäntö tälle ryhmälle vasta, kun Ryhmä 1:n käyttöönotto ja käyttökokemus on hyväksytty.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>All Internals CA-Persona-Internals
+    <ul>
+      <li>kaikki CA-Persona-Internals jäsenet</li>
+      <li>Tätä persoonaa edustava vakiotuotantoryhmä.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Uuden CA-käytännön käyttöönottoprosessi on seuraava:</strong></p>
+
+<ul>
+  <li>Luo uusi CA-käytäntö sen persoonaryhmän sisällä, jolle se on tarkoitettu (noudata CA-nimeämisstandardia persoonalle). Noudata nimeämisstandardia käytettävän käytännön tyypin mukaan, eli aseta se vain raportointitilaan, jotta se ei vaikuta tuotantoon ennen testausta. Jos haluat minimoida
+loppukäyttäjille aiheutuvat seuraukset vain raportointitilassa, voit valita käytännön soveltamisen vain raportointitilassa ensin CA-Persona-Internals-Ryhmä0, lisätä sitten Ryhmä1:n, Ryhmä2:n ja Ryhmä3:n ja lopuksi asettaa sen CA-Persona-Internalsiksi.</li>
+  <li>Anna käytännön toimia päivän tai kaksi - CA-työkirjojen ja kirjautumislokien mahdollisten virheiden perusteella varmistaen, että ne ymmärretään ennen jatkamista, ja tarkista, ovatko loppukäyttäjät valittaneet uusista kirjautumiskehotteista, erityisesti mobiililaitteilla, koska vain raportointi voi aiheuttaa odottamattomia kehotteita joissakin käyttötapauksissa.</li>
+  <li>Mahdollisesti voit muokata käytäntöä ja jatkaa sen suorittamista vain raportti -tilassa muutaman päivän ajan ja varmistaa, että ongelmat on ratkaistu tai ymmärretty täysin ennen käytännön käyttöönottoa ensimmäisellä soitolla.</li>
+  <li>Määritä käytäntö CA-Persona-Internals-Ryhmä0:lle ja ota se käyttöön.</li>
+  <li>Testaa ja varmista, että kaikki toimii odotetulla tavalla muutaman päivän ajan.</li>
+  <li>Määritä käytäntö myös CA-Persona-Internals-Ryhmä1:lle (jotta sekä Ryhmä0- että Ryhmä1-ryhmät on määritetty).</li>
+  <li>Testaa ja varmista, että kaikki toimii odotetulla tavalla muutaman päivän ajan.</li>
+  <li>Määritä käytäntö myös CA-Persona-Internals-Ryhmä2:lle (jotta sekä Ryhmä0-, Ryhmä1- että Ryhmä2-ryhmät on määritetty).</li>
+  <li>Testaa ja varmista, että kaikki toimii odotetulla tavalla muutaman päivän ajan.</li>
+  <li>Määritä käytäntö CA-Persona-Internalsille. Uusi käytäntö on nyt täydessä tuotannossa.</li>
+</ul>
+
+<p><strong>Muutokset tuotannossa oleviin CA-käytäntöihin</strong></p>
+
+<p>Jos tuotannossa olevaa CA-käytäntöä on muutettava uuden CA-käytännön luomisen sijaan, ehdotettu käyttöönottoprosessi on hieman erilainen. Tällä menettelyllä varmistetaan, että tietoturvaominaisuuksia ei heikennetä uusia käytäntöjä testatessa, eli ei haluta vain poistaa olemassa olevaa käytäntöä käytöstä.</p>
+
+<ul>
+  <li>Pidä olemassa oleva/alkuperäinen käytäntö käynnissä, kun testaat muutosta kopioidussa käytännössä
+vain raportointitilassa alla kuvatulla tavalla.</li>
+  <li>Kopioi olemassa oleva/alkuperäinen käytäntö ja nimeä se uudelleen olemassa olevalla nimellä lisäämällä “staged-deployment” tai “test”. Yritä olla johdonmukainen siinä, mitä sanamuotoja lisätään olemassa olevaan käytäntöön osoittamaan, että kyseessä on vaiheittainen käyttöönotto. Kopiointia ei vielä tueta portaalissa, jolloin sinun on luotava uusi käytäntö, jolla on sama sisältö kuin olemassa olevalla käytännöllä ja noudatettava nimeämistä. CI/CD:n kautta tehtyjen muutosten osalta CA-käytäntö pitäisi olla helppo kopioida käytäntömääritystiedostoon, kuten json-tiedostoon.</li>
+  <li>Määritä kopioitu käytäntö CA-Persona-Internals-Ryhmä0:lle ja aseta se vain raportointitilaan, koska haluamme testata, mitä tapahtuu, jos tätä käytäntöä sovelletaan.</li>
+  <li>Tarkista työkirjat ja kirjautumislokit ja seuraa uuden testikäytännön mahdollisia virheitä ja muuta niitä vastaavasti.</li>
+  <li>Lisää CA-Persona-Internals-Ryhmä1 ja CA-Persona-Internals-Ryhmä2 ja myöhemmin samalla, kun tarkistat työkirjat ja kirjautumislokit sekä mahdolliset loppukäyttäjien valitukset.</li>
+  <li>Jos kaikki näyttää hyvältä, haluamme nyt ottaa sen käyttöön/pakottaa sen tuotannossa. Aloita sulkemalla CA-Persona-Internals-Ryhmä0 pois alkuperäisestä käytännöstä.</li>
+  <li>Muuta kopioitu käytäntö kohdistumaan vain CA-Persona-Internals-Ryhmä0:een, vaihda se “vain raportointi” -tilasta “käytössä” -tilaan.</li>
+  <li>Tarkista ja seuraa uuden testikäytännön mahdollisia virheitä ja tee tarvittavat muutokset</li>
+  <li>Muuta alkuperäistä käytäntöä niin, että myös CA-Persona-Internals-Ryhmä1 jätetään pois käyttäjien/ryhmien määrityksestä</li>
+  <li>Määritä CA-Persona-Internal-Ryhmä1 lisäsisällykseksi CA-Persona-Internals-testikäytäntöön</li>
+  <li>Tarkista ja seuraa uuden testikäytännön mahdollisia virheitä ja tee tarvittavat muutokset</li>
+  <li>Muuta alkuperäistä käytäntöä niin, että myös CA-Persona-Internals-Ryhmä2 jätetään pois käyttäjien/ryhmien määrityksestä</li>
+  <li>Määritä CA-Persona-Internal-Ryhmä2 lisäsisällykseksi CA-Persona-Internals-testikäytäntöön</li>
+  <li>Tarkista ja seuraa uuden testikäytännön mahdollisia virheitä ja tee tarvittavat muutokset</li>
+  <li>Määritä testikäytäntö CA-Persona-Internalsille</li>
+  <li>Muuta alkuperäinen käytäntö käytöstä pois päältä -tilaan</li>
+  <li>Tarkista ja seuraa uuden testikäytännön virheitä ja tee tarvittavat muutokset</li>
+  <li>Jos kaikki toimii oikein, poista alkuperäinen käytäntö</li>
+  <li>Muuta testikäytännön nimi niin, ettei nimessä ole -test-päätettä, jotta sillä on nyt sama nimi kuin alkuperäisellä käytännöllä, mutta se toimii uusien muutosten kanssa.</li>
+</ul>
+
+<h2 id="ca-käytäntöjen-ylläpidon-automatisointi">CA käytäntöjen ylläpidon automatisointi</h2>
+
+<p>Mikäli organisaation automaatio on niin kehittynyttä, niin voidaan käyttää Azure DevOps CI/CD -prosessia CA-käytäntöjen muutosten hallintaan manuaalisen tekemisen sijaan Azure-portaalissa. Tämä vähentää inhimillisten virheiden riskiä CA-käytäntöjä määritettäessä ja mahdollistaa muutosten hyväksyntäprosessien sisällyttämisen
+sekä mahdollisuuden palata aiempiin käytäntöihin.</p>
+
+<p>Tässä blogi kirjoituksessa en käsittele automatisointia mainintaa enempää.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Conditional Access" /><category term="CA" /><summary type="html"><![CDATA[CA lisenssit, rakenne, templates, nimeämiskäytännöt, hyvät käytännöt, testaaminen ja käyttöönotto]]></summary></entry><entry><title type="html">Microsoft Entra ID – Multifactor authentication</title><link href="http://localhost:4000/posts/m365_mfa/" rel="alternate" type="text/html" title="Microsoft Entra ID – Multifactor authentication" /><published>2025-08-06T10:01:00+03:00</published><updated>2025-08-06T10:01:00+03:00</updated><id>http://localhost:4000/posts/m365_mfa</id><content type="html" xml:base="http://localhost:4000/posts/m365_mfa/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
 
@@ -353,7 +1286,7 @@ Ehdollisen käyttöoikeuden hyödyntäminen vaatii <strong>Microsoft Entra ID P1
 
 <blockquote>
   <p><strong>MFA registration policy ohittaa registration campaignin</strong> ja pakottaa käyttäjän rekisteröimään MFA:n ennen kirjautumista.</p>
-</blockquote>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Multifactor Authentication" /><category term="MFA" /><summary type="html"><![CDATA[MFA]]></summary></entry><entry><title type="html">Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)</title><link href="http://localhost:4000/posts/m365_auth_methods/" rel="alternate" type="text/html" title="Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)" /><published>2025-08-06T10:00:00+03:00</published><updated>2025-08-06T14:29:15+03:00</updated><id>http://localhost:4000/posts/m365_auth_methods</id><content type="html" xml:base="http://localhost:4000/posts/m365_auth_methods/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+</blockquote>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Multifactor Authentication" /><category term="MFA" /><summary type="html"><![CDATA[MFA vaihtoehdot, MFA rekisteröinti, MFA Conditional Accessilla]]></summary></entry><entry><title type="html">Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)</title><link href="http://localhost:4000/posts/m365_auth_methods/" rel="alternate" type="text/html" title="Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)" /><published>2025-08-06T10:00:00+03:00</published><updated>2025-08-06T14:29:15+03:00</updated><id>http://localhost:4000/posts/m365_auth_methods</id><content type="html" xml:base="http://localhost:4000/posts/m365_auth_methods/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
 

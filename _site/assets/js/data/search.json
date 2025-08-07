@@ -1,11 +1,19 @@
 [
   {
+    "title": "Microsoft Entra ID –Conditional Access (CA)",
+    "url": "/posts/conditional_access/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Conditional Access, CA",
+    "date": "2025-08-07 10:02:00 +0300",
+    "content": "CA lisenssit, rakenne, templates, nimeämiskäytännöt, hyvät käytännöt, testaaminen ja käyttöönotto"
+  },
+  {
     "title": "Microsoft Entra ID – Multifactor authentication",
     "url": "/posts/m365_mfa/",
     "categories": "M365",
     "tags": "SC-300, Microsoft, Entra ID, Multifactor Authentication, MFA",
     "date": "2025-08-06 10:01:00 +0300",
-    "content": "MFA"
+    "content": "MFA vaihtoehdot, MFA rekisteröinti, MFA Conditional Accessilla"
   },
   {
     "title": "Microsoft Entra ID – Todennuskäytännöt (Authentication Methods)",
