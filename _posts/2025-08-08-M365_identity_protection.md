@@ -1,12 +1,11 @@
 ---
 title: Microsoft Entra ID – Identity Protection osa 1
-description: SSPR - käyttöönotto ja testaus
+description: Identity Protection käyttöönotto kirjautumisessa
 authors: Petteri
 date: 2025-08-08 05:01:00 +0200
 categories: [M365]
 tags: [SC-300, Microsoft, Entra ID, Identity Protection]
 pin: false
-media_subpath: '/assets/media/2025-08-08_sspr'
 ---
 ## Johdanto
 
