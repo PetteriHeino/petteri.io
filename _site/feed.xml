@@ -1,4 +1,246 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-07T16:11:44+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID –Conditional Access (CA)</title><link href="http://localhost:4000/posts/conditional_access/" rel="alternate" type="text/html" title="Microsoft Entra ID –Conditional Access (CA)" /><published>2025-08-07T10:02:00+03:00</published><updated>2025-08-07T10:02:00+03:00</updated><id>http://localhost:4000/posts/conditional_access</id><content type="html" xml:base="http://localhost:4000/posts/conditional_access/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-08T10:17:37+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Self-Service Password Reset (SSPR)</title><link href="http://localhost:4000/posts/M365_sspr/" rel="alternate" type="text/html" title="Microsoft Entra ID – Self-Service Password Reset (SSPR)" /><published>2025-08-08T04:01:00+03:00</published><updated>2025-08-08T04:01:00+03:00</updated><id>http://localhost:4000/posts/M365_sspr</id><content type="html" xml:base="http://localhost:4000/posts/M365_sspr/"><![CDATA[<h2 id="microsoft-entra-self-service-password-reset-sspr--mitä-miksi-ja-miten">Microsoft Entra Self-Service Password Reset (SSPR) – Mitä, miksi ja miten?</h2>
+
+<p>Microsoft Entran <strong>Self-Service Password Reset (SSPR)</strong> antaa käyttäjille mahdollisuuden nollata tai vaihtaa unohtuneen salasanansa ilman IT-tuen apua. Jos käyttäjä lukittuu ulos tililtään tai unohtaa salasanansa, hän voi itse palauttaa pääsyn työympäristöön. Tämä vähentää tukipyyntöjä ja parantaa tuottavuutta.</p>
+
+<h3 id="miten-sspr-toimii">Miten SSPR toimii?</h3>
+
+<ol>
+  <li><strong>Käyttäjä siirtyy SSPR-portaaliin</strong>, esimerkiksi:
+    <ul>
+      <li>Kirjautumisruudun <strong>“Can’t access your account?”</strong> -linkistä</li>
+      <li><strong>Suoralla URL-osoitteella:</strong><br />
+👉 <a href="https://aka.ms/sspr">https://aka.ms/sspr</a><br />
+Tämä linkki vie suoraan Microsoftin SSPR-portaaliin, ja toimii myös mobiililaitteilla tai toisella laitteella.</li>
+    </ul>
+  </li>
+  <li>Palvelu tarkistaa:
+    <ul>
+      <li>Käyttäjän tilin kelpoisuuden SSPR:ään</li>
+      <li>Onko salasana hallinnassa pilvessä vai paikallisessa AD:ssä</li>
+      <li>Onko käyttäjä rekisteröinyt vaaditut todennusmenetelmät</li>
+    </ul>
+  </li>
+  <li>
+    <p>Käyttäjä suorittaa todennuksen esimerkiksi puhelinnumeron, sähköpostin tai Authenticator-sovelluksen avulla.</p>
+  </li>
+  <li>Prosessin lopuksi käyttäjä voi:
+    <ul>
+      <li><strong>Nollata salasanansa</strong>, jos se on unohtunut tai vanhentunut</li>
+      <li><strong>Poistaa tililukituksen</strong>, jos niin on sallittu asetuksissa</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="lukituksen-avaaminen-ilman-salasanan-vaihtoa">Lukituksen avaaminen ilman salasanan vaihtoa</h3>
+
+<p>Aiemmin SSPR:n asetuksissa oli mahdollista sallia käyttäjille tilin lukituksen avaaminen <strong>ilman salasanan vaihtoa</strong>, esimerkiksi tilanteissa, joissa käyttäjä oli lukinnut tilinsä toistuvilla virheellisillä kirjautumisyrityksillä.</p>
+
+<p>Tämä tehtiin asetuksella:</p>
+
+<blockquote>
+  <p><strong>“Allow users to unlock account without resetting password”</strong></p>
+</blockquote>
+
+<h4 id="nykytila-2025">Nykytila (2025)</h4>
+
+<p>Tämä asetus ei enää näy useimmissa ympäristöissä seuraavista syistä:</p>
+
+<ul>
+  <li>Microsoft on <strong>poistanut näkyvyyden asetukseen</strong> Entra-hallintakeskuksen käyttöliittymästä uusissa tai päivitettyissä tenanteissa.</li>
+  <li>Vanha <strong>AzureAD PowerShell -moduuli</strong>, jonka kautta asetusta aiemmin hallittiin (<code class="language-plaintext highlighter-rouge">Get-AzureADPolicy</code>), on <strong>poistettu käytöstä</strong>.</li>
+  <li><strong>Microsoft Graph PowerShell SDK</strong> ei tällä hetkellä tarjoa suoraa komentoa kyseisen asetuksen hallintaan.</li>
+</ul>
+
+<h4 id="mitä-tämä-tarkoittaa">Mitä tämä tarkoittaa?</h4>
+
+<p>Jos et näe asetusta tenantissasi:</p>
+<ul>
+  <li>Et voi muuttaa käyttäytymistä manuaalisesti.</li>
+  <li>Microsoftin järjestelmä <strong>hallinnoi asetusta taustalla</strong>, mahdollisesti oletusarvoisesti sallien tai estäen toiminnon riippuen tenantin muista määrityksistä ja pilviversiosta.</li>
+</ul>
+
+<h4 id="suositus">Suositus</h4>
+
+<p>Jos tilin lukituksen avaaminen ilman salasanan vaihtoa on tärkeä osa käyttötapauksia, suosittelemme seuraavaa:</p>
+
+<ul>
+  <li><strong>Testaa</strong> käyttäjäskenaario käytännössä: lukitse testikäyttäjä ja katso, voiko hän avata tilinsä <code class="language-plaintext highlighter-rouge">https://aka.ms/sspr</code>-sivun kautta ilman salasanan vaihtoa.</li>
+  <li><strong>Seuraa Microsoftin päivityksiä</strong>, sillä authentication methods -politiikka on jatkuvasti kehittyvä osa Entraa.</li>
+</ul>
+
+<h3 id="hybridituki-ja-password-writeback">Hybridituki ja “password writeback”</h3>
+
+<p>Monissa organisaatioissa käyttäjätunnukset ja salasanat hallitaan edelleen paikallisessa Active Directoryssä (AD DS). Tässä tilanteessa Microsoft Entra -ympäristön SSPR voidaan yhdistää paikalliseen AD:hen <strong>password writeback</strong> -toiminnolla.</p>
+
+<h4 id="miten-password-writeback-toimii">Miten password writeback toimii?</h4>
+
+<p>Kun käyttäjä nollaa salasanansa pilven kautta SSPR:llä:</p>
+
+<ol>
+  <li>Microsoft Entra ID vastaanottaa salasanan vaihdon pyynnön.</li>
+  <li><strong>Microsoft Entra Connect</strong> -komponentti ottaa yhteyden paikalliseen Active Directoryyn.</li>
+  <li>Uusi salasana kirjoitetaan takaisin (writeback) AD:hen.</li>
+  <li>Käyttäjä voi kirjautua normaalisti kaikissa järjestelmissä, jotka käyttävät AD-tunnistautumista.</li>
+</ol>
+
+<p><strong>Vaatimukset:</strong></p>
+
+<ul>
+  <li><strong>Microsoft Entra Connect</strong> käyttöön otettu on-premises ympäristössä</li>
+  <li><strong>Password writeback</strong> aktivoitu Entra Connectin asetuksissa</li>
+  <li>Käyttäjän tili synkronoitu Enta ID:hen</li>
+  <li><strong>Entra Connect palvelutunnuksella</strong> riittävät Active Directory käyttöoikeudet writeback-operaatioihin</li>
+</ul>
+
+<h3 id="salasana-resetointi-b2b-käyttäjillä">Salasana resetointi B2B käyttäjillä</h3>
+
+<p>Microsoft Entra tukee myös <strong>B2B (Business-to-Business) käyttäjien</strong> salasanojen palauttamista, mikä helpottaa yhteistyötä ulkoisten kumppaneiden kanssa.</p>
+
+<h4 id="miten-b2b-käyttäjätunnuksen-resetointi-toimii">Miten B2B käyttäjätunnuksen resetointi toimii?</h4>
+
+<ul>
+  <li>B2B-käyttäjä voi käyttää <strong>SSPR:ää</strong> aivan kuten organisaation oma käyttäjä, <strong>jos hän käyttää Microsoft-tiliä</strong> tai hänen oma Entra-hakemistonsa tukee SSPR:ää.</li>
+  <li>Käyttäjä ohjataan omaan organisaatioonsa palauttamaan salasana.</li>
+  <li>Jos kumppanin ympäristö ei tue SSPR:ää, salasanan palautus ei ole mahdollista Microsoftin kautta.</li>
+</ul>
+
+<h4 id="huomioitavaa">Huomioitavaa</h4>
+
+<ul>
+  <li>Organisaatio ei voi pakottaa toisen organisaation B2B-käyttäjää käyttämään tiettyjä palautusmenetelmiä.</li>
+  <li>B2B-käyttäjän salasana palautetaan <strong>heidän oman identiteetin tarjoajansa kautta</strong>, ei isäntäympäristössä.</li>
+</ul>
+
+<h3 id="hallinta-ja-seuranta">Hallinta ja seuranta</h3>
+
+<ul>
+  <li><strong>Lisenssit:</strong> Vähintään Entra ID P1 / P2 -lisenssi vaaditaan.</li>
+  <li><strong>Autentikointimenetelmät:</strong> Voit sallia esim. puhelin, sähköposti, Microsoft Authenticator -sovellus, turvakysymykset jne.</li>
+  <li><strong>Auditointi:</strong> Rekisteröinti- ja palautustoiminnot kirjataan, ja niitä voi seurata myös SIEM-järjestelmissä.</li>
+  <li><strong>Kohdistus:</strong> Voit rajata, mitkä käyttäjät saavat käyttää SSPR:ää (esim. ryhmäperusteisesti).</li>
+</ul>
+
+<h3 id="hyödyt">Hyödyt</h3>
+
+<ul>
+  <li><strong>Kustannustehokas:</strong> Vähemmän helpdesk-tikettejä.</li>
+  <li><strong>Käyttäjäystävällinen:</strong> Pääsy palautuu nopeasti.</li>
+  <li><strong>Turvallinen:</strong> Auditointi, vahva todennus ja hallittu käyttöönotto.</li>
+</ul>
+
+<hr />
+
+<h2 id="ota-käyttöön-microsoft-entra-selfservice-password-reset-sspr">Ota käyttöön Microsoft Entra Self‑Service Password Reset (SSPR)</h2>
+
+<p>Tämä ohje kuvaa, miten SSPR otetaan käyttöön Microsoft Entra ID -ympäristössä testiryhmälle – ja tarvittaessa laajennetaan koko organisaatioon.</p>
+
+<h3 id="vaatimukset">Vaatimukset</h3>
+
+<ul>
+  <li><strong>Lisenssi</strong>: Tarvitaan vähintään Microsoft Entra ID P1-lisenssi</li>
+  <li><strong>Käyttöoikeus</strong>: Sinulla tulee olla vähintään <strong>Authentication Policy Administrator</strong> -oikeus</li>
+</ul>
+
+<h3 id="ssprn-aktivointi">SSPR:n aktivointi</h3>
+
+<ol>
+  <li>Kirjaudu sisään Microsoft Entra -hallintakeskukseen.</li>
+  <li>Siirry kohtaan: <strong>Entra ID → Password reset</strong>.
+<img src="/sspr1.png" alt="Kuva" /></li>
+  <li>Ominaisuusvalikosta (<code class="language-plaintext highlighter-rouge">Properties</code>) valitse <strong>Self service password reset enabled</strong>:
+    <ul>
+      <li><strong>None</strong> – Ei käytössä</li>
+      <li><strong>Selected</strong> – Käytössä valituille ryhmille</li>
+      <li><strong>All</strong> – Käytössä kaikille käyttäjille</li>
+    </ul>
+  </li>
+  <li>Jos valitset <strong>Selected</strong>, hae ja valitse ryhmä kohdassa Select Group, kuten <code class="language-plaintext highlighter-rouge">SSPR-Test-Group</code>.</li>
+  <li>Tallenna asetukset klikkaamalla <strong>Save</strong></li>
+</ol>
+
+<h3 id="autentikointimenetelmät-ja-rekisteröinti-2025">Autentikointimenetelmät ja rekisteröinti (2025)</h3>
+
+<p>Mene kohtaan:<br />
+<strong>Entra ID → Password reset → Authentication methods</strong></p>
+
+<p>Tässä näkymässä näkyy enää vain <strong>Security questions</strong>, koska muut menetelmät hallitaan nyt Authentication Methods Policylla.</p>
+
+<ul>
+  <li>Voit edelleen valita, haluatko sallia <strong>Security questions</strong> osaksi SSPR-prosessia.</li>
+  <li>Määritä myös:
+    <ul>
+      <li><strong>Number of methods required to reset</strong> → esim. 1 tai 2, riippuen turvallisuuspolitiikastasi.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Mikäli tarpeen on tarkastella ja mahdollisesti muuttaa muita käytössä olevia todennuskäytäntöjä niin siirry hallintakeskuksessa kohtaan:<br />
+<strong>Entra ID → Authentication methods</strong></p>
+
+<p>Olen kirjoittanut blogikirjoituksen todennuskäytännöistä <a href="../M365_auth_methods">Linkki kirjoitukseen</a></p>
+
+<p>Siirry kohtaan:<br />
+<strong>Entra ID → Password reset → Registration</strong></p>
+
+<p>Täältä voit määrittää:</p>
+
+<ul>
+  <li><strong>Require users to register when signing in</strong> → Suositellaan <strong>Yes</strong></li>
+  <li><strong>Number of days before users are asked to reconfirm their authentication information</strong> → Esimerkiksi <strong>180 päivää</strong></li>
+</ul>
+
+<p>Tämä varmistaa, että käyttäjien todennustiedot pysyvät ajan tasalla.</p>
+
+<h3 id="ilmoitukset-notifications">Ilmoitukset (Notifications)</h3>
+
+<p>SSPR:n avulla voit lähettää ilmoituksia sekä käyttäjille että ylläpitäjille salasanan palautustapahtumista. Tämä parantaa valvontaa ja tietoturvaa.</p>
+
+<h4 id="asetusten-sijainti">Asetusten sijainti:</h4>
+
+<p><strong>Entra ID → Password reset → Notifications</strong></p>
+
+<p>Täällä on kaksi tärkeää asetusta:</p>
+
+<ul>
+  <li>
+    <p><strong>Notify users on password resets?</strong><br />
+→ Kun tämä on <strong>Yes</strong>, käyttäjille lähetetään sähköposti-ilmoitus, kun heidän salasanansa on nollattu – riippumatta siitä, kuka sen teki.</p>
+  </li>
+  <li>
+    <p><strong>Notify all admins when other admins reset their password?</strong><br />
+→ Kun tämä on <strong>Yes</strong>, kaikki Entra-järjestelmänvalvojat saavat ilmoituksen, jos jonkun toisen ylläpitäjän salasana palautetaan.</p>
+  </li>
+</ul>
+
+<h3 id="testaa-rekisteröinti-ja-salasanan-palautus">Testaa rekisteröinti ja salasanan palautus</h3>
+
+<p>Käyttöönoton jälkeen kannattaa testata SSPR-toiminto alusta loppuun testikäyttäjällä.</p>
+
+<ol>
+  <li><strong>Rekisteröinti</strong>:
+    <ul>
+      <li>Avaa inkognito-selain.</li>
+      <li>Siirry osoitteeseen: <a href="https://aka.ms/ssprsetup">https://aka.ms/ssprsetup</a></li>
+      <li>Kirjaudu sisään testikäyttäjällä.</li>
+      <li>Rekisteröi vaaditut todennustavat (esim. sähköposti, puhelin, Authenticator).</li>
+    </ul>
+  </li>
+  <li><strong>Salasanan palautus</strong>:
+    <ul>
+      <li>Siirry osoitteeseen: <a href="https://aka.ms/sspr">https://aka.ms/sspr</a></li>
+      <li>Syötä käyttäjätunnus ja seuraa ohjeita salasanan palauttamiseksi.</li>
+      <li>Tarkista, että ilmoitukset lähtevät onnistuneesti sekä käyttäjälle että ylläpitäjälle (jos kyseessä admin-tili).</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="ssprn-poistaminen-käytöstä-tarvittaessa">SSPR:n poistaminen käytöstä (tarvittaessa)</h3>
+
+<ol>
+  <li>Mene <strong>Entra ID → Password reset</strong>.</li>
+  <li>Aseta <strong>Self service password reset enabled</strong> arvoon <strong>None</strong>.</li>
+  <li>Tallenna muutos. Näin SSPR otetaan kokonaan pois käytöstä</li>
+</ol>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Self-Service Password Reset" /><category term="SSPR" /><summary type="html"><![CDATA[SSPR - käyttöönotto ja testaus]]></summary></entry><entry><title type="html">Microsoft Entra ID –Conditional Access (CA)</title><link href="http://localhost:4000/posts/conditional_access/" rel="alternate" type="text/html" title="Microsoft Entra ID –Conditional Access (CA)" /><published>2025-08-07T10:02:00+03:00</published><updated>2025-08-07T10:02:00+03:00</updated><id>http://localhost:4000/posts/conditional_access</id><content type="html" xml:base="http://localhost:4000/posts/conditional_access/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa, missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
 

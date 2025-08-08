@@ -1,5 +1,13 @@
 [
   {
+    "title": "Microsoft Entra ID – Self-Service Password Reset (SSPR)",
+    "url": "/posts/M365_sspr/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Self-Service Password Reset, SSPR",
+    "date": "2025-08-08 04:01:00 +0300",
+    "content": "SSPR - käyttöönotto ja testaus"
+  },
+  {
     "title": "Microsoft Entra ID –Conditional Access (CA)",
     "url": "/posts/conditional_access/",
     "categories": "M365",
