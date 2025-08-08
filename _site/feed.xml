@@ -1,4 +1,948 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-08T10:17:37+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Self-Service Password Reset (SSPR)</title><link href="http://localhost:4000/posts/M365_sspr/" rel="alternate" type="text/html" title="Microsoft Entra ID – Self-Service Password Reset (SSPR)" /><published>2025-08-08T04:01:00+03:00</published><updated>2025-08-08T04:01:00+03:00</updated><id>http://localhost:4000/posts/M365_sspr</id><content type="html" xml:base="http://localhost:4000/posts/M365_sspr/"><![CDATA[<h2 id="microsoft-entra-self-service-password-reset-sspr--mitä-miksi-ja-miten">Microsoft Entra Self-Service Password Reset (SSPR) – Mitä, miksi ja miten?</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="fi"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="fi" /><updated>2025-08-08T15:32:01+03:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Petteri Heino</title><subtitle>Kotisivu ja blogi</subtitle><entry><title type="html">Microsoft Entra ID – Identity Protection osa 1</title><link href="http://localhost:4000/posts/M365_identity_protection/" rel="alternate" type="text/html" title="Microsoft Entra ID – Identity Protection osa 1" /><published>2025-08-08T06:01:00+03:00</published><updated>2025-08-08T06:01:00+03:00</updated><id>http://localhost:4000/posts/M365_identity_protection</id><content type="html" xml:base="http://localhost:4000/posts/M365_identity_protection/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä blogikirjoitus on osa kirjoittamaani Microsoft SC-300 testi sarjaa (kirjoitain aiheista, mitkä kuuluvat testialueeseen), missä käsittelen kevyellä tasolla testissä käsiteltäviä asioita. Tarkoituksena on että kirjoituksista saa nopeasti ymmärryksen mistä asiassa on kyse ja kuinka perus konfigurointi tapahtuu. Kun haluaa syventää ymmärtämistä, niin kannattaa lukea jatkoksi Microsoft Learniä, mistä samat asiat löytyvät huomattavasti kattavammin ja tarkemmin (mutta ovat myös raskaampia lukea jos asia on täysin uusi).</p>
+
+<p>Identity Protection on laaja kokonaisuus, koska sen signaalit eivät rajoitu pelkästään Entraan – niitä hyödynnetään myös Microsoft Defenderissä, Sentinelissä ja muissa SIEM-järjestelmissä osana laajempaa uhkien havaitsemista ja reagointia. Tässä kirjoituksessa keskitytään vain sen käyttöönottoon kirjautumisen yhteydessä, kun taas signaalien tulkinta ja operatiivinen käsittely vaativat oman syventävän tarkastelunsa. Kirjoitan myöhemmin jatko-osan tälle blogikirjoitukselle.</p>
+
+<h2 id="mikä-on-entra-id-protection">Mikä on Entra ID Protection?</h2>
+
+<p><strong>Microsoft Entra ID Protection</strong> on pilvipohjainen tietoturvapalvelu, joka auttaa organisaatioita suojaamaan käyttäjätunnuksiaan kehittyneiltä uhkilta. Se hyödyntää koneoppimista ja Microsoftin laajaa tietoturvadataverkostoa havaitakseen ja reagoidakseen epäilyttäviin kirjautumistoimintoihin lähes reaaliaikaisesti.</p>
+
+<h3 id="riskien-havaitseminen">Riskien havaitseminen</h3>
+
+<p>Entra ID Protection tunnistaa automaattisesti riskejä kolmessa eri kategoriassa:</p>
+
+<ul>
+  <li><strong>Risky sign-ins</strong> – Epäilyttävät kirjautumisyritykset (esim. sijaintihyppäykset, epäluotetut IP-osoitteet)</li>
+  <li><strong>Risky users</strong> – Käyttäjät, joiden tilit näyttävät olevan vaarantuneet</li>
+  <li><strong>Risk detections</strong> – Tarkat tiedot havaituista riskitekijöistä, kuten torjutuista hyökkäyksistä tai epätavallisesta toiminnasta</li>
+</ul>
+
+<h3 id="riskien-tutkiminen-ja-korjaaminen">Riskien tutkiminen ja korjaaminen</h3>
+
+<p>Kun riski havaitaan, Entra ID Protection antaa mahdollisuuden:</p>
+
+<ul>
+  <li><strong>Tutkia tapahtumia</strong> – Analysoida kirjautumisiin ja käyttäjiin liittyviä tietoja riskin lähteen ymmärtämiseksi</li>
+  <li><strong>Korjata riskit</strong> – Joko <strong>automaattisesti</strong> (esim. pakotettu MFA-tarkistus tai salasanan vaihto) tai <strong>manuaalisesti</strong> (esim. järjestelmänvalvojan tekemä tilin palautus tai tutkimus)</li>
+</ul>
+
+<h3 id="datan-hyödyntäminen-ja-integraatiot">Datan hyödyntäminen ja integraatiot</h3>
+
+<p>ID Protectionin tuottamaa dataa voidaan viedä ja hyödyntää laajasti esimerkiksi:</p>
+
+<ul>
+  <li><strong>Microsoft Sentinelissa</strong> – Tapahtumien yhdistäminen muuhun lokidataan ja uhkien korelointi</li>
+  <li><strong>SIEM-järjestelmissä</strong> – API- tai logiikkavirtojen avulla tietojen rikastaminen ja keskitetty seuranta</li>
+  <li><strong>Power Automate tai Logic Apps</strong> -ratkaisuissa – Reaktiivisten toimenpiteiden automatisointi organisaation prosesseihin</li>
+</ul>
+
+<blockquote>
+  <p>Entra ID Protection ei ole pelkkä kirjautumislogien tarkkailija – se toimii aktiivisena osana nykyaikaista Zero Trust -strategiaa.</p>
+</blockquote>
+
+<h3 id="microsoft-defender-ja-identity-protectionin-signaalit">Microsoft Defender ja Identity Protectionin signaalit</h3>
+
+<p>Useat Microsoft Defender -sovellukset pystyvät hyödyntämään Entra ID Protectionin tuottamia riskisignaaleja osana omaa uhkatunnistustaan, valvontaa tai automaatiota.</p>
+
+<h4 id="microsoft-defender-for-cloud-apps-defender-for-cloud-apps--mcas">Microsoft Defender for Cloud Apps (Defender for Cloud Apps / MCAS)</h4>
+
+<ul>
+  <li>Kuluttaa signaaleja kuten:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Risky sign-ins</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Risky users</code></li>
+      <li>Analysoi käyttäjän istuntoja reaaliaikaisesti (Conditional Access App Control)</li>
+    </ul>
+  </li>
+  <li>Voi käyttää riskitasoja esimerkiksi ohjaamaan sessiopohjaisia käyttöehtoja (esim. estä tiedoston lataus, vaadi MFA)</li>
+  <li>Integroitu suoraan Entra Conditional Accessin kanssa</li>
+</ul>
+
+<h4 id="microsoft-defender-for-endpoint-mde">Microsoft Defender for Endpoint (MDE)</h4>
+
+<ul>
+  <li>Ei suoraan käytä Identity Protectionin signaaleja, mutta:
+    <ul>
+      <li>Voi lähettää käyttäjäkohtaisia uhkatietoja (esim. risk score) takaisin Entraan, jolloin kokonaisriskipiste nousee</li>
+    </ul>
+  </li>
+  <li>Integraatio Microsoft XDR-ekosysteemin kautta (Microsoft 365 Defender)</li>
+  <li>Identity Protectionin päätöksenteko vaikuttaa epäsuorasti pääsynhallintaan (esim. blokkaa kirjautuminen korkean riskin perusteella)</li>
+</ul>
+
+<h4 id="microsoft-defender-for-office-365">Microsoft Defender for Office 365</h4>
+
+<ul>
+  <li>Ei suoraan käytä Identity Protectionin riskejä</li>
+  <li>Voi vaikuttaa käyttäjän riskitasoon epäsuorasti (esim. huijausviestit voivat laukaista käyttäjän kompromissiepäilyn)</li>
+  <li>Signaaleja rikastetaan Microsoft 365 Defenderissä</li>
+</ul>
+
+<h4 id="microsoft-defender-for-identity-entinen-azure-atp">Microsoft Defender for Identity (entinen Azure ATP)</h4>
+
+<ul>
+  <li>Havaitsee epänormaaleja AD-käyttäytymisiä, joita voidaan yhdistää Entra ID:n riskeihin</li>
+  <li>Ei käytä Identity Protectionin signaaleja suoraan, mutta:
+    <ul>
+      <li>Signaalit yhdistetään XDR:ssä osaksi käyttäjän kokonaisturvaprofiilia</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="microsoft-365-defender-xdr">Microsoft 365 Defender (XDR)</h4>
+
+<ul>
+  <li>Kuluttaa signaaleja <strong>kaikista lähteistä</strong>, mukaan lukien:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Risky sign-ins</code></li>
+      <li><code class="language-plaintext highlighter-rouge">Risky users</code></li>
+      <li>Defender for Endpointin, Cloud Appsin ja Office 365:n tapahtumat</li>
+    </ul>
+  </li>
+  <li>Yhdistää käyttäjän kontekstin, uhkatapahtumat ja tunnistautumisriskit yhdeksi kokonaiskuvaksi</li>
+  <li>Käytössä myös automaattinen uhkien vastaus (AutoIR)</li>
+</ul>
+
+<hr />
+
+<h3 id="yhteenveto-signaalien-käytöstä">Yhteenveto signaalien käytöstä</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Defender-tuote</th>
+      <th>Käyttää Entra ID Protection -signaaleja?</th>
+      <th>Huomio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Defender for Cloud Apps</strong></td>
+      <td>✅ Suoraan</td>
+      <td>Istuntopohjaiset kontrollit, riskiperustainen käyttö</td>
+    </tr>
+    <tr>
+      <td><strong>Defender for Endpoint</strong></td>
+      <td>⚠️ Epäsuorasti</td>
+      <td>Lähettää riskejä takaisin Entraan</td>
+    </tr>
+    <tr>
+      <td><strong>Defender for Office 365</strong></td>
+      <td>⚠️ Epäsuorasti</td>
+      <td>Riskejä analysoidaan XDR-tasolla</td>
+    </tr>
+    <tr>
+      <td><strong>Defender for Identity</strong></td>
+      <td>⚠️ Epäsuorasti</td>
+      <td>Oma riskianalyysi, yhdistyy XDR:ssä</td>
+    </tr>
+    <tr>
+      <td><strong>Microsoft 365 Defender</strong></td>
+      <td>✅ Suoraan</td>
+      <td>Yhdistää kaikki signaalit analytiikkaan</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Huom:</strong> Identity Protectionin signaalit ovat erityisen hyödyllisiä, kun ne yhdistetään Microsoft 365 Defender -ympäristöön, jossa kokonaisvaltainen uhka-analyysi tapahtuu eri puolilta tulleiden tietojen perusteella.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="identity-protection-vaatimukset">Identity Protection vaatimukset</h2>
+
+<h3 id="lisenssit">Lisenssit</h3>
+
+<p>Identity Protectionin eri ominaisuudet edellyttävät Microsoft Entra -lisenssejä.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kyvykkyys</th>
+      <th>Vaadittu lisenssi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Risky sign-ins -näkymä</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td>Risky users -näkymä</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td>Risk detection -data</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td>Automaattinen riskien korjaus (esim. salasanan nollaus, MFA)</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td>Riskipohjaiset ehdollisen käytön säännöt (Conditional Access)</td>
+      <td><strong>Microsoft Entra ID P1</strong> <em>(vain perusehdot)</em> / <strong>P2</strong> <em>(riskiperusteinen logiikka)</em></td>
+    </tr>
+    <tr>
+      <td>Riskitiedon vienti Microsoft Sentinel/SIEM:iin</td>
+      <td><strong>Microsoft Entra ID P2</strong> + erillinen Sentinel-/SIEM-lisenssi</td>
+    </tr>
+    <tr>
+      <td>Riskiraporttien tarkastelu (read-only)</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td>Riskipohjaisten toimintojen automatisointi (esim. Power Automate)</td>
+      <td><strong>Microsoft Entra ID P2</strong> + tarvittavat Power Platform -lisenssit</td>
+    </tr>
+    <tr>
+      <td><strong>Sähköposti-ilmoitukset (Notifications)</strong></td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td><strong>MFA Registration Policy</strong> (pakollinen MFA-rekisteröinti tietyille käyttäjille)</td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Microsoft Graph API -integraatiot Identity Protectionin riskitietoon</strong></td>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Huom:</strong> Identity Protectionin kaikki riskitietoihin perustuvat toiminnot ja integraatiot, mukaan lukien API-pääsy Microsoft Graphin kautta, vaativat <strong>Entra ID P2</strong> -lisenssin.</p>
+</blockquote>
+
+<h3 id="käyttöoikeudet">Käyttöoikeudet</h3>
+
+<p>Identity Protectionin hallinta edellyttää tiettyjä Microsoft Entra -rooleja. Alla on yhteenveto tärkeimmistä rooleista, niiden kyvykkyyksistä ja rajoituksista:</p>
+
+<ul>
+  <li><strong>Security Reader</strong>
+    <ul>
+      <li>✅ Voi tarkastella riskiraportteja ja -havaintoja: <code class="language-plaintext highlighter-rouge">Risky users</code>, <code class="language-plaintext highlighter-rouge">Risky sign-ins</code>, <code class="language-plaintext highlighter-rouge">Risk detections</code></li>
+      <li>❌ Ei voi määrittää käytäntöjä tai tehdä korjaavia toimenpiteitä</li>
+    </ul>
+  </li>
+  <li><strong>Security Operator</strong>
+    <ul>
+      <li>✅ Kuten Security Reader, lisäksi voi merkitä riskejä käsitellyiksi</li>
+      <li>❌ Ei voi luoda tai muokata käytäntöjä</li>
+    </ul>
+  </li>
+  <li><strong>Security Administrator</strong>
+    <ul>
+      <li>✅ Täydet oikeudet Identity Protectionin asetuksiin, käytäntöihin ja korjaaviin toimenpiteisiin</li>
+      <li>❌ Ei automaattisesti pääsyä muiden palveluiden hallintaan (riippuu rooliasetuksista)</li>
+    </ul>
+  </li>
+  <li><strong>Global Administrator</strong>
+    <ul>
+      <li>✅ Täydet oikeudet kaikkiin asetuksiin, mukaan lukien Identity Protection</li>
+      <li>❌ Ei teknisiä rajoituksia, mutta hallintakäytännöt voivat rajoittaa käyttöä</li>
+    </ul>
+  </li>
+  <li><strong>Conditional Access Administrator</strong>
+    <ul>
+      <li>✅ Voi hallita ehdollisen käytön sääntöjä, myös riskeihin perustuvia</li>
+      <li>❌ Ei pääsyä tarkastelemaan yksittäisiä riskiraportteja ilman lisäroolia</li>
+    </ul>
+  </li>
+  <li><strong>Global Reader</strong>
+    <ul>
+      <li>✅ Voi tarkastella kaikkia asetuksia ja raportteja organisaatiossa, myös Identity Protection -dataa</li>
+      <li>❌ Ei voi tehdä muutoksia tai suorittaa toimintoja</li>
+    </ul>
+  </li>
+  <li><strong>User Administrator</strong>
+    <ul>
+      <li>✅ Voi palauttaa käyttäjän tilin, pakottaa salasanan vaihdon ja hallita käyttäjäobjekteja</li>
+      <li>❌ Ei pääsyä riskiraportteihin eikä oikeuksia muuttaa Identity Protection -käytäntöjä</li>
+      <li>⚠️ Voi kuitenkin olla mukana riskienhallintaprosessissa esimerkiksi salasanan palauttajana</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p><strong>Huom:</strong> Identity Protectionin käyttöoikeudet riippuvat sekä käyttäjän roolista että lisenssitasosta.</p>
+</blockquote>
+
+<h2 id="käyttöönotto-entra-id-protection">Käyttöönotto: Entra ID Protection</h2>
+
+<p>Tässä artikkelissa esitellään vaiheittain, kuinka otat Entra ID Protection -palvelun käyttöön organisaatiossasi.</p>
+
+<h3 id="vaihe-0--esivalmistelut-prerequisites">Vaihe 0 – Esivalmistelut (Prerequisites)</h3>
+
+<ul>
+  <li>Varmista, että sinulla on toimiva Microsoft Entra -vuokraaja ja käytössä <strong>Entra ID P2</strong> -lisenssi tai P2-kokeilu.<br />
+Lisäksi jotkin riskitapahtumat edellyttävät <strong>Microsoft 365 E5</strong> tai <strong>Enterprise Mobility + Security E5</strong> -lisenssiä.</li>
+  <li>Varmista sopivat roolit:
+    <ul>
+      <li><strong>Lukuoikeudet</strong>: Security Reader tai Global Reader</li>
+      <li><strong>Hallinta</strong>: Security Operator tai Security Administrator</li>
+      <li><strong>Conditional Access -hallinta</strong>: Conditional Access Administrator tai Security Administrator</li>
+    </ul>
+  </li>
+  <li>Luo testikäyttäjä (ei hallinnon tili) ja ryhmä, joiden avulla voit testata politiikkoja turvallisesti</li>
+  <li>Määrittele projektin sidosryhmät ja vastuut selkeästi – onnistumisen edellytys</li>
+</ul>
+
+<h3 id="vaihe-1--tarkastele-nykytilaa">Vaihe 1 – Tarkastele nykytilaa</h3>
+
+<p>Aloita Identity Protectionin käyttöönotto selvittämällä organisaation nykyinen riskiprofiili.</p>
+
+<ul>
+  <li><strong>Selaa Entra -&gt; ID Protection -&gt; Dahshboard (tämä vie vanhaan portaali näkymään) valitse Risk detections”</strong>
+    <ul>
+      <li>Täällä näet kaikki havaitut riskitapahtumat, joita Microsoftin analytiikka on tunnistanut käyttäjien kirjautumisista tai käyttäytymisestä</li>
+      <li>Kukin havainto sisältää tiedot:
+        <ul>
+          <li>Riskityypistä (esim. <code class="language-plaintext highlighter-rouge">Anonymous IP address</code>, <code class="language-plaintext highlighter-rouge">Impossible travel</code>)</li>
+          <li>Vakavuusasteesta (Low / Medium / High)</li>
+          <li>Aikaleimasta ja sijainnista</li>
+          <li>Mihin käyttäjään tapahtuma liittyy</li>
+          <li>Onko riski vielä avoin vai jo käsitelty</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Hyödynnä “Investigate” tai “Details”-toimintoa yksittäisen riskin tarkasteluun</strong>
+    <ul>
+      <li>Tutki, onko kyseessä aito uhka vai mahdollisesti väärä positiivinen havainto (esim. matkustaminen VPN-yhteydellä)</li>
+      <li>Tarkastele sign-in historyä, käytettyjä sovelluksia ja päätelaitteita</li>
+      <li>Käytä tietoa päätöksenteon tukena esimerkiksi riskin merkitsemisessä käsitellyksi</li>
+    </ul>
+  </li>
+  <li><strong>Analysoi toistuvia kuvioita</strong>
+    <ul>
+      <li>Onko tietyillä käyttäjillä jatkuvasti kirjautumisyrityksiä epäilyttävistä IP-osoitteista?</li>
+      <li>Näkyykö paljon “Impossible travel” -tapahtumia, jotka voisivat viitata VPN- tai mobiilikäyttöön?</li>
+    </ul>
+  </li>
+  <li><strong>Valmistaudu politiikan luontiin</strong>
+    <ul>
+      <li>Tämä vaihe antaa arvokasta tietoa siitä, kuinka aggressiivisia tai sallivia korjauspolitiikoiden tulisi olla</li>
+      <li>Voit myös käyttää tietoa suodattamaan käyttäjäryhmiä, joita ei kannata vielä ottaa politiikkojen piiriin</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Tavoitteena on tunnistaa, missä määrin riskien havaitseminen on jo käynnissä – ja kuinka tarkkaa ja hyödyllistä havaittu data on ennen automaattisten toimenpiteiden käyttöönottoa.</p>
+</blockquote>
+
+<h3 id="vaihe-2--suunnittele-conditional-access--politiikat">Vaihe 2 – Suunnittele Conditional Access -politiikat</h3>
+
+<ul>
+  <li>Suunnittele politiikat, jotka hyödyntävät signaaleja kuten <strong>sign-in risk</strong> ja <strong>user risk</strong>: esimerkiksi MFA-vaatimus tai salasanan vaihtaminen riskitapauksissa.</li>
+  <li>Älä unohda poissulkea:
+    <ul>
+      <li><strong>Break-glass-tilit</strong> (varatilit) lukittumisen estämiseksi</li>
+      <li><strong>Service principals</strong> / palvelutilit, jotka eivät ole käyttäjäperusteisia.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="vaihe-3--varmista-mfa-rekisteröinti">Vaihe 3 – Varmista MFA-rekisteröinti</h3>
+
+<p>Jotta riskipohjaiset käytännöt toimivat oikein – esimerkiksi kun vaaditaan käyttäjää vahvistamaan henkilöllisyytensä MFA:lla epäilyttävän kirjautumisen jälkeen – on tärkeää varmistaa, että käyttäjät ovat rekisteröineet tarvittavat todennusmenetelmät <strong>etukäteen</strong>.</p>
+
+<ul>
+  <li><strong>Käytä Entra-portaalin “Identity Protection” -osiota ja ota käyttöön:</strong>
+    <ul>
+      <li><strong>Multi-Factor Authentication registration policy</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<p>Tämä politiikka ohjaa valitut käyttäjät rekisteröimään MFA-tavat (kuten Microsoft Authenticatorin) heti, kun he täyttävät ehdot.</p>
+
+<blockquote>
+  <p>Vaikka todennustapojen salliminen tehdään Authentication Methods -politiikalla ja rekisteröintisivun käyttöä voi rajoittaa Conditional Access -politiikalla (<code class="language-plaintext highlighter-rouge">Register security information</code>), vain Identity Protectionin rekisteröintikäytäntö takaa, että riskitilanteissa tarvittava MFA on ennakkoon käytettävissä.</p>
+</blockquote>
+
+<p><strong>Tavoite:</strong> Varmistaa, että jokaisella käyttäjällä on vähintään yksi voimassa oleva todennusmenetelmä kirjattuna ennen kuin automaattisia riskinhallintatoimia otetaan käyttöön.</p>
+
+<h4 id="suositellut-asetukset">Suositellut asetukset:</h4>
+
+<ul>
+  <li><strong>Kohdista käytäntö koko organisaatiolle</strong> (tai ainakin riskiherkille ryhmille)</li>
+  <li>Varmista, että seuraavat turvalliset todennusmenetelmät ovat sallittuja ja että vähintään yksi niistä on rekisteröity:
+    <ul>
+      <li><strong>Microsoft Authenticator</strong> -sovellus (ilmoitukset tai vahvistuskoodi)</li>
+      <li><strong>FIDO2-avain</strong> tai muu vahva todennusväline (esimerkiksi biometrinen tunnistus, jos tuettu)</li>
+      <li><strong>Windows Hello for Business</strong> (organisaation tuesta riippuen)</li>
+    </ul>
+  </li>
+  <li>Aseta käytäntö vaatimaan rekisteröintiä heti, kun käyttäjä täyttää ehdot (esimerkiksi ensikirjautumisen yhteydessä tai roolin saannin jälkeen)</li>
+</ul>
+
+<blockquote>
+  <p><strong>Huom:</strong> Vältä vähemmän turvallisia menetelmiä kuten tekstiviestit (SMS) ja puhelut. Nämä ovat alttiita sieppauksille ja SIM-hyökkäyksille, eikä Microsoft suosittele niiden käyttöä riskiperusteisessa autentikoinnissa.</p>
+</blockquote>
+
+<p><strong>Tavoite:</strong> Varmistaa, että jokaisella käyttäjällä on vähintään yksi <strong>vahva ja suositeltu todennusmenetelmä</strong> kirjattuna ennen kuin riskiperusteiset automaattitoimet (kuten “Require MFA”) otetaan käyttöön.</p>
+
+<h3 id="vaihe-4--seuranta-ja-jatkuva-ylläpito">Vaihe 4 – Seuranta ja jatkuva ylläpito</h3>
+
+<p>Riskipohjainen suojaus ei ole “ota käyttöön ja unohda” -ratkaisu. Se vaatii jatkuvaa seurantaa, vianselvitystä ja reagointia. Alla on neljä keskeistä toimenpidettä ja niiden tarkempi kuvaus:</p>
+
+<h4 id="aktivoi-email-notifications">Aktivoi Email notifications</h4>
+
+<blockquote>
+  <p>Ilmoitukset varoittavat, kun riskikäyttäjä havaitaan tai riskitilanteita syntyy.</p>
+</blockquote>
+
+<ul>
+  <li><strong>Missä:</strong><br />
+Entra &gt; Identity Protection &gt; <strong>Notifications</strong></li>
+  <li><strong>Aseta ilmoitusten vastaanottajat:</strong>
+    <ul>
+      <li>Valitse yksi tai useampi <strong>Global Administrator</strong> tai <strong>Security Administrator</strong> -rooliin kuuluva henkilö.</li>
+    </ul>
+  </li>
+  <li><strong>Ilmoitustyypit:</strong>
+    <ul>
+      <li>Risky users detected</li>
+      <li>Risky sign-ins detected</li>
+    </ul>
+  </li>
+  <li>Ilmoitukset lähetetään sähköpostitse Microsoftilta, esim. <code class="language-plaintext highlighter-rouge">alerts@microsoft.com</code></li>
+</ul>
+
+<blockquote>
+  <p>Tämä on erityisen tärkeä asetus SOC-tiimeille, jotka haluavat reagoida nopeasti.</p>
+</blockquote>
+
+<h4 id="analysoi-käyttöä-ja-trendejä-workbooks-raporteilla">Analysoi käyttöä ja trendejä Workbooks-raporteilla</h4>
+
+<p>Microsoft tarjoaa valmiita workbookeja riskien ja vaikutusten seurantaan.</p>
+
+<h5 id="a-identity-protection-workbook">a) Identity Protection Workbook</h5>
+<ul>
+  <li><strong>Missä:</strong><br />
+Entra &gt; Identity Protection &gt; <strong>Dashboard &gt; Open workbook</strong></li>
+  <li><strong>Sisältö:</strong>
+    <ul>
+      <li>Risky sign-ins: määrät, lähteet, käyttäjät, maat</li>
+      <li>Risky users: trendit ja yksittäiset käyttäjät</li>
+      <li>Risk detections: tyypit ja kehitys</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="b-impact-analysis-workbook">b) Impact Analysis Workbook</h5>
+<ul>
+  <li><strong>Missä:</strong><br />
+Entra &gt; Conditional Access &gt; Insights &amp; reporting &gt; Workbooks &gt; Impact Analysis</li>
+  <li><strong>Sisältö:</strong>
+    <ul>
+      <li>Näyttää, kuinka moni käyttäjä olisi joutunut käytännön piiriin ennen sen varsinaista aktivointia</li>
+      <li>Erittäin hyödyllinen, kun käytetään <strong>report-only</strong> -tilaa ennen politiikan käyttöönottoa</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Workbooks-raportit edellyttävät lokien ohjaamista Log Analytics -työn tilille (Azure Monitor).</p>
+</blockquote>
+
+<hr />
+
+<h4 id="integroi-riskisignaalit-microsoft-defenderiin-ja-siemsoc-järjestelmiin">Integroi riskisignaalit Microsoft Defenderiin ja SIEM/SOC-järjestelmiin</h4>
+
+<blockquote>
+  <p>Riskisignaalit eivät jää Identity Protectionin sisälle – niitä voidaan hyödyntää myös muualla.</p>
+</blockquote>
+
+<h5 id="a-microsoft-defender-for-cloud-apps-mcas">a) Microsoft Defender for Cloud Apps (MCAS)</h5>
+<ul>
+  <li>Tukee seuraavia Entra Identity Protection -signaaleja:
+    <ul>
+      <li><strong>Risky sign-ins</strong></li>
+      <li><strong>Risky users</strong></li>
+    </ul>
+  </li>
+  <li>Esimerkkejä tuetuista signaaleista:
+    <ul>
+      <li><em>Activity from anonymous IP address</em></li>
+      <li><em>Impossible travel</em></li>
+      <li><em>Mass access to sensitive files</em></li>
+      <li><em>New country</em></li>
+    </ul>
+  </li>
+  <li><strong>Missä:</strong><br />
+Microsoft Defender portal &gt; Cloud Apps &gt; Policies tai Activity Log &gt; Signals</li>
+</ul>
+
+<h5 id="b-microsoft-sentinel--muu-siem">b) Microsoft Sentinel / muu SIEM</h5>
+<ul>
+  <li>Ohjaa Entra ID -signaalit Log Analytics -tilille.</li>
+  <li>Luo hälytyksiä ja sääntöjä SIEM-työkalussa seuraavista:
+    <ul>
+      <li>Risky sign-ins</li>
+      <li>Risky users</li>
+      <li>Risk detections</li>
+    </ul>
+  </li>
+  <li><strong>Konfigurointi:</strong><br />
+Entra / Azure AD &gt; Diagnostic settings</li>
+</ul>
+
+<h4 id="simuloi-uhkia--simulate-threats">Simuloi uhkia – simulate threats</h4>
+
+<blockquote>
+  <p>Testaus on tärkeää, jotta varmistetaan, että riskikäytännöt todella toimivat odotetulla tavalla.</p>
+</blockquote>
+
+<ul>
+  <li><strong>Missä:</strong><br />
+Entra &gt; Identity Protection &gt; Risky users &gt; Valitse käyttäjä &gt; <strong>Mark user as compromised</strong></li>
+  <li><strong>Vaihtoehtoisesti:</strong><br />
+Käytä Microsoft Graph APIa simuloidun riskin luomiseen (edistyneempi vaihtoehto)</li>
+  <li>Simuloinnin avulla voit:
+    <ul>
+      <li>Tarkistaa, laukeaako haluttu riskipolitiikka</li>
+      <li>Varmistaa, että hälytykset tai korjaavat toimet (kuten Require MFA tai block access) toimivat</li>
+      <li>Testata SOC-tiimin vasteen</li>
+    </ul>
+  </li>
+</ul>
+
+<blockquote>
+  <p>Tee testauksesta osa käyttöönottoprosessia ja toista säännöllisesti.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="käyttöönotto-ilmoitukset-notifications">Käyttöönotto: Ilmoitukset (Notifications)</h2>
+
+<p>Entra ID Protection voi lähettää kaksi erilaista automaattista ilmoitusta sähköpostitse, jotka auttavat sinua reagoimaan tunnistettuihin riskeihin ja pysymään ajan tasalla riskeistä:</p>
+
+<h4 id="users-at-risk-detected--ilmoitus-käyttäjän-riskitasoista"><strong>Users at risk detected</strong> – ilmoitus käyttäjän riskitasoista</h4>
+
+<ul>
+  <li>Lähetetään heti, kun käyttäjän riskitaso nousee asetetun tason (esim. Medium tai High) yläpuolelle.</li>
+  <li>Sisältää linkin <em>Users flagged for risk</em> -raporttiin, mikä mahdollistaa välittömän tutkimisen.</li>
+  <li>Jos käyttäjän riskitaso pysyy samana, mutta riskisarja päivitetään (esim. uusi riskitapahtuma), uusi ilmoitus lähetetään vain, jos riskin ajankohta on ilmoitusta edeltävän viimeisen ilmoituksen jälkeen.</li>
+  <li>Estää sähköpostitulvan: jos useiden käyttäjien riskit nousevat samaan aikaan (huom. 5 sekunnin säteellä), kaikki sisällytetään yhteen sähköpostiin.</li>
+</ul>
+
+<blockquote>
+  <p><strong>Huom:</strong><br />
+Ilmoitusviestien vastaanottajia ei aina tarvitse määrittää manuaalisesti. Käyttäjät, joilla on <strong>Global Administrator</strong>, <strong>Security Administrator</strong> tai <strong>Security Reader</strong> -rooli, lisätään automaattisesti vastaanottajalistalle, jos heillä on määritettynä kelvollinen <strong>Email</strong>- tai <strong>Alternate email</strong> -osoite.</p>
+
+  <p>Ilmoituksia yritetään lähettää korkeintaan <strong>20 ensimmäiselle käyttäjälle per rooli</strong>.</p>
+
+  <p>Jos käyttäjä hyödyntää <strong>Privileged Identity Managementia (PIM)</strong> ja nostaa käyttöoikeuksiaan tarpeen mukaan (on-demand), hän saa ilmoituksia <strong>vain silloin</strong>, kun roolin nosto (elevation) on aktiivinen ilmoituksen lähetyshetkellä.</p>
+
+  <p>Varmista, että ilmoituksen saavan ylläpitäjän sähköpostiosoite täyttää ilmoitussivun <strong>“custom email validation”</strong> -ehdot – muuten viestiä ei välttämättä voida toimittaa.</p>
+</blockquote>
+
+<h5 id="konfiguroi">Konfiguroi:</h5>
+<ul>
+  <li><strong>Microsoft Entra admin center</strong> ‑portaalissa: <strong>ID Protection &gt; Dashboard &gt; Users at risk detected alerts</strong>.</li>
+  <li>Aseta tavoiteltava riskitaso (esim. Medium tai High), jolloin ilmoitus laukeaa.</li>
+  <li>Määritä vastaanottajat – oletuksena ilmoitus menee aktiivisille Global Administrator, Security Administrator ja Security Reader -roolin haltijoille, joilla on kelvollinen sähköpostiosoite.</li>
+</ul>
+
+<h4 id="weekly-digest--viikkoyhteenveto-riskeistä"><strong>Weekly digest</strong> – viikkoyhteenveto riskeistä</h4>
+
+<ul>
+  <li>Lähetetään kerran viikossa tiivistelmä uusista riskeistä, jotka on havaittu kuluneella ajanjaksolla.</li>
+  <li>Yhteenveto sisältää esimerkiksi:
+    <ul>
+      <li>Uudet riskikäyttäjät (New risky users)</li>
+      <li>Uudet riskikirjautumiset (New risky sign‑ins)</li>
+      <li>Linkit eri raportteihin ID Protectionissa</li>
+    </ul>
+  </li>
+</ul>
+
+<h5 id="konfiguroi-1">Konfiguroi:</h5>
+<ul>
+  <li>Asetukset löytyvät <strong>Microsoft Entra admin center</strong> -portaalista kohdasta <strong>ID Protection &gt; Dashboard &gt; Weekly digest</strong>.</li>
+  <li>Voit valita, haluatko ottaa viikkoyhteenvedon käyttöön tai pois ja määrittää vastaanottajat.</li>
+</ul>
+
+<h4 id="yhteenveto">Yhteenveto</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ilmoitustyyppi</th>
+      <th>Milloin lähetetään</th>
+      <th>Sisältö</th>
+      <th>Mistä hallitaan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Users at risk detected</strong></td>
+      <td>Kun riskitaso nousee asetetun tason yläpuolelle</td>
+      <td>Linkki <em>Users flagged for risk</em> -raporttiin</td>
+      <td><strong>ID Protection &gt; Dashboard &gt; Users at risk detected alerts</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Weekly digest</strong></td>
+      <td>Viikoittain</td>
+      <td>Yhteenveto uusista riskeistä ja raporttilinkit</td>
+      <td><strong>ID Protection &gt; Dashboard &gt; Weekly digest</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Muista:</strong> Vain käyttäjät, joilla on kelvollinen sähköpostiosoite ja sopiva rooli (Global Admin, Security Admin, Security Reader), saavat nämä ilmoitukset. Käytännön hallinta kannattaa testata ensin testiryhmällä, jotta tiedät, että viestit tavoittavat oikeat henkilöt.</p>
+</blockquote>
+
+<h2 id="käyttöönotto-riskipolitiikat-conditional-accessilla">Käyttöönotto: Riskipolitiikat Conditional Accessilla</h2>
+
+<h3 id="esivalmistelut">Esivalmistelut</h3>
+<ul>
+  <li>Tarvitaan <strong>Entra ID P2</strong> tai <strong>Entra Suite</strong> -lisenssi.</li>
+  <li>Käyttäjällä tulee olla vähintään <strong>Conditional Access Administrator</strong> -rooli.</li>
+</ul>
+
+<h3 id="hyväksyttävien-riskitasojen-valinta">Hyväksyttävien riskitasojen valinta</h3>
+<ul>
+  <li><strong>High</strong>: vähiten häiriöitä käyttäjille, mutta sis. vain korkean riskin tapaukset.</li>
+  <li><strong>Medium</strong> tai <strong>Low</strong>: herkempi reagointi, mutta enemmän häiriöitä.<br />
+Voit myös käyttää luotettuja verkkoja vähentämään virheitä.</li>
+</ul>
+
+<h3 id="suositus-sallia-itsenäinen-riskin-korjaus-käyttäjille">Suositus: sallia itsenäinen riskin korjaus käyttäjille</h3>
+<ul>
+  <li><strong>User risk policy</strong>:
+    <ul>
+      <li>Riskin taso: <strong>High</strong></li>
+      <li>Toimenpide: sallitaan käyttäjän turvallinen salasanan vaihto (vaatii MFA ja password writeback)</li>
+    </ul>
+  </li>
+  <li><strong>Sign‑in risk policy</strong>:
+    <ul>
+      <li>Riskin taso: <strong>Medium</strong> tai <strong>High</strong></li>
+      <li>Toimenpide: MFA-vaatimus (yksi rekisteröity menetelmä riittää)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="riskipolitiikkojen-määrittäminen">Riskipolitiikkojen määrittäminen</h3>
+<ol>
+  <li>Kirjaudu <strong>Entra admin centeriin</strong> Conditional Access -roolilla.</li>
+  <li>Luo uusi policy ja määritä:
+    <ul>
+      <li><strong>Users</strong>: Kaikki, mutta poislukien break-glass-tilit</li>
+      <li><strong>Cloud apps</strong>: Kaikki sovellukset</li>
+      <li><strong>Condition</strong>: User risk / Sign‑in risk -asetukset ja riskitasot</li>
+    </ul>
+  </li>
+  <li><strong>Access controls</strong>:
+    <ul>
+      <li>User risk: “Require password change” &amp; MFA</li>
+      <li>Sign‑in: “Require MFA”</li>
+    </ul>
+  </li>
+  <li><strong>Session</strong>: Aseta “Sign‑in frequency – Every time”</li>
+  <li>Ota käyttöön ensin <strong>Report-only</strong>, arvioi vaikutus ja vasta sitten siirry “On”</li>
+</ol>
+
+<h3 id="viimeiset-vihjeet">Viimeiset vihjeet</h3>
+<ul>
+  <li>Poista perinteiset riskipolitiikat, kun Conditional Access -malli toimii</li>
+  <li>Älä lukitse kriittisiä tilejä – poissulje emergency-access- tai käyttöliittymätunnukset politiikoista</li>
+</ul>
+
+<blockquote>
+  <p><strong>Yhteenveto</strong></p>
+  <ul>
+    <li><strong>User risk policy</strong>: high → salasanan vaihto</li>
+    <li><strong>Sign-in risk policy</strong>: medium/high → MFA</li>
+    <li>Testaa ensin <strong>report-only</strong>‑tilassa</li>
+    <li>Älä sulje tilanne pois korjauskanavista</li>
+    <li>Vältä tukihenkilöiden lukintahäiriöitä</li>
+  </ul>
+</blockquote>
+
+<h3 id="parhaat-käytännöt-riskipolitiikkojen-käyttöönottoon">Parhaat käytännöt riskipolitiikkojen käyttöönottoon</h3>
+
+<p>Kun otat käyttöön riskipohjaisia käyttöehdotuksia Entra ID Protectionilla, on tärkeää varmistaa, että politiikat eivät estä pääsyä järjestelmiin tai aiheuta tarpeetonta häiriötä loppukäyttäjille.</p>
+
+<h4 id="aloita-report-only-tilassa">Aloita “Report-only”-tilassa</h4>
+
+<ul>
+  <li>Käytä <strong>Report-only</strong>-asetusta kaikille uusille Conditional Access -politiikoille.</li>
+  <li>Arvioi vaikutukset ennen kuin otat ne käyttöön oikeasti (ON).</li>
+  <li>Voit analysoida vaikutuksia <strong>Sign-in logs</strong> -osiosta (filter: Report-only).</li>
+  <li>Käytä Entra-portaalin “What If” -työkalua testataksesi vaikutuksia ennen aktivointia.</li>
+</ul>
+
+<h4 id="määritä-selkeät-ja-perustellut-riskitasot">Määritä selkeät ja perustellut riskitasot</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Riskitaso</th>
+      <th>Milloin käyttää</th>
+      <th>Huomioitavaa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>High</strong></td>
+      <td>Hyvin luottamuksellisiin resursseihin tai korkean profiilin käyttäjiin</td>
+      <td>Suositellaan “Require password change”</td>
+    </tr>
+    <tr>
+      <td><strong>Medium</strong></td>
+      <td>Useimmille tavallisille käyttäjille</td>
+      <td>Usein yhdistetty “Require MFA” -ehtoon</td>
+    </tr>
+    <tr>
+      <td><strong>Low</strong></td>
+      <td>Harvoin käytössä suoraan, voi aiheuttaa paljon vääriä positiivisia</td>
+      <td>Käytä harkiten tai yhdistä muihin ehtoihin</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="poissulje-break-glass--ja-palvelutilit">Poissulje “Break-glass”- ja palvelutilit</h4>
+
+<ul>
+  <li>Luo erilliset “emergency access” -tilit, joita ei koske riskipolitiikat.</li>
+  <li>Lisää nämä tilit poikkeuksena Conditional Access -politiikoissa.</li>
+  <li>Nämä tilit tulisi:
+    <ul>
+      <li>Olla suojattuja vahvalla salasanalla ja MFA:lla</li>
+      <li>Dokumentoida ja testata säännöllisesti</li>
+      <li>Olla käytössä vain hätätilanteissa</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="varmista-mfa-ja-password-writeback--kyvykkyys">Varmista MFA ja Password Writeback -kyvykkyys</h4>
+
+<ul>
+  <li>Käyttäjän itsenäinen riskin korjaus (esim. salasanan vaihto) edellyttää:
+    <ul>
+      <li>Azure AD Password Writeback (jos käytössä hybriditunnistus)</li>
+      <li>Vähintään yksi rekisteröity MFA-menetelmä käyttäjällä</li>
+    </ul>
+  </li>
+  <li>Ilman näitä vaatimuksia “require password change” ei onnistu, ja käyttäjä voi jäädä lukkoon.</li>
+</ul>
+
+<h4 id="käytä-yhdistelmiä-muiden-ehtojen-kanssa">Käytä yhdistelmiä muiden ehtojen kanssa</h4>
+
+<ul>
+  <li>Rajoita politiikkojen vaikutusaluetta esim. <strong>location</strong>, <strong>device platform</strong> tai <strong>sign-in frequency</strong> -ehdoilla.</li>
+  <li>Näin voit ottaa politiikan käyttöön vaiheittain ja välttää odottamattomia lukituksia.</li>
+</ul>
+
+<h4 id="testaa-käyttäjäprofiileilla">Testaa käyttäjäprofiileilla</h4>
+
+<ul>
+  <li>Luo testikäyttäjäryhmiä eri rooleille: tavallinen työntekijä, ylläpitäjä, ulkoinen käyttäjä.</li>
+  <li>Aja politiikat alkuun näille ryhmille ja tarkastele vaikutuksia.</li>
+  <li>Käytä sign-in logeja ja policy impact -analytiikkaa (Entra portal / Sign-in logs).</li>
+</ul>
+
+<blockquote>
+  <p><strong>Yhteenveto</strong></p>
+  <ul>
+    <li>Käynnistä “Report-only” -tilassa ja analysoi vaikutus ennen aktivointia</li>
+    <li>Käytä “High” risk -tasoa varoen, mutta määrätietoisesti</li>
+    <li>Varmista emergency access -tilien toiminta ja suojaus</li>
+    <li>Älä oleta että MFA on automaattisesti rekisteröity – tarkista!</li>
+    <li>Hyödynnä sign-in-ehdot (location, platform, device) politiikkojen rajaukseen</li>
+  </ul>
+</blockquote>
+
+<h2 id="passwordless-ja-hybridiratkaisut--mitä-tulee-huomioida-riskipolitiikkojen-kanssa">Passwordless ja hybridiratkaisut – mitä tulee huomioida riskipolitiikkojen kanssa</h2>
+
+<p>Kun käytössä on modernit tunnistusmenetelmät tai hybridimalli (esim. AD synkronointi), on tärkeää ymmärtää, miten nämä vaikuttavat riskien havaitsemiseen ja politiikkojen käyttäytymiseen.</p>
+
+<h3 id="passwordless-ei-ole-immuuni-riskeille">Passwordless ei ole “immuuni” riskeille</h3>
+
+<p>Vaikka käyttäjä kirjautuu ilman salasanaa (esim. Windows Hello, FIDO2, Authenticator-sovelluksella), kirjautumista voidaan silti pitää riskipitoisena:</p>
+
+<ul>
+  <li>Microsoft Entra ID Protection arvioi <strong>kontekstuaalisen riskin</strong>, ei vain kirjautumismenetelmää.</li>
+  <li>Esimerkiksi:
+    <ul>
+      <li><strong>Impossible travel</strong></li>
+      <li><strong>Anonymous IP</strong></li>
+      <li><strong>Sign-in from new country</strong></li>
+      <li>voivat silti laukaista “Medium” tai “High” riskin kirjautumiselle, vaikka kirjautuminen olisi “vahvasti todennettu”.</li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Suositus:</strong> älä ohita riskipolitiikkoja vain siksi, että käytössä on passwordless – käytä samaa politiikkamallia kuin muillekin.</p>
+
+<h4 id="hybridikäytössä-varmista-writeback-ja-riskidatan-näkyvyys">Hybridikäytössä varmista writeback ja riskidatan näkyvyys</h4>
+
+<p>Hybridikäyttö tarkoittaa, että käyttäjätiedot synkronoidaan paikallisesta Active Directorystä Entra ID:hen. Tämä tuo mukanaan erityispiirteitä:</p>
+
+<ul>
+  <li><strong>Salasanan vaihdon writeback</strong> vaatii seuraavat edellytykset:
+    <ul>
+      <li>Azure AD Connect asennettuna ja writeback asetettu päälle</li>
+      <li>Oikeudet päivittää salasanat paikalliseen AD:hen</li>
+    </ul>
+  </li>
+  <li><strong>User risk remediation</strong> (salasanan vaihto) ei onnistu ilman writebackia – käyttäjä jää jumiin.</li>
+</ul>
+
+<p><strong>Vinkki:</strong> Tarkista <code class="language-plaintext highlighter-rouge">Password reset &gt; On-premises integration</code> asetukset Azure-portaalissa</p>
+
+<h4 id="mfa-tilanne-hybridissä-ja-passwordless-ympäristössä">MFA-tilanne hybridissä ja passwordless-ympäristössä</h4>
+
+<ul>
+  <li>Riskipolitiikat edellyttävät, että käyttäjällä on rekisteröity vähintään yksi <strong>moderni MFA-menetelmä</strong>.</li>
+  <li>Vanhat “perinteiset MFA”-rekisteröinnit eivät aina täytä vaatimuksia.</li>
+  <li>FIDO2-avaimet ja Authenticator-sovellus toimivat hyvin, mutta varmista että ne ovat <strong>Entra ID:n tunnistamia</strong>.</li>
+</ul>
+
+<p><strong>Tarkistuspaikka:</strong><br />
+Entra admin center → Users → MFA → Authentication methods</p>
+
+<h4 id="riskien-analysointi-eri-kirjautumistavoilla">Riskien analysointi eri kirjautumistavoilla</h4>
+
+<p>Riskien lähteet pysyvät samoina, mutta käyttäytyminen voi vaihdella:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Kirjautumistapa</th>
+      <th>Riskien arviointi</th>
+      <th>Huomioitavaa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Salasana + MFA</td>
+      <td>Normaali riskitason laskenta</td>
+      <td>Riski lasketaan koko sessiosta</td>
+    </tr>
+    <tr>
+      <td>Passwordless (WHfB, FIDO2)</td>
+      <td>Riskit arvioidaan IP-, sijainti-, matka- ja anomaliatiedon perusteella</td>
+      <td>Ei “ohita” politiikkoja</td>
+    </tr>
+    <tr>
+      <td>SSO tai federointi (esim. ADFS)</td>
+      <td>Riskin laskenta rajoittunut</td>
+      <td>Riskitieto voi jäädä vajaaksi ilman täyttä Entra-integraatiota</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="yhteenveto-1">Yhteenveto</h4>
+
+<ul>
+  <li>Passwordless on turvallinen, mutta ei riskitön kirjautumismuoto</li>
+  <li>Hybridikäytössä on erityisen tärkeää varmistaa password writeback ja MFA-toteutus</li>
+  <li>Älä oleta, että vahva kirjautuminen korvaa riskipohjaisen päätöksenteon</li>
+  <li>Testaa politiikat kaikilla käytetyillä kirjautumistavoilla, erityisesti hybridiympäristöissä</li>
+</ul>
+
+<hr />
+
+<h2 id="siirtyminen-vanhoista-riskipolitiikoista-uusiin-conditional-access--pohjaisiin">Siirtyminen vanhoista riskipolitiikoista uusiin (Conditional Access -pohjaisiin)</h2>
+
+<p>Microsoft on ilmoittanut, että perinteiset Identity Protection -riskipolitiikat (User risk policy, Sign-in risk policy, MFA registration policy) poistuvat käytöstä <strong>1.10.2026</strong> alkaen. Ne korvataan täysin <strong>Conditional Access</strong> -pohjaisilla politiikoilla, jotka tarjoavat joustavamman ja keskitetymmän hallinnan.</p>
+
+<h3 id="mistä-tunnistaa-vanhat-politiikat">Mistä tunnistaa vanhat politiikat?</h3>
+
+<ul>
+  <li>Entra-portaalissa kohdassa <strong>Identity Protection &gt; Policies</strong></li>
+  <li>Jos politiikat on konfiguroitu suoraan Identity Protectionin kautta (eikä Conditional Accessin kautta), ne ovat <em>vanhoja</em>.</li>
+  <li>Nämä politiikat näkyvät yleensä erillisenä “MFA registration policy”, “User risk policy” tai “Sign-in risk policy”</li>
+</ul>
+
+<h3 id="mikä-muuttuu">Mikä muuttuu?</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vanha politiikka</th>
+      <th>Korvaava ratkaisu</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>User risk policy</td>
+      <td>Conditional Access -policy, jossa <code class="language-plaintext highlighter-rouge">User risk level</code> = medium/high + toimenpide</td>
+    </tr>
+    <tr>
+      <td>Sign-in risk policy</td>
+      <td>Conditional Access -policy, jossa <code class="language-plaintext highlighter-rouge">Sign-in risk</code> = medium/high + toimenpide</td>
+    </tr>
+    <tr>
+      <td>MFA registration policy</td>
+      <td>Conditional Access -policy, jossa <code class="language-plaintext highlighter-rouge">Grant controls</code> sisältää <code class="language-plaintext highlighter-rouge">Require registration of security info</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="suositeltu-siirtymäsuunnitelma">Suositeltu siirtymäsuunnitelma</h3>
+
+<ol>
+  <li><strong>Tunnista käytössä olevat vanhat politiikat</strong>
+    <ul>
+      <li>Kirjaa niiden konfiguraatio ja kohderyhmät ylös</li>
+      <li>Tunnista missä tilanteissa ne aktivoituvat ja mitä ne tekevät</li>
+    </ul>
+  </li>
+  <li><strong>Suunnittele vastaavat Conditional Access -politiikat</strong>
+    <ul>
+      <li>Luo CA-politiikat, jotka vastaavat vanhojen logiikkaa</li>
+      <li>Lisää tarvittaessa rajauksia (esim. location, device platform)</li>
+      <li>Aseta politiikat aluksi tilaan <strong>Report-only</strong></li>
+    </ul>
+  </li>
+  <li><strong>Testaa vaikutukset</strong>
+    <ul>
+      <li>Käytä Entra-portaalin <strong>Sign-in logs</strong>- ja <strong>What If</strong> -työkalua</li>
+      <li>Varmista, että politiikka käyttäytyy odotetusti</li>
+    </ul>
+  </li>
+  <li><strong>Ota käyttöön vaiheittain</strong>
+    <ul>
+      <li>Aktivoi uudet CA-politiikat ryhmä kerrallaan</li>
+      <li>Pidä vanhat politiikat vielä rinnalla siirtymävaiheessa</li>
+    </ul>
+  </li>
+  <li><strong>Poista vanhat politiikat käytöstä</strong>
+    <ul>
+      <li>Kun olet varmistanut, että kaikki uudet CA-politiikat toimivat suunnitellusti</li>
+      <li>Varmista, että käyttäjillä on rekisteröity MFA ja salasanan vaihto toimii</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="yhteenveto-2">Yhteenveto</h3>
+
+<ul>
+  <li>Microsoftin vanhat riskipolitiikat poistuvat lokakuussa 2026 – siirtymä on <strong>pakollinen</strong></li>
+  <li>Luo korvaavat Conditional Access -politiikat, jotka hyödyntävät <code class="language-plaintext highlighter-rouge">Sign-in risk</code> ja <code class="language-plaintext highlighter-rouge">User risk</code> -ehtoja</li>
+  <li>Varmista MFA- ja password writeback -toiminnot ennen “require password change” -politiikkojen käyttöä</li>
+  <li>Käytä <strong>Report-only</strong>-tilaa ja testaa ennen aktivointia</li>
+</ul>
+
+<blockquote>
+  <p>Siirtyminen on mahdollisuus päivittää suojaus nykyaikaiselle tasolle – tee se hallitusti ja dokumentoidusti.</p>
+</blockquote>
+
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Protection" /><summary type="html"><![CDATA[SSPR - käyttöönotto ja testaus]]></summary></entry><entry><title type="html">Microsoft Entra ID – Self-Service Password Reset (SSPR)</title><link href="http://localhost:4000/posts/M365_sspr/" rel="alternate" type="text/html" title="Microsoft Entra ID – Self-Service Password Reset (SSPR)" /><published>2025-08-08T04:01:00+03:00</published><updated>2025-08-08T04:01:00+03:00</updated><id>http://localhost:4000/posts/M365_sspr</id><content type="html" xml:base="http://localhost:4000/posts/M365_sspr/"><![CDATA[<h2 id="microsoft-entra-self-service-password-reset-sspr--mitä-miksi-ja-miten">Microsoft Entra Self-Service Password Reset (SSPR) – Mitä, miksi ja miten?</h2>
 
 <p>Microsoft Entran <strong>Self-Service Password Reset (SSPR)</strong> antaa käyttäjille mahdollisuuden nollata tai vaihtaa unohtuneen salasanansa ilman IT-tuen apua. Jos käyttäjä lukittuu ulos tililtään tai unohtaa salasanansa, hän voi itse palauttaa pääsyn työympäristöön. Tämä vähentää tukipyyntöjä ja parantaa tuottavuutta.</p>
 
@@ -2227,321 +3171,7 @@ Kirjautuminen tapahtuu Authenticator-sovelluksella skannaamalla jaetulla laittee
 
 <h2 id="pim-auditointi-ja-raportit">PIM auditointi ja raportit</h2>
 
-<p>Kirjoitan mahdollisesti myöhemmin tästä osuudesta, kun omassa tenantissani on dataa, mitä käyttää esimerkkinä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Privileged Identity Management" /><category term="PIM" /><summary type="html"><![CDATA[Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
-
-<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn osa-alueeseen Access Review.</p>
-
-<p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
-
-<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
-
-<hr />
-
-<h2 id="access-review---organisaation-resursseihin-kohdistettuja-käyttöoikeuksien-tarkistuksia">Access Review - Organisaation resursseihin kohdistettuja käyttöoikeuksien tarkistuksia</h2>
-
-<h3 id="yleiskatsaus">Yleiskatsaus</h3>
-
-<p>Access Review -toiminnallisuuden avulla organisaatiot voivat säännöllisesti tarkistaa ja hallita käyttäjien käyttöoikeuksia eri resursseihin. Tämä on keskeinen osa <strong>Microsoft Entra Identity Governance</strong> -kokonaisuutta ja sen tavoitteena on varmistaa, että oikeudet säilyvät ajan mittaan tarpeellisina, turvallisina ja organisaation käytäntöjen mukaisina.</p>
-
-<p>Tyypillinen legacy teknologia ongelma oli se, että organisaatioilta puuttui ymmärrys siitä, että kenellä on oikeuksia mihinkin resursseihin ja käyttäjien lähtiessä pois organisaatiosta ei ollut ymmärrystä siitä minne kaikkialle käyttäjän oikeudet periytyivät. Access Review M365 pilvipalveluiden vastaus tähän ongelmaan.</p>
-
-<p>Käyttöoikeustarkistusten avulla organisaatiot voivat:
-•	Ajoittaa säännölliset tai ad hoc -tarkistukset nähdäksesi selvittääkseen kenellä on pääsy mihinkin resursseihin
-•	Delegoida tarkistuksia järjestelmänvalvojille, palveluiden omistajille, ryhmäpääliköille tai vahvistaa itse käyttöoikeuksien jatkuvuus
-•	Automatisoida tarkistustulokset, kuten käyttäjien resurssien käyttöoikeuksien poistaminen
-•	Seurata access review dataa käyttöstatistiikan tai vaatimustenmukaisuuden saamiseksi</p>
-
-<p>Access Review on tehokas ja joustava työkalu, jolla voidaan varmistaa käyttöoikeuksien ajantasaisuus ja tietoturva. Se on olennainen osa identiteetinhallinnan kokonaisuutta ja erityisen tehokas yhdessä Access Packagien ja PIM:n kanssa. Soveltuu sekä sisäisten että ulkoisten käyttäjien käyttöoikeuksien hallintaan – skaalautuen yrityksen kokoon ja tarpeisiin.</p>
-
-<blockquote>
-  <p><strong>Vinkki:</strong> Yhdistä Access Review Microsoft Sentinel -valvontaan saadaksesi kokonaiskuvan käyttöoikeuksista ja poikkeamista reaaliaikaisesti.</p>
-</blockquote>
-
-<hr />
-
-<h3 id="lisenssivaatimukset">Lisenssivaatimukset</h3>
-
-<p>Access Review -toiminto on käytettävissä Microsoft Entra -palvelussa seuraavin ehdoin:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Lisenssi</th>
-      <th>Tukee Access Review -toimintoa</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Microsoft Entra ID P2</strong></td>
-      <td>✅ Täysi tuki</td>
-    </tr>
-    <tr>
-      <td>Microsoft Entra ID P1</td>
-      <td>❌ Ei sisällä Access Review -toimintoa</td>
-    </tr>
-    <tr>
-      <td>Microsoft 365 E5 / EMS E5</td>
-      <td>✅ Sisältyy (koska sisältää Entra ID P2:n)</td>
-    </tr>
-    <tr>
-      <td>Microsoft 365 E3 / EMS E3</td>
-      <td>❌ Ei sisällä</td>
-    </tr>
-    <tr>
-      <td>Ilmainen Entra ID</td>
-      <td>❌ Ei sisällä</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p><strong>Huom:</strong> Access Review edellyttää lisenssiä kaikille osallistujille – sekä käyttöoikeuksien tarkistettaville että tarkistajille!</p>
-</blockquote>
-
-<p>B2B Collaboration käyttäjien osalta lisenssisääntö 50:1 sääntö:
-→ 1 P2-lisenssi kattaa 50 ulkoista käyttäjää.
-Lisenssointi perustuu Monthly active users (MAU) malliin, eli 1 lisenssi per 50 käyttäjää tulee olla vapaana.</p>
-
-<hr />
-
-<h3 id="keskeiset-roolit-ja-niiden-oikeudet">Keskeiset roolit ja niiden oikeudet</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Rooli</th>
-      <th>Kuvaus</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Global Administrator / Identity Governance Administrator</strong></td>
-      <td>Voi luoda ja hallita kaikkia Access Review -prosesseja.</td>
-    </tr>
-    <tr>
-      <td><strong>Group Owner</strong></td>
-      <td>Voi tarkistaa jäsenten oikeuksia ryhmässä, jonka omistaja hän on.</td>
-    </tr>
-    <tr>
-      <td><strong>Access Package Manager</strong></td>
-      <td>Voi luoda käyttöpaketteja ja liittää niihin Access Review -tarkistuksia.</td>
-    </tr>
-    <tr>
-      <td><strong>Reviewer (tarkistaja)</strong></td>
-      <td>Käyttäjä, jolle on delegoitu oikeus tarkistaa toisten käyttöoikeuksia (esim. tiiminvetäjä).</td>
-    </tr>
-    <tr>
-      <td><strong>Self-review target user</strong></td>
-      <td>Käyttäjä, joka tarkistaa omia käyttöoikeuksiaan.</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>Kaikki roolit edellyttävät P2-lisenssiä. Ryhmän omistajalla voi olla oikeus tarkistaa omien ryhmiensä käyttöoikeuksia, mutta tämäkin vaatii lisenssin.</p>
-</blockquote>
-
-<hr />
-
-<h3 id="tuetut-resurssityypit">Tuetut resurssityypit</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th>Resurssi</th>
-      <th>Roolien/ominaisuuksien tuki</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Entra ID -ryhmät</strong></td>
-      <td>Tukee omistajien tai nimettyjen tarkistajien suorittamia tarkistuksia.</td>
-    </tr>
-    <tr>
-      <td><strong>Entra ID roolit (PIM)</strong></td>
-      <td>Mahdollistaa roolien tarkistuksen käyttöoikeuksien hallinnassa (PIM).</td>
-    </tr>
-    <tr>
-      <td><strong>Access Packages</strong></td>
-      <td>Tukee automaattisia käyttöoikeustarkistuksia osana käyttöpakettien elinkaarta.</td>
-    </tr>
-    <tr>
-      <td><strong>Sovellukset</strong></td>
-      <td>Voidaan tarkistaa käyttäjäkohtaisia käyttöoikeuksia (esim. SSO-sovellukset).</td>
-    </tr>
-    <tr>
-      <td><strong>Ulkoiset käyttäjät (B2B collaboration)</strong></td>
-      <td>Mahdollistaa ulkoisten yhteistyökumppaneiden oikeuksien tarkistamisen.</td>
-    </tr>
-  </tbody>
-</table>
-
-<blockquote>
-  <p>Joissain tapauksissa (esim. roolit PIM:n kautta) tarkistus vaatii lisäkonfiguraatioita ennen näkyvyyttä Access Reviewissa.</p>
-</blockquote>
-
-<hr />
-
-<h3 id="access-review--access-package--yhteiskäyttö">Access Review + Access Package – yhteiskäyttö</h3>
-
-<p>Access Packages ovat käyttöpaketteja, jotka sisältävät resursseja ja määrittelevät, miten käyttäjät voivat niitä hakea.</p>
-
-<ul>
-  <li>Access Review voidaan <strong>liittää suoraan käyttöpakettiin</strong>.</li>
-  <li>Käyttäjien käyttöoikeudet tarkastellaan automaattisesti tietyin väliajoin.</li>
-  <li>Tarkistuksen jälkeen voidaan määrittää esimerkiksi:
-    <ul>
-      <li><strong>Automaattinen poisto</strong>, jos tarkistus epäonnistuu.</li>
-      <li><strong>Oikeuden säilyttäminen</strong>, jos tarkistus jää tekemättä.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Yhdistelmä mahdollistaa käyttöoikeuksien hallinnan ilman jatkuvaa manuaalista valvontaa.</p>
-
-<hr />
-<h3 id="käyttöoikeus-tarkistusten-suunnittelu">Käyttöoikeus tarkistusten suunnittelu</h3>
-
-<p>Käyttöoikeuksien tarkistusten suunnittelu ennen niiden toteuttamista on välttämätöntä, jotta organisaatiosi työntekijöille ja vieraskäyttäjille voidaan saavuttaa haluttu hallintostrategia. Halutun strategian saavuttamiseksi:</p>
-<ul>
-  <li>Sitouta oikeat sidosryhmät.</li>
-  <li>Suunnittele pilotti.</li>
-  <li>Luettele tarkistettavat resurssityypit.</li>
-  <li>Tunnista tarkistajat käyttöoikeuksien tarkistamista varten.</li>
-</ul>
-
-<h4 id="sitouta-oikeat-sidosryhmät">Sitouta oikeat sidosryhmät</h4>
-
-<p>Oikeiden sidosryhmien sitouttaminen on ratkaisevan tärkeää halutun vaikutuksen, tulosten ja vastuiden saavuttamiseksi. Käyttöoikeustarkistuksissa on todennäköisesti edustajia seuraavista tiimeistä:</p>
-<ul>
-  <li>IT-järjestelmänvalvoja – joka hallinnoi IT-infrastruktuuria, pilviinvestointeja ja SaaS (Software as a Service) -sovelluksia</li>
-  <li>Kehitystiimit – jotka rakentavat ja ylläpitävät sovelluksia organisaatiollesi</li>
-  <li>Liiketoimintayksiköt – jotka hallinnoivat projekteja ja omia sovelluksia</li>
-  <li>Corporate governance – kuka varmistaa, että organisaatio noudattaa sisäisiä käytäntöjä ja säädöksiä</li>
-</ul>
-
-<h4 id="suunnittele-pilotti">Suunnittele pilotti</h4>
-
-<p>On suositeltavaa suunnitella pilottikäyttöoikeuksien arvioinnit kohdennetulla pienellä ryhmällä ei-kriittisiä resursseja. Pilotin tulosten perusteella voit muokata prosesseja ja viestintää tarpeen mukaan.</p>
-<ul>
-  <li>Suosituksia pilotin suunnitteluun ovat:</li>
-  <li>Aloita arvioinneista, joissa tuloksia ei sovelleta automaattisesti.</li>
-  <li>Varmista, että kaikilla käyttäjillä on kelvollinen sähköpostiosoite, jotta he voivat vastaanottaa sähköpostiviestejä asianmukaisten toimien suorittamiseksi.</li>
-  <li>Dokumentoi kaikki pilotin aikana tekemäsi muutokset, kuten käyttöoikeuden poistaminen.</li>
-  <li>Valvo valvontalokeja varmistaaksesi, että kaikki tapahtumat kirjataan oikein.</li>
-</ul>
-
-<h4 id="luettelo-tarkastettavista-resurssityypeistä">Luettelo tarkastettavista resurssityypeistä</h4>
-
-<p>Resursseja, kuten käyttäjiä (sekä sisäisiä että ulkoisia käyttäjiä), sovelluksia ja ryhmiä, voidaan hallita ja tarkastella Access Review toiminnallisuuden avulla.
-Käyttöoikeuksien tarkistusten tyypillisiä kohteita ovat:</p>
-<ul>
-  <li>Käyttäjien pääsy sovelluksiin – SaaS- tai toimialakohtaiset sovellukset, jotka on integroitu Azure AD:hen kertakirjautumista varten</li>
-  <li>Ryhmän jäsenyys – ryhmät, jotka synkronoidaan Azure AD:hen tai jotka on luotu Azure AD:ssä tai Microsoft 365:ssä, mukaan lukien tiimit</li>
-  <li>Käyttöpaketit – resurssit, kuten ryhmät, sovellukset ja sivustot</li>
-  <li>Azure AD roolit ja Azure-resurssiroolit – roolit, jotka on määritetty Privileged Identity Management (PIM)</li>
-</ul>
-
-<h4 id="tunnista-tarkistajat-käyttöoikeuksien-tarkistamiseksi">Tunnista tarkistajat käyttöoikeuksien tarkistamiseksi</h4>
-
-<p>Käyttöoikeustarkistuksia luodessaan tekijä päättää, kuka suorittaa tarkistuksen. Käyttöoikeustarkistuksen luoja voi muokata tätä asetusta milloin tahansa, vaikka tarkistus olisi aloitettu. Kolme henkilöä edustaa yleensä arvioijia:</p>
-<ul>
-  <li>Resurssin omistajat – resurssin yrityksen omistaja</li>
-  <li>Yksilöllisesti valittujen edustajien joukko – käyttöoikeuksien tarkistuksen luojan valitsema</li>
-  <li>Loppukäyttäjä – itse varmentaa jatkuvan käytön</li>
-</ul>
-
-<p>Ennen kuin otat käyttöoikeuksien tarkistukset käyttöön, suunnittele organisaatiollesi merkitykselliset tarkistustyypit. Käyttöoikeuksien tarkistuskäytännön luomiseen tarvitaan seuraavat tiedot:</p>
-<ul>
-  <li>Mitä resursseja on tarkistettava?</li>
-  <li>Kenen käyttöoikeuksia tarkistetaan?</li>
-  <li>Kuinka usein tarkistus tulisi tehdä?</li>
-  <li>Kuka suorittaa arvioinnin?</li>
-  <li>Miten arvioijalle ilmoitetaan tarkistamisesta?</li>
-  <li>Mitkä ovat tarkistuksen määräajat?</li>
-  <li>Mitä tapahtuu, jos arvioija ei vastaa ajoissa?</li>
-  <li>Mitä automaattisia toimia tulisi panna täytäntöön?</li>
-  <li>Mitä manuaalisia toimia tehdään tarkistustulosten perusteella?</li>
-  <li>Mitä viestejä tulisi lähettää tehtyjen toimenpiteiden perusteella?</li>
-</ul>
-
-<h3 id="access-reviewin-luominen--vaiheittainen-ohje">Access Reviewin luominen – Vaiheittainen ohje</h3>
-
-<ol>
-  <li>
-    <p><strong>Avaa Azure-portaali</strong><br />
-Siirry: <em>Microsoft Entra ID &gt; Identity Governance &gt; Access Reviews</em></p>
-  </li>
-  <li>
-    <p><strong>Luo uusi tarkistus</strong><br />
-Valitse <strong>“New access review”</strong></p>
-  </li>
-  <li>
-    <p><strong>Valitse tarkistettava kohde (Review type)</strong><br />
-Esim. ryhmä, käyttöpaketti, rooli tai sovellus</p>
-
-    <p><img src="/accessreview1.png" alt="Kuva" /></p>
-  </li>
-  <li>
-    <p><strong>Määritä tarkistajat (Reviews) ja tarkistuksen toistuvuus</strong></p>
-
-    <p>Asetukset:</p>
-    <ul>
-      <li>Multistage review</li>
-      <li>Select Reviewers. Vaihtoehdot:
-        <ul>
-          <li>Group Owner</li>
-          <li>Nimetty henkilö</li>
-          <li>User’s manager</li>
-          <li>Self-review (käyttäjät itse)</li>
-        </ul>
-      </li>
-      <li>Duration (in Days)</li>
-      <li>Review recurrence
-        <ul>
-          <li>One time</li>
-          <li>Weekly</li>
-          <li>Monthly</li>
-          <li>Quarterly</li>
-          <li>Semi-annually</li>
-          <li>Annually</li>
-        </ul>
-      </li>
-      <li>Start Date</li>
-      <li>End
-        <ul>
-          <li>Never</li>
-          <li>End On Specfic date</li>
-          <li>End after number of occurences
-<img src="/accessreview2.png" alt="Kuva" /></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><strong>Toiminta tarkistuksen jälkeen (Settings)</strong>
-Asetukset:
-    <ul>
-      <li>Auto apply results to resource</li>
-      <li>If reviewers don’t respond</li>
-      <li>At end of review, send notification to</li>
-      <li>No sign-in within 30 days</li>
-      <li>User-to-Group Affiliation</li>
-      <li>Justification required</li>
-      <li>Email notifications</li>
-      <li>Reminders</li>
-      <li>Additional content for reviewer email
-<img src="/accessreview3.png" alt="Kuva" /></li>
-    </ul>
-  </li>
-  <li><strong>Tarkista asetukset ja anna access review nimi(Review + Create)</strong>
-    <ul>
-      <li>Anna kuvaava nimi ja kuvaus. Tarkista asetukset ja klikkaa Create painiketta
-<img src="/accessreview4.png" alt="Kuva" /></li>
-    </ul>
-  </li>
-</ol>
-
-<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Access Review" /><summary type="html"><![CDATA[Access Review]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+<p>Kirjoitan mahdollisesti myöhemmin tästä osuudesta, kun omassa tenantissani on dataa, mitä käyttää esimerkkinä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Privileged Identity Management" /><category term="PIM" /><summary type="html"><![CDATA[Assignments, rooliryhmien asetukset, PIM for Groups ja role-assignable group]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 2</title><link href="http://localhost:4000/posts/m365_id_gov_entitlement_management2/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 2" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/m365_id_gov_entitlement_management2</id><content type="html" xml:base="http://localhost:4000/posts/m365_id_gov_entitlement_management2/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 
@@ -2862,7 +3492,321 @@ Kun käyttäjällä ei ole enää pääsyä mihinkään access packageen, laskur
 
 <p>→ Käyttäjällä ei ole enää access package -oikeuksia.
 → 14 päivän kuluttua: käyttäjän kirjautuminen estetään.
-→ Poistetaan kokonaan tenantista seuraavana päivänä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-04T11:05:14+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+→ Poistetaan kokonaan tenantista seuraavana päivänä.</p>]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Entitlement Management" /><summary type="html"><![CDATA[Entitlement Management - Terms Of Use (ToU), Yhdistetyt organisaatiot ja ulkoisten käyttäjien elinkaaren hallinta]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Access Review</title><link href="http://localhost:4000/posts/M365_id_gov_access_review/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Access Review" /><published>2025-08-04T04:00:00+03:00</published><updated>2025-08-04T04:00:00+03:00</updated><id>http://localhost:4000/posts/M365_id_gov_access_review</id><content type="html" xml:base="http://localhost:4000/posts/M365_id_gov_access_review/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
+
+<p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn osa-alueeseen Access Review.</p>
+
+<p>Tämän blogisarjan tarkoitus on antaa lyhyt katsaus Microsoftin M365 teknologiaan Suomen kielellä, niin että siitä saa hetkessä kuvan mistä teknologiassa on kyse ja miten palvelua konfiguroidaan. Jos sitten haluaa perehtyä asiaan syvemmin, niin Microsoftin Learn sivustosta löytyy materiaali siihen.</p>
+
+<p>Identity Governance on osa-alue Microsoftin SC-300 sertifiointitestissä.</p>
+
+<hr />
+
+<h2 id="access-review---organisaation-resursseihin-kohdistettuja-käyttöoikeuksien-tarkistuksia">Access Review - Organisaation resursseihin kohdistettuja käyttöoikeuksien tarkistuksia</h2>
+
+<h3 id="yleiskatsaus">Yleiskatsaus</h3>
+
+<p>Access Review -toiminnallisuuden avulla organisaatiot voivat säännöllisesti tarkistaa ja hallita käyttäjien käyttöoikeuksia eri resursseihin. Tämä on keskeinen osa <strong>Microsoft Entra Identity Governance</strong> -kokonaisuutta ja sen tavoitteena on varmistaa, että oikeudet säilyvät ajan mittaan tarpeellisina, turvallisina ja organisaation käytäntöjen mukaisina.</p>
+
+<p>Tyypillinen legacy teknologia ongelma oli se, että organisaatioilta puuttui ymmärrys siitä, että kenellä on oikeuksia mihinkin resursseihin ja käyttäjien lähtiessä pois organisaatiosta ei ollut ymmärrystä siitä minne kaikkialle käyttäjän oikeudet periytyivät. Access Review M365 pilvipalveluiden vastaus tähän ongelmaan.</p>
+
+<p>Käyttöoikeustarkistusten avulla organisaatiot voivat:
+•	Ajoittaa säännölliset tai ad hoc -tarkistukset nähdäksesi selvittääkseen kenellä on pääsy mihinkin resursseihin
+•	Delegoida tarkistuksia järjestelmänvalvojille, palveluiden omistajille, ryhmäpääliköille tai vahvistaa itse käyttöoikeuksien jatkuvuus
+•	Automatisoida tarkistustulokset, kuten käyttäjien resurssien käyttöoikeuksien poistaminen
+•	Seurata access review dataa käyttöstatistiikan tai vaatimustenmukaisuuden saamiseksi</p>
+
+<p>Access Review on tehokas ja joustava työkalu, jolla voidaan varmistaa käyttöoikeuksien ajantasaisuus ja tietoturva. Se on olennainen osa identiteetinhallinnan kokonaisuutta ja erityisen tehokas yhdessä Access Packagien ja PIM:n kanssa. Soveltuu sekä sisäisten että ulkoisten käyttäjien käyttöoikeuksien hallintaan – skaalautuen yrityksen kokoon ja tarpeisiin.</p>
+
+<blockquote>
+  <p><strong>Vinkki:</strong> Yhdistä Access Review Microsoft Sentinel -valvontaan saadaksesi kokonaiskuvan käyttöoikeuksista ja poikkeamista reaaliaikaisesti.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="lisenssivaatimukset">Lisenssivaatimukset</h3>
+
+<p>Access Review -toiminto on käytettävissä Microsoft Entra -palvelussa seuraavin ehdoin:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Lisenssi</th>
+      <th>Tukee Access Review -toimintoa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Microsoft Entra ID P2</strong></td>
+      <td>✅ Täysi tuki</td>
+    </tr>
+    <tr>
+      <td>Microsoft Entra ID P1</td>
+      <td>❌ Ei sisällä Access Review -toimintoa</td>
+    </tr>
+    <tr>
+      <td>Microsoft 365 E5 / EMS E5</td>
+      <td>✅ Sisältyy (koska sisältää Entra ID P2:n)</td>
+    </tr>
+    <tr>
+      <td>Microsoft 365 E3 / EMS E3</td>
+      <td>❌ Ei sisällä</td>
+    </tr>
+    <tr>
+      <td>Ilmainen Entra ID</td>
+      <td>❌ Ei sisällä</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Huom:</strong> Access Review edellyttää lisenssiä kaikille osallistujille – sekä käyttöoikeuksien tarkistettaville että tarkistajille!</p>
+</blockquote>
+
+<p>B2B Collaboration käyttäjien osalta lisenssisääntö 50:1 sääntö:
+→ 1 P2-lisenssi kattaa 50 ulkoista käyttäjää.
+Lisenssointi perustuu Monthly active users (MAU) malliin, eli 1 lisenssi per 50 käyttäjää tulee olla vapaana.</p>
+
+<hr />
+
+<h3 id="keskeiset-roolit-ja-niiden-oikeudet">Keskeiset roolit ja niiden oikeudet</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Rooli</th>
+      <th>Kuvaus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Global Administrator / Identity Governance Administrator</strong></td>
+      <td>Voi luoda ja hallita kaikkia Access Review -prosesseja.</td>
+    </tr>
+    <tr>
+      <td><strong>Group Owner</strong></td>
+      <td>Voi tarkistaa jäsenten oikeuksia ryhmässä, jonka omistaja hän on.</td>
+    </tr>
+    <tr>
+      <td><strong>Access Package Manager</strong></td>
+      <td>Voi luoda käyttöpaketteja ja liittää niihin Access Review -tarkistuksia.</td>
+    </tr>
+    <tr>
+      <td><strong>Reviewer (tarkistaja)</strong></td>
+      <td>Käyttäjä, jolle on delegoitu oikeus tarkistaa toisten käyttöoikeuksia (esim. tiiminvetäjä).</td>
+    </tr>
+    <tr>
+      <td><strong>Self-review target user</strong></td>
+      <td>Käyttäjä, joka tarkistaa omia käyttöoikeuksiaan.</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Kaikki roolit edellyttävät P2-lisenssiä. Ryhmän omistajalla voi olla oikeus tarkistaa omien ryhmiensä käyttöoikeuksia, mutta tämäkin vaatii lisenssin.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="tuetut-resurssityypit">Tuetut resurssityypit</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Resurssi</th>
+      <th>Roolien/ominaisuuksien tuki</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Entra ID -ryhmät</strong></td>
+      <td>Tukee omistajien tai nimettyjen tarkistajien suorittamia tarkistuksia.</td>
+    </tr>
+    <tr>
+      <td><strong>Entra ID roolit (PIM)</strong></td>
+      <td>Mahdollistaa roolien tarkistuksen käyttöoikeuksien hallinnassa (PIM).</td>
+    </tr>
+    <tr>
+      <td><strong>Access Packages</strong></td>
+      <td>Tukee automaattisia käyttöoikeustarkistuksia osana käyttöpakettien elinkaarta.</td>
+    </tr>
+    <tr>
+      <td><strong>Sovellukset</strong></td>
+      <td>Voidaan tarkistaa käyttäjäkohtaisia käyttöoikeuksia (esim. SSO-sovellukset).</td>
+    </tr>
+    <tr>
+      <td><strong>Ulkoiset käyttäjät (B2B collaboration)</strong></td>
+      <td>Mahdollistaa ulkoisten yhteistyökumppaneiden oikeuksien tarkistamisen.</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>Joissain tapauksissa (esim. roolit PIM:n kautta) tarkistus vaatii lisäkonfiguraatioita ennen näkyvyyttä Access Reviewissa.</p>
+</blockquote>
+
+<hr />
+
+<h3 id="access-review--access-package--yhteiskäyttö">Access Review + Access Package – yhteiskäyttö</h3>
+
+<p>Access Packages ovat käyttöpaketteja, jotka sisältävät resursseja ja määrittelevät, miten käyttäjät voivat niitä hakea.</p>
+
+<ul>
+  <li>Access Review voidaan <strong>liittää suoraan käyttöpakettiin</strong>.</li>
+  <li>Käyttäjien käyttöoikeudet tarkastellaan automaattisesti tietyin väliajoin.</li>
+  <li>Tarkistuksen jälkeen voidaan määrittää esimerkiksi:
+    <ul>
+      <li><strong>Automaattinen poisto</strong>, jos tarkistus epäonnistuu.</li>
+      <li><strong>Oikeuden säilyttäminen</strong>, jos tarkistus jää tekemättä.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Yhdistelmä mahdollistaa käyttöoikeuksien hallinnan ilman jatkuvaa manuaalista valvontaa.</p>
+
+<hr />
+<h3 id="käyttöoikeus-tarkistusten-suunnittelu">Käyttöoikeus tarkistusten suunnittelu</h3>
+
+<p>Käyttöoikeuksien tarkistusten suunnittelu ennen niiden toteuttamista on välttämätöntä, jotta organisaatiosi työntekijöille ja vieraskäyttäjille voidaan saavuttaa haluttu hallintostrategia. Halutun strategian saavuttamiseksi:</p>
+<ul>
+  <li>Sitouta oikeat sidosryhmät.</li>
+  <li>Suunnittele pilotti.</li>
+  <li>Luettele tarkistettavat resurssityypit.</li>
+  <li>Tunnista tarkistajat käyttöoikeuksien tarkistamista varten.</li>
+</ul>
+
+<h4 id="sitouta-oikeat-sidosryhmät">Sitouta oikeat sidosryhmät</h4>
+
+<p>Oikeiden sidosryhmien sitouttaminen on ratkaisevan tärkeää halutun vaikutuksen, tulosten ja vastuiden saavuttamiseksi. Käyttöoikeustarkistuksissa on todennäköisesti edustajia seuraavista tiimeistä:</p>
+<ul>
+  <li>IT-järjestelmänvalvoja – joka hallinnoi IT-infrastruktuuria, pilviinvestointeja ja SaaS (Software as a Service) -sovelluksia</li>
+  <li>Kehitystiimit – jotka rakentavat ja ylläpitävät sovelluksia organisaatiollesi</li>
+  <li>Liiketoimintayksiköt – jotka hallinnoivat projekteja ja omia sovelluksia</li>
+  <li>Corporate governance – kuka varmistaa, että organisaatio noudattaa sisäisiä käytäntöjä ja säädöksiä</li>
+</ul>
+
+<h4 id="suunnittele-pilotti">Suunnittele pilotti</h4>
+
+<p>On suositeltavaa suunnitella pilottikäyttöoikeuksien arvioinnit kohdennetulla pienellä ryhmällä ei-kriittisiä resursseja. Pilotin tulosten perusteella voit muokata prosesseja ja viestintää tarpeen mukaan.</p>
+<ul>
+  <li>Suosituksia pilotin suunnitteluun ovat:</li>
+  <li>Aloita arvioinneista, joissa tuloksia ei sovelleta automaattisesti.</li>
+  <li>Varmista, että kaikilla käyttäjillä on kelvollinen sähköpostiosoite, jotta he voivat vastaanottaa sähköpostiviestejä asianmukaisten toimien suorittamiseksi.</li>
+  <li>Dokumentoi kaikki pilotin aikana tekemäsi muutokset, kuten käyttöoikeuden poistaminen.</li>
+  <li>Valvo valvontalokeja varmistaaksesi, että kaikki tapahtumat kirjataan oikein.</li>
+</ul>
+
+<h4 id="luettelo-tarkastettavista-resurssityypeistä">Luettelo tarkastettavista resurssityypeistä</h4>
+
+<p>Resursseja, kuten käyttäjiä (sekä sisäisiä että ulkoisia käyttäjiä), sovelluksia ja ryhmiä, voidaan hallita ja tarkastella Access Review toiminnallisuuden avulla.
+Käyttöoikeuksien tarkistusten tyypillisiä kohteita ovat:</p>
+<ul>
+  <li>Käyttäjien pääsy sovelluksiin – SaaS- tai toimialakohtaiset sovellukset, jotka on integroitu Azure AD:hen kertakirjautumista varten</li>
+  <li>Ryhmän jäsenyys – ryhmät, jotka synkronoidaan Azure AD:hen tai jotka on luotu Azure AD:ssä tai Microsoft 365:ssä, mukaan lukien tiimit</li>
+  <li>Käyttöpaketit – resurssit, kuten ryhmät, sovellukset ja sivustot</li>
+  <li>Azure AD roolit ja Azure-resurssiroolit – roolit, jotka on määritetty Privileged Identity Management (PIM)</li>
+</ul>
+
+<h4 id="tunnista-tarkistajat-käyttöoikeuksien-tarkistamiseksi">Tunnista tarkistajat käyttöoikeuksien tarkistamiseksi</h4>
+
+<p>Käyttöoikeustarkistuksia luodessaan tekijä päättää, kuka suorittaa tarkistuksen. Käyttöoikeustarkistuksen luoja voi muokata tätä asetusta milloin tahansa, vaikka tarkistus olisi aloitettu. Kolme henkilöä edustaa yleensä arvioijia:</p>
+<ul>
+  <li>Resurssin omistajat – resurssin yrityksen omistaja</li>
+  <li>Yksilöllisesti valittujen edustajien joukko – käyttöoikeuksien tarkistuksen luojan valitsema</li>
+  <li>Loppukäyttäjä – itse varmentaa jatkuvan käytön</li>
+</ul>
+
+<p>Ennen kuin otat käyttöoikeuksien tarkistukset käyttöön, suunnittele organisaatiollesi merkitykselliset tarkistustyypit. Käyttöoikeuksien tarkistuskäytännön luomiseen tarvitaan seuraavat tiedot:</p>
+<ul>
+  <li>Mitä resursseja on tarkistettava?</li>
+  <li>Kenen käyttöoikeuksia tarkistetaan?</li>
+  <li>Kuinka usein tarkistus tulisi tehdä?</li>
+  <li>Kuka suorittaa arvioinnin?</li>
+  <li>Miten arvioijalle ilmoitetaan tarkistamisesta?</li>
+  <li>Mitkä ovat tarkistuksen määräajat?</li>
+  <li>Mitä tapahtuu, jos arvioija ei vastaa ajoissa?</li>
+  <li>Mitä automaattisia toimia tulisi panna täytäntöön?</li>
+  <li>Mitä manuaalisia toimia tehdään tarkistustulosten perusteella?</li>
+  <li>Mitä viestejä tulisi lähettää tehtyjen toimenpiteiden perusteella?</li>
+</ul>
+
+<h3 id="access-reviewin-luominen--vaiheittainen-ohje">Access Reviewin luominen – Vaiheittainen ohje</h3>
+
+<ol>
+  <li>
+    <p><strong>Avaa Azure-portaali</strong><br />
+Siirry: <em>Microsoft Entra ID &gt; Identity Governance &gt; Access Reviews</em></p>
+  </li>
+  <li>
+    <p><strong>Luo uusi tarkistus</strong><br />
+Valitse <strong>“New access review”</strong></p>
+  </li>
+  <li>
+    <p><strong>Valitse tarkistettava kohde (Review type)</strong><br />
+Esim. ryhmä, käyttöpaketti, rooli tai sovellus</p>
+
+    <p><img src="/accessreview1.png" alt="Kuva" /></p>
+  </li>
+  <li>
+    <p><strong>Määritä tarkistajat (Reviews) ja tarkistuksen toistuvuus</strong></p>
+
+    <p>Asetukset:</p>
+    <ul>
+      <li>Multistage review</li>
+      <li>Select Reviewers. Vaihtoehdot:
+        <ul>
+          <li>Group Owner</li>
+          <li>Nimetty henkilö</li>
+          <li>User’s manager</li>
+          <li>Self-review (käyttäjät itse)</li>
+        </ul>
+      </li>
+      <li>Duration (in Days)</li>
+      <li>Review recurrence
+        <ul>
+          <li>One time</li>
+          <li>Weekly</li>
+          <li>Monthly</li>
+          <li>Quarterly</li>
+          <li>Semi-annually</li>
+          <li>Annually</li>
+        </ul>
+      </li>
+      <li>Start Date</li>
+      <li>End
+        <ul>
+          <li>Never</li>
+          <li>End On Specfic date</li>
+          <li>End after number of occurences
+<img src="/accessreview2.png" alt="Kuva" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Toiminta tarkistuksen jälkeen (Settings)</strong>
+Asetukset:
+    <ul>
+      <li>Auto apply results to resource</li>
+      <li>If reviewers don’t respond</li>
+      <li>At end of review, send notification to</li>
+      <li>No sign-in within 30 days</li>
+      <li>User-to-Group Affiliation</li>
+      <li>Justification required</li>
+      <li>Email notifications</li>
+      <li>Reminders</li>
+      <li>Additional content for reviewer email
+<img src="/accessreview3.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+  <li><strong>Tarkista asetukset ja anna access review nimi(Review + Create)</strong>
+    <ul>
+      <li>Anna kuvaava nimi ja kuvaus. Tarkista asetukset ja klikkaa Create painiketta
+<img src="/accessreview4.png" alt="Kuva" /></li>
+    </ul>
+  </li>
+</ol>
+
+<hr />]]></content><author><name></name></author><category term="M365" /><category term="SC-300" /><category term="Microsoft" /><category term="Entra ID" /><category term="Identity Governance" /><category term="Access Review" /><summary type="html"><![CDATA[Access Review]]></summary></entry><entry><title type="html">Entra ID Identity Governance - Entitlement Management osa 1</title><link href="http://localhost:4000/posts/M365_ID_gov_entitlement_management/" rel="alternate" type="text/html" title="Entra ID Identity Governance - Entitlement Management osa 1" /><published>2025-08-03T10:00:00+03:00</published><updated>2025-08-04T11:05:14+03:00</updated><id>http://localhost:4000/posts/M365_ID_gov_entitlement_management</id><content type="html" xml:base="http://localhost:4000/posts/M365_ID_gov_entitlement_management/"><![CDATA[<h2 id="johdanto">Johdanto</h2>
 
 <p>Tämä kirjoitus on osa blogikirjoitus sarjaa, missä käsittelen Entra ID:n palvelukokonaisuutta nimeltä Identity Governance. Tässä kirjoutuksessä keskityn Identityn Governancen osa-alueeseen nimeltä Entitlement Management. Kirjoitan Entitlement Management asiat kahdessa eri blogi kirjoituksessa:</p>
 

@@ -1,5 +1,13 @@
 [
   {
+    "title": "Microsoft Entra ID – Identity Protection osa 1",
+    "url": "/posts/M365_identity_protection/",
+    "categories": "M365",
+    "tags": "SC-300, Microsoft, Entra ID, Identity Protection",
+    "date": "2025-08-08 06:01:00 +0300",
+    "content": "SSPR - käyttöönotto ja testaus"
+  },
+  {
     "title": "Microsoft Entra ID – Self-Service Password Reset (SSPR)",
     "url": "/posts/M365_sspr/",
     "categories": "M365",
